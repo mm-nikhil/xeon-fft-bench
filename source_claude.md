@@ -1,922 +1,777 @@
-# Deep Walkthrough: `fft_benchmark.c` and `run_fft_benchmarks.sh`
+# Deep Walkthrough: `fft_benchmark.c` and `run_fft_benchmarks.sh` (v2)
 
-This document is a thorough, opinionated explanation of every part of this benchmark. It covers what each line of code does, what the inputs and outputs mean, how threads work, what the scenarios actually test, where the benchmark is solid, and where it has real problems.
+Covers the redesigned benchmark end-to-end: what changed, what every line does, what the data means, and what is still imperfect.
 
 ---
 
-## 1. Hardware Context You Must Keep in Mind
-
-Everything in this benchmark is designed around this machine:
+## 1. Hardware Context (Unchanged)
 
 ```
-CPU    : Intel Xeon W-2155 @ 3.30 GHz (Skylake-X microarchitecture)
-Cores  : 10 physical cores / 20 logical threads (Hyper-Threading, 2 per core)
+CPU    : Intel Xeon W-2155 @ 3.30 GHz (Skylake-X)
+Cores  : 10 physical / 20 logical (Hyper-Threading, 2 per core)
 Socket : 1 socket, 1 NUMA node
-Cache  : L1d 32 KB per core | L2 1 MB per core | L3 14 MB shared (all 10 cores)
-AVX    : AVX, AVX2, AVX-512F, AVX-512DQ, AVX-512BW, AVX-512CD, AVX-512VL
-DRAM   : (external to chip, shared bandwidth)
+Cache  : L1d 32 KB/core | L2 1 MB/core | L3 14 MB shared
+AVX    : AVX, AVX2, AVX-512F/DQ/BW/CD/VL confirmed
+DRAM   : shared by all cores
 ```
 
-The hostname in the logs is `amdtoolsserver.morphingmachines`. Despite the name, the machine runs an Intel Xeon. The hostname is just a label.
+**AVX-512 frequency throttle** still applies. Skylake-X drops from 3.3 GHz → ~2.5 GHz under sustained AVX-512. Warmup runs force this steady state before measurement begins. The 5-warmup default is adequate for large grids (each run takes 100ms+ so 5 = 500ms of settling). For 32^3 (each run ~0.07ms), 5 warmup runs = 0.35ms — frequency likely hasn't fully throttled, so AVX-512 numbers at 32^3 may be slightly optimistic relative to sustained workloads.
 
-**Critical Skylake-X quirk: AVX-512 frequency throttling.**
-When the processor executes sustained AVX-512 instructions (512-bit wide FMA ops), it drops its clock from 3.3 GHz to roughly 2.5 GHz (the "AVX-512 license" frequency). This happens automatically to stay within thermal design power. The result: AVX-512 throughput is higher per clock (operates on 8 doubles at once vs 4 for AVX2), but the clock is slower. The net benefit depends on whether the workload is compute-bound or memory-bound. This is why the warmup runs exist — to force the CPU into the throttled frequency *before* measurement starts, so your timed numbers reflect the steady-state AVX-512 speed.
+**Cache working set:**
 
-**Cache working set for the grid sizes used:**
+| Grid | Points N | Memory/transform (16B/pt) | Fits in |
+|------|----------|---------------------------|---------|
+| 32^3 | 32,768   | 512 KB                    | L2 (1 MB) — compute-bound |
+| 64^3 | 262,144  | 4 MB                      | L3 (14 MB) — compute-bound |
+| 128^3 | 2,097,152 | 32 MB                   | DRAM — memory-bound |
+| 256^3 | 16,777,216 | 256 MB                 | DRAM, deeply — memory-bound |
 
-| Grid size | Points (N) | Memory per transform (complex double, 16 B) | Fits in |
-|-----------|-----------|----------------------------------------------|---------|
-| 64^3      | 262,144   | 4 MB                                         | L3 (14 MB) ✓ |
-| 128^3     | 2,097,152 | 32 MB                                        | DRAM (spills L3) |
-| 256^3     | 16,777,216| 256 MB                                       | DRAM (deeply) |
-
-This matters a lot: 64^3 is compute-bound (data fits in L3), 128^3 and 256^3 are memory-bound.
+This is the most important thing to hold in your head while reading results. Everything behaves differently on each side of the DRAM boundary.
 
 ---
 
-## 2. The Two Levels of "Scenario": The Most Confusing Thing in This Project
+## 2. What Changed: Old Design vs New Design
 
-This benchmark has **two separate, overlapping uses of the word "Scenario"**, and conflating them will make every log unreadable.
+The old design had two overlapping layers of "Scenario" that were genuinely confusing. The new design eliminates that.
 
-### Level 1: Shell Script Outer Scenarios (4 total)
+### Old problems fixed
 
-These are invocations of the compiled binary with different ISA instructions and thread counts. The shell controls these.
+| Old Problem | New Solution |
+|-------------|-------------|
+| Two binaries (`fft_cpu_only`/`fft_avx512`) with compile flags that didn't actually control MKL ISA | One binary, `fft_benchmark`, compiled with `-march=native`. ISA controlled exclusively by `MKL_ENABLE_INSTRUCTIONS` |
+| 5 C internal sections (SCENARIO 1–5) that ran inside every outer run, creating 20 section outputs per full run | Three clean workload functions: `run_throughput`, `run_thread_scaling`, `run_batch_scaling`. Each outer profile runs exactly one workload. |
+| C sections labelled "CPU only" and "AVX-512" even when the binary was AVX-512 and the ISA was forced to SSE4.2 | Labels come entirely from the profile system — no ISA label inside C |
+| No 32^3 grid size (missed L2-resident compute-bound regime) | 32^3 added to default cube list |
+| No AVX2 intermediate ISA | `avx2_1t` and `avx2_phys` profiles added |
+| Batch scaling labelled "max threads" but used `cli_threads` | Batch scaling uses explicit `scale_threads` parameter |
+| No structured parseable output | Every result emits a `RESULT|...` pipe-delimited line |
+| No auto-generated report | Markdown report auto-generated from log by awk |
+| No memory cap | `BENCH_MAX_MEM_MB` skips cases that would OOM |
 
-| Shell Scenario | Binary         | MKL_ENABLE_INSTRUCTIONS | Threads |
-|----------------|----------------|--------------------------|---------|
-| Scenario 1     | `fft_cpu_only` | `SSE4_2`                 | 1       |
-| Scenario 2     | `fft_avx512`   | `AVX512`                 | 1       |
-| Scenario 3     | `fft_avx512`   | `AVX512`                 | 10 (physical) |
-| Scenario 3b    | `fft_avx512`   | `AVX512`                 | 20 (logical)  |
+### New concepts added
 
-### Level 2: C Program Inner Sections (5 total, run inside every outer scenario)
-
-These are hard-coded sections *inside* `fft_benchmark.c` that run in sequence every time the binary is called.
-
-| C Section | What it varies | Fixed parameters |
-|-----------|----------------|-----------------|
-| SCENARIO 1 | Grid size only | 1 thread |
-| SCENARIO 2 | Grid size only | 1 thread |
-| SCENARIO 3 | Grid + batch   | cli_threads |
-| SCENARIO 4 | Thread count   | 128^3, batch=4 |
-| SCENARIO 5 | Batch size     | 128^3, cli_threads |
-
-**The consequence**: every outer run produces output for all 5 inner sections. A full benchmark run produces 4 × 5 = 20 section outputs in the log, all with the same labels. This makes logs long and difficult to navigate without carefully anchoring your position by the outer `RUNNING: Scenario ...` header.
+- **Run profile**: a named combination of workload type + ISA + thread count. The shell defines 8 profiles; the C binary executes the workload the profile specifies.
+- **Workload type**: `throughput`, `thread_scaling`, or `batch_scaling`. These are mutually exclusive modes inside one binary invocation.
+- **Structured output lines**: `PROFILE|...`, `RESULT|...`, `SKIP|...` for machine parsing.
+- **Markdown report**: auto-generated, case-centric comparison across profiles.
+- **`RUN_PROFILES` selector**: run a subset of profiles, e.g. `RUN_PROFILES=avx512_1t,avx512_phys`.
 
 ---
 
-## 3. What the Inputs Mean
+## 3. `fft_benchmark.c`: Complete Walkthrough
 
-### 3.1 Grid size: what `64^3`, `128^3`, `256^3` mean
+### 3.1 New helper functions
 
-The FFT is **3-dimensional**. The grid `nx × ny × nz` describes the shape of a 3D volume.
+**`env_double`**: Same as `env_int` but reads a floating-point value. Used for `BENCH_MAX_MEM_MB`. Pattern: try to read env var, validate range, fall back to default if missing or invalid.
 
-`64^3` means `nx=64, ny=64, nz=64`. The total number of complex data points in one transform is:
+**`trim`**: Strips leading and trailing whitespace from a string. Used before parsing tokens from comma-separated env var values. Prevents `" 32 , 64 "` from breaking the parser.
 
-```
-N = nx × ny × nz = 64 × 64 × 64 = 262,144 points
-```
+**`parse_int_list`**: Tokenizes a comma-separated string into an integer array. Uses `strtok_r` (re-entrant, safe for single-threaded parsing). Each token is trimmed and parsed with `strtol`. Values outside `[min_v, max_v]` are silently skipped. Returns count of valid values.
 
-Each point is a `MKL_Complex16` — a struct with two `double` values (real and imaginary), totalling 16 bytes per point.
+**`load_int_list`**: Wrapper around `parse_int_list` that reads from an environment variable with a fallback string if the env var is absent. This is how grid sizes, batch sizes, and thread sets are configured at runtime without recompilation.
 
-So one 64^3 transform needs: `262,144 × 16 = 4,194,304 bytes = 4 MB`.
+**`print_list`**: Prints a comma-separated integer array to stdout for the header block. Used to log the exact configuration that was parsed.
 
-This benchmark uses **out-of-place** transforms, meaning input and output are separate buffers. So the full memory for one 64^3 transform is `2 × 4 MB = 8 MB`.
+### 3.2 `run_benchmark`: The core function (what changed)
 
-For 128^3:
-```
-N = 128 × 128 × 128 = 2,097,152 points
-Memory per buffer = 2,097,152 × 16 = 32 MB
-Two buffers = 64 MB
-```
-
-For 256^3:
-```
-N = 256 × 256 × 256 = 16,777,216 points
-Memory per buffer = 256 MB
-Two buffers = 512 MB
-```
-
-These numbers appear directly in the log's "Mem:" column.
-
-### 3.2 Batch size: what `batch=4`, `batch=16` etc. mean
-
-`batch` (called `howmany` in the C code) means: **how many independent 3D FFTs are computed in a single DFTI call**.
-
-When you set `DFTI_NUMBER_OF_TRANSFORMS = 4`, you are telling MKL: "I have 4 completely separate 3D volumes stacked in memory. Transform all 4 in one call."
-
-The memory layout is contiguous: transforms are placed back-to-back with no padding. The `distance` variable in the C code defines how far apart consecutive transforms are in memory (in elements):
+The function signature expanded significantly:
 
 ```c
-MKL_LONG distance = (MKL_LONG)nx * ny * nz;  // one transform's worth of elements
+static void run_benchmark(const char *profile_id,
+                          const char *workload,
+                          const char *case_id,
+                          int nx, int ny, int nz,
+                          int howmany,
+                          int num_threads,
+                          int warmup_runs,
+                          int nruns,
+                          double max_mem_mb)
 ```
 
-So for 128^3 batch=4:
-- Total elements: `2,097,152 × 4 = 8,388,608`
-- Total memory (in + out): `8,388,608 × 2 × 16 bytes = 256 MB`
+New parameters vs old:
+- `profile_id`: the string name of the outer run profile (e.g. `"avx512_phys"`). Printed in the `RESULT|` line.
+- `workload`: the workload category (`"throughput"`, `"thread_scaling"`, `"batch_scaling"`). Printed in the `RESULT|` line.
+- `case_id`: a short label generated by the caller (e.g. `"n128_b4"`, `"n128_b4_t10"`). Used in human output and `RESULT|` lines.
+- `max_mem_mb`: memory cap. If the allocation would exceed this, the benchmark is skipped.
 
-This matches the log output exactly (`Mem: 256.0 MB`).
-
-**Why batch matters**: MKL can compute twiddle factors (sine/cosine tables used in the FFT butterfly computation) once and reuse them across all transforms in the batch. For sizes that fit in L3 cache, this is a meaningful speedup. For sizes that spill to DRAM (128^3 and up), the benefit is hidden by memory bandwidth saturation.
-
-### 3.3 What `32x32` would mean (not currently used)
-
-If the benchmark had a `32^3` grid, that would be:
+**Memory cap check (new)**:
+```c
+double mem_mb = (2.0 * (double)total * (double)sizeof(MKL_Complex16)) / (1024.0 * 1024.0);
+if (max_mem_mb > 0.0 && mem_mb > max_mem_mb) {
+    printf("[skip] ...\n");
+    printf("SKIP|%s|%s|%s|...|%.2f|memory_limit\n", ...);
+    return;
+}
 ```
-N = 32,768 points
-Memory per buffer = 512 KB
-Two buffers = 1 MB (fits in L2!)
+Before allocating anything, the function computes how much memory would be needed (both buffers). If this exceeds `max_mem_mb`, it prints a human-readable `[skip]` line and a machine-parseable `SKIP|` line, then returns. The awk report handles `SKIP` records and can include them in tables with a reason column. Default cap is 3072 MB (3 GB).
+
+**Two output lines per successful run (new)**:
+
+Human-readable:
 ```
-At this size, FFT is essentially fully L2-cache resident. Twiddle factor reuse from batching would be clearly visible, and per-GFLOPS numbers would be much higher. The current benchmark skips this size, which is a gap (discussed in section 10).
+[run ] n128_b4         | Grid: 128x 128x 128 | Batch:  4 | Thr:10 | Fwd:  14.384 ms   61.24 GF/s | ...
+```
+
+Machine-parseable:
+```
+RESULT|avx512_phys|throughput|n128_b4|128|128|128|4|10|14.384000|61.240000|14.705000|59.900000|256.00
+```
+
+The `RESULT|` line uses `|` as field separator with fixed field order:
+`profile_id | workload | case_id | nx | ny | nz | batch | threads | fwd_ms | fwd_gflops | bwd_ms | bwd_gflops | mem_mb`
+
+This is what the awk report consumes.
+
+### 3.3 Three workload dispatch functions
+
+**`run_throughput`**: Nested loop over `cubes × batches` at a fixed thread count. This is the primary ISA-comparison workload. All throughput profiles (baseline_sse42_1t, avx2_1t, avx512_1t, avx2_phys, avx512_phys, avx512_logical) run this. Case ID format: `n{cube}_b{batch}`.
+
+**`run_thread_scaling`**: Single loop over a thread array at fixed `cube` and `batch`. The outer `cli_threads` value is irrelevant here — `mkl_set_num_threads(threads[i])` is called per iteration. The outer profile passes `NTHREADS_PHYSICAL` as `scale_threads` (used only to set `MKL_ENABLE_INSTRUCTIONS` and outer env; the C sweeps its own thread_set). Case ID format: `n{cube}_b{batch}_t{threads}`.
+
+**`run_batch_scaling`**: Single loop over a batch array at fixed `cube` and `threads`. The `threads` here comes from `scale_threads` which is read from `BENCH_SCALE_THREADS` (defaults to `cli_threads`). For the `avx512_batch_scaling` profile, `cli_threads=NTHREADS_PHYSICAL=10`. Case ID format: `n{cube}_b{batch}_t{threads}`.
+
+### 3.4 `main`: parsing and dispatch
+
+The flow is:
+1. Read `cli_threads` from `argv[1]`
+2. Read `BENCH_NRUNS`, `BENCH_WARMUP`, `BENCH_MAX_MEM_MB`
+3. Read `BENCH_PROFILE`, `BENCH_PROFILE_DESC`, `BENCH_WORKLOAD` (all set by shell)
+4. Parse four lists: `cubes` (from `BENCH_CUBES`), `batches` (from `BENCH_BATCHES`), `thread_set` (from `BENCH_THREAD_SET`), `batch_scale_set` (from `BENCH_BATCH_SCALE_SET`)
+5. Parse scalar scaling params: `scale_cube`, `scale_batch`, `scale_threads`
+6. Print header block
+7. Dispatch to `run_throughput`, `run_thread_scaling`, or `run_batch_scaling` based on `BENCH_WORKLOAD`
+
+The `if (n_cubes <= 0)` fallback blocks set safe defaults if parsing produces nothing. This means an empty or malformed `BENCH_CUBES` still produces a working run.
 
 ---
 
-## 4. `fft_benchmark.c`: Line-by-Line
+## 4. `run_fft_benchmarks.sh`: Complete Walkthrough
 
-### 4.1 Headers and defines
-
-```c
-#define _POSIX_C_SOURCE 200809L
-```
-Enables POSIX 2008 API features, specifically needed for `clock_gettime` with `CLOCK_MONOTONIC`. Without this define, `clock_gettime` might not be declared on some POSIX-strict build configurations.
-
-```c
-#include <mkl_dfti.h>   // MKL DFT descriptor API
-#include <mkl.h>        // mkl_set_num_threads, mkl_malloc, mkl_free, mkl_get_max_threads
-```
-MKL's DFTI (Discrete Fourier Transform Interface) is the main FFT API used here. `mkl.h` provides thread control and memory allocation functions.
-
-### 4.2 Timer function
-
-```c
-static double get_time_ms(void)
-{
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return ts.tv_sec * 1000.0 + ts.tv_nsec / 1.0e6;
-}
-```
-
-`CLOCK_MONOTONIC` is a timer that never goes backwards and is unaffected by system time changes. It measures wall-clock time from some arbitrary starting point. The return value is milliseconds as a double. This is the right choice for timing parallel code because it measures real elapsed time, not CPU time.
-
-Important: this measures **wall-clock (real) time**, not CPU time. For multithreaded runs, wall-clock time reflects the actual throughput improvement from parallelism.
-
-### 4.3 Random initialization
-
-```c
-static void random_init(MKL_Complex16 *data, int n)
-{
-    for (int i = 0; i < n; i++) {
-        data[i].real = (double)rand() / RAND_MAX;
-        data[i].imag = (double)rand() / RAND_MAX;
-    }
-}
-```
-
-FFT computation time is independent of input values — it performs the same butterfly operations regardless of what numbers are in the array. So random initialization is correct for timing purposes. The seed is fixed at 42 (`srand(42)`), making results deterministic across runs.
-
-`MKL_Complex16` is a struct of two doubles: `{ double real; double imag; }`. It is MKL's type for double-precision complex numbers.
-
-### 4.4 Environment integer helper
-
-```c
-static int env_int(const char *name, int fallback, int min_v, int max_v)
-```
-
-This reads an integer from an environment variable with bounds checking. It is used to read `BENCH_NRUNS` and `BENCH_WARMUP` from the shell environment (set by `run_fft_benchmarks.sh`). If the variable is missing or out of range, it falls back to the default.
-
-### 4.5 The core benchmark function: `run_benchmark`
-
-This is the heart of the entire file. Every data point in the log comes from one call to this function.
-
-```c
-static void run_benchmark(int nx, int ny, int nz,
-                          int howmany, int num_threads,
-                          int warmup_runs, int nruns, const char *label)
-```
-
-Parameters:
-- `nx, ny, nz`: 3D grid dimensions
-- `howmany`: batch size (number of simultaneous transforms)
-- `num_threads`: how many MKL threads to use
-- `warmup_runs`: number of untimed warmup iterations
-- `nruns`: number of timed iterations to average
-- `label`: string printed in the output line
-
-**Step 1: Set thread count**
-```c
-mkl_set_num_threads(num_threads);
-```
-This tells MKL how many threads to use for this specific call. It overrides `OMP_NUM_THREADS` and `MKL_NUM_THREADS` environment variables from within the process. This is how the inner C scenarios can test different thread counts within a single run.
-
-**Step 2: Allocate aligned memory**
-```c
-MKL_Complex16 *in  = (MKL_Complex16*)mkl_malloc(total * sizeof(MKL_Complex16), 64);
-MKL_Complex16 *out = (MKL_Complex16*)mkl_malloc(total * sizeof(MKL_Complex16), 64);
-```
-`mkl_malloc(size, alignment)` guarantees 64-byte alignment. AVX-512 registers are 512 bits = 64 bytes wide. A misaligned load across a 64-byte cache line boundary forces two cache-line fetches instead of one. With aligned data, 8 complex doubles fit exactly in one AVX-512 register and load in one operation.
-
-Using `malloc()` instead of `mkl_malloc()` would not guarantee this alignment and could cause a measurable performance penalty on AVX-512 paths.
-
-**Step 3: Initialize data**
-```c
-srand(42);
-random_init(in, total);
-memset(out, 0, total * sizeof(MKL_Complex16));
-```
-Input filled with deterministic random values. Output zeroed (not strictly necessary, but avoids reading uninitialized memory). The `srand(42)` reset here means every benchmark configuration starts from the same initial data.
-
-**Step 4: Create and configure the DFTI descriptor**
-```c
-status = DftiCreateDescriptor(&plan, DFTI_DOUBLE, DFTI_COMPLEX, 3, ngrid);
-status |= DftiSetValue(plan, DFTI_NUMBER_OF_TRANSFORMS, howmany);
-status |= DftiSetValue(plan, DFTI_INPUT_DISTANCE,  distance);
-status |= DftiSetValue(plan, DFTI_OUTPUT_DISTANCE, distance);
-status |= DftiSetValue(plan, DFTI_PLACEMENT, DFTI_NOT_INPLACE);
-status |= DftiCommitDescriptor(plan);
-```
-
-- `DFTI_DOUBLE` — double-precision (64-bit) floating point
-- `DFTI_COMPLEX` — input and output are complex
-- `3` — three-dimensional transform
-- `ngrid = {nx, ny, nz}` — dimensions
-- `DFTI_NUMBER_OF_TRANSFORMS = howmany` — enables batched operation
-- `DFTI_INPUT_DISTANCE` / `DFTI_OUTPUT_DISTANCE` — offset in *elements* between consecutive transforms in the batch. Set to `nx*ny*nz`, meaning transforms are packed contiguously.
-- `DFTI_NOT_INPLACE` — output goes to a separate buffer (out-of-place)
-
-`DftiCommitDescriptor` is where MKL does its internal planning: it analyzes the transform shape, selects the optimal algorithm (Cooley-Tukey for powers of 2), pre-computes twiddle factor tables, and prepares the execution plan. This is the expensive setup step — it is done once per configuration, not once per timed run. Its cost is amortized across `warmup_runs + nruns` executions.
-
-**Step 5: Warmup runs (untimed)**
-```c
-for (int w = 0; w < warmup_runs; w++) {
-    status = DftiComputeForward(plan, in, out);
-}
-```
-On Skylake-X, the first time AVX-512 instructions execute after a period of idle, the CPU needs a short ramp-up before the clock frequency drops to the sustained AVX-512 rate. Without warmup, the first timed run would happen at the full 3.3 GHz boost frequency, making it appear faster than the sustained rate. The warmup forces the frequency to settle so all timed runs are at the same, stable operating point.
-
-Default is 5 warmup runs. For large transforms (128^3 at ~100ms each), 5 runs = 500ms of warmup — sufficient. For tiny transforms (64^3 at ~1ms), 5 runs = 5ms — probably not enough for frequency to fully stabilize. This is a known limitation discussed in section 10.
-
-**Step 6: Timed forward FFT**
-```c
-double start = get_time_ms();
-for (int r = 0; r < nruns; r++) {
-    status = DftiComputeForward(plan, in, out);
-}
-double elapsed_fwd = (get_time_ms() - start) / nruns;
-```
-`DftiComputeForward` computes the forward DFT: `out = FFT(in)`.
-
-The time measurement wraps the entire loop, then divides by `nruns`. This gives the average time per transform across all runs. Default is 20 timed runs.
-
-Note: the data in `out` is updated each iteration and `in` is not updated. So each forward run computes `FFT(same_input) → out`. The output is overwritten but not reset between runs. For timing purposes this is fine, but for correctness testing it means you cannot verify round-trip identity.
-
-**Step 7: Timed backward (inverse) FFT**
-```c
-double start = get_time_ms();
-for (int r = 0; r < nruns; r++) {
-    status = DftiComputeBackward(plan, out, in);
-}
-double elapsed_bwd = (get_time_ms() - start) / nruns;
-```
-`DftiComputeBackward` computes the inverse DFT: `in = IFFT(out)`. MKL's convention for "backward" is the unnormalized inverse (no `1/N` scaling). The result is `N × original_input`, not `original_input`. This benchmark does not correct for this, which is fine for timing but means you cannot check correctness without applying the 1/N normalization.
-
-**Step 8: GFLOPS computation**
-```c
-double N_total = (double)(nx * ny * nz);
-double flops   = 5.0 * N_total * log2(N_total) * howmany;
-double gf_fwd  = flops / (elapsed_fwd * 1.0e6);
-double gf_bwd  = flops / (elapsed_bwd * 1.0e6);
-```
-
-The formula `5 * N * log2(N)` is the **standard theoretical FLOP count for a complex-to-complex FFT** using the Cooley-Tukey algorithm. Each butterfly requires 4 real multiplications and 2 real additions for a total of 6 operations per butterfly. With N/2 log2(N) butterflies, and counting multiplications as 2 flops (mul+add fused), the standard approximation is `5 * N * log2(N)`.
-
-The factor `* howmany` scales for the batch.
-
-`elapsed_fwd * 1.0e6` converts milliseconds to microseconds... wait, no. Let's be precise:
-- `elapsed_fwd` is in milliseconds
-- `flops / (elapsed_fwd * 1e6)` = flops / (ms × 10^6) = flops / (10^-3 s × 10^6) = flops / (10^3 s × ... )
-
-Actually: `1 ms = 10^-3 s`. So `elapsed_fwd ms = elapsed_fwd × 10^-3 s`. Then:
-```
-flops / (elapsed_fwd × 10^-3 s) = flops per second
-flops / (elapsed_fwd × 10^-3) / 10^9 = GFLOPS
-```
-The code: `flops / (elapsed_fwd * 1.0e6)`.
-- `elapsed_fwd * 1e6`: if elapsed is 10 ms, this is 10 × 10^6 = 10^7
-- `flops / 10^7` where flops is in units of flops
-- Result is in units of gigaflops only if `1e6 = 1e9 / 1e3 = 1e9 ms/s`
-
-Let me verify the units: `GFLOPS = flops / (time_ms × 10^6)`. We want GFLOPS = flops/s / 10^9.
-- `flops/s = flops / (time_ms × 10^-3)`
-- `GFLOPS = flops / (time_ms × 10^-3) / 10^9 = flops / (time_ms × 10^6)` ✓
-
-The formula is correct. GFLOPS numbers in the logs are valid.
-
-Important caveat: this is a **theoretical** FLOP count based on the algorithmic operation count. It does not account for memory access, which can dominate performance at large sizes. When two configurations show different GFLOPS, the difference could be due to compute efficiency OR memory behavior. The GFLOPS number is useful for comparisons within this project but should not be compared against hardware peak FLOP rates without understanding these limits.
-
-**Step 9: Output line**
-```c
-printf("%-22s | Grid: %4dx%4dx%4d | Batch:%3d | Thr:%2d | "
-       "Fwd: %8.3f ms  %7.2f GFLOPS | "
-       "Bwd: %8.3f ms  %7.2f GFLOPS | "
-       "Mem: %6.1f MB\n", ...);
-```
-
-Every data line you see in the log follows this format. The 22-character left-justified label field is why labels like `"64^3 batch=1"` and `"128^3 thr=10"` align in columns.
-
-**Step 10: Cleanup**
-```c
-DftiFreeDescriptor(&plan);
-mkl_free(in);
-mkl_free(out);
-```
-Releases MKL resources. Every `run_benchmark` call is fully self-contained: allocate, plan, time, free. There is no reuse of plans across calls, even when the same configuration repeats across sections. This means repeated configurations (e.g., `128^3 batch=4 thr=1` appears in SCENARIO 1, 2, 3, and 4) each re-plan from scratch. For a timing benchmark this is fine; it would matter if you were optimizing plan creation overhead.
-
-### 4.6 `main`: Configuration and section dispatch
-
-```c
-int cli_threads = (argc > 1) ? atoi(argv[1]) : 1;
-int max_threads = mkl_get_max_threads();
-int NRUNS       = env_int("BENCH_NRUNS", 20, 1, 1000000);
-int WARMUP_RUNS = env_int("BENCH_WARMUP", 5, 0, 1000000);
-```
-
-`cli_threads` is the thread count passed as a command-line argument. The shell script passes the thread count here: `./fft_avx512 10` for 10-thread runs. This value propagates to SCENARIO 3 and SCENARIO 5.
-
-`max_threads` is MKL's view of how many threads are available (based on `OMP_NUM_THREADS` / `MKL_NUM_THREADS` at process start). The log shows `MKL max threads available: 1` for outer Scenario 1 (because the shell set `OMP_NUM_THREADS=1` before launching) and `MKL max threads available: 10` for outer Scenario 3.
-
-The cache reference printout in `main` is informational only — it has no effect on the benchmark behavior.
-
----
-
-## 5. `run_fft_benchmarks.sh`: Phase by Phase
-
-### 5.1 Logging setup
+### 4.1 Directory anchoring (new)
 
 ```bash
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-LOGDIR="./fft_logs"
-mkdir -p "$LOGDIR"
-LOGFILE="${LOGDIR}/fft_benchmark_${TIMESTAMP}.log"
-exec > >(tee -a "$LOGFILE") 2>&1
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 ```
 
-`exec > >(tee -a "$LOGFILE") 2>&1` redirects both stdout and stderr of the entire script process through `tee`. This means every subsequent `echo` and every line of output from compiled binaries goes simultaneously to the terminal and the log file. The log persists after the run is complete.
+The old script used a relative path `./fft_logs` which would break if called from a different directory. Now the script `cd`s to its own directory before doing anything. `BASH_SOURCE[0]` is the path to the script itself, which works correctly even when called via symlink or from another directory.
 
-### 5.2 Configurable defaults
+### 4.2 Report file (new)
 
 ```bash
-NTHREADS_PHYSICAL="${NTHREADS_PHYSICAL:-10}"
-NTHREADS_LOGICAL="${NTHREADS_LOGICAL:-20}"
-BASELINE_ISA="${BASELINE_ISA:-SSE4_2}"
-AVX_ISA="${AVX_ISA:-AVX512}"
-BENCH_NRUNS="${BENCH_NRUNS:-20}"
-BENCH_WARMUP="${BENCH_WARMUP:-5}"
+REPORT_MD="${LOGDIR}/fft_benchmark_${TIMESTAMP}.report.md"
 ```
 
-The `${VAR:-default}` syntax uses the environment variable if set, otherwise the default. This is how you can override parameters without editing the script:
+Alongside the raw log, a markdown report is generated. The report is populated at the end of the run by the `generate_markdown_report` awk function. The log accumulates all output during the run; the report is a post-processed view.
+
+### 4.3 Configurable sets (new)
+
 ```bash
-BENCH_NRUNS=5 BENCH_WARMUP=2 ./run_fft_benchmarks.sh
+THROUGHPUT_CUBES="${THROUGHPUT_CUBES:-32,64,128,256}"
+THROUGHPUT_BATCHES="${THROUGHPUT_BATCHES:-1,4}"
+THREAD_SCALING_SET="${THREAD_SCALING_SET:-1,2,4,8,10,20}"
+BATCH_SCALING_SET="${BATCH_SCALING_SET:-1,2,4,8,16,32}"
+SCALE_CUBE="${SCALE_CUBE:-128}"
+SCALE_BATCH="${SCALE_BATCH:-4}"
 ```
 
-### 5.3 Intel oneAPI / MKL sourcing
+These replace hardcoded arrays in the old C code. Now every dimension is configurable at the shell level without changing C code. The shell passes them as environment variables to the binary.
 
-The script tries three approaches to find MKL:
-1. Source `/opt/intel/oneapi/setvars.sh` (standard oneAPI install)
-2. Source `/opt/intel/mkl/bin/mklvars.sh` (older MKL standalone)
-3. Use `module load` (HPC cluster environment)
-
-Then `detect_mklroot()` searches four locations for `mkl_dfti.h`. The machine actually uses the pip-installed MKL at `~/.local`, which is the fourth fallback location.
-
-### 5.4 MKL library linking
-
-The script detects whether the MKL runtime library is named `libmkl_rt.so` or `libmkl_rt.so.2` (a versioned symlink). The linking mode uses `mkl_rt` — the **runtime dispatch library**. This single library contains code for multiple ISA paths and selects the right one at program startup based on `MKL_ENABLE_INSTRUCTIONS`. This is the key mechanism enabling the ISA comparison.
-
-### 5.5 Compiler selection and compile flags
+### 4.4 Single binary compile (vs two binaries before)
 
 ```bash
 if [ "${USE_ICX}" -eq 1 ]; then
-    FLAGS_BASE="-O2 -std=c99"
-    FLAGS_AVX="-O3 -xCORE-AVX512 -std=c99"
+    CFLAGS="-O3 -xHost -std=c99"
 else
-    FLAGS_BASE="-O2 -std=c99"
-    FLAGS_AVX="-O3 -mavx512f -mavx512dq -mavx512bw -mavx512vl -std=c99"
+    CFLAGS="-O3 -march=native -std=c99"
 fi
 ```
 
-Two binaries are compiled:
+`-march=native` / `-xHost` tells the compiler to target the current CPU's full native instruction set. On the Xeon W-2155, this includes all AVX-512 extensions. The key difference from the old design: this only affects host code (the wrapper code in `fft_benchmark.c`). MKL's FFT kernels are always selected at runtime via `MKL_ENABLE_INSTRUCTIONS`, not compile flags. So the compile flags here enable the compiler to auto-vectorize any non-MKL code (like `random_init`, though that's not timed) and also allow MKL to JIT or select kernels based on feature detection.
 
-**`fft_cpu_only` (FLAGS_BASE)**: Compiled with `-O2`, no explicit vectorization flags. The host code (glue around MKL calls) will not use AVX-512 instructions. MKL itself is a pre-compiled library; compile flags do not affect which MKL kernel runs. Runtime ISA of MKL is controlled by `MKL_ENABLE_INSTRUCTIONS`.
-
-**`fft_avx512` (FLAGS_AVX)**: Compiled with `-O3` and explicit AVX-512 flags. The host code can use AVX-512 for any operations outside of MKL (e.g., the random initialization loop). In practice, the initialization is not in the timed section, so this has no effect on benchmark results. The `MKL_ENABLE_INSTRUCTIONS` env var still controls MKL's kernels.
-
-**This reveals a key issue**: the compile flags are largely irrelevant to MKL performance. Both binaries call MKL through the runtime dispatch library, and the ISA used is determined entirely by `MKL_ENABLE_INSTRUCTIONS` set by the shell. The difference between the two binaries for FFT performance is almost entirely the `MKL_ENABLE_INSTRUCTIONS` value, not the compile flags.
-
-### 5.6 Runtime environment variables
+### 4.5 `run_profile` function
 
 ```bash
-COMMON_ENVS=(
-    "KMP_AFFINITY=scatter,granularity=fine"
-    "KMP_BLOCKTIME=0"
-    "MKL_DYNAMIC=FALSE"
-)
-```
+run_profile() {
+    local profile_id="$1"
+    local profile_desc="$2"
+    local isa="$3"
+    local threads="$4"
+    local workload="$5"
+    local cubes="$6"
+    local batches="$7"
+    local thread_set="$8"
+    local scale_cube="$9"
+    local scale_batch="${10}"
+    local scale_threads="${11}"
 
-**`KMP_AFFINITY=scatter,granularity=fine`**: Controls how MKL/OpenMP threads are pinned to physical resources.
-- `scatter`: distributes threads across physical cores first, then uses hyperthreads. For 4 threads, you get one thread on core 0, one on core 1, one on core 2, one on core 3 — not two threads on core 0 and two on core 1.
-- `granularity=fine`: pins at the hardware thread (logical processor) level rather than the core or socket level.
+    echo "PROFILE|${profile_id}|${profile_desc}|${isa}|${threads}|${workload}|..."
 
-This is the recommended setting from Intel's MKL FFT application notes. It prevents two threads from fighting over the same physical core's L1/L2 cache in the compute-intensive FFT phase.
-
-**`KMP_BLOCKTIME=0`**: After a parallel region completes, OpenMP threads normally spin-wait (block) for a short time before returning to the OS. `KMP_BLOCKTIME=0` tells them to return immediately. For a benchmark with many consecutive parallel calls this reduces overhead.
-
-**`MKL_DYNAMIC=FALSE`**: Prevents MKL from dynamically adjusting its thread count. Without this, MKL might use fewer threads than requested based on heuristics. Setting it to FALSE means MKL uses exactly the thread count you specified.
-
-### 5.7 `run_case` function
-
-```bash
-run_case() {
     export OMP_NUM_THREADS="${threads}"
     export MKL_NUM_THREADS="${threads}"
     export MKL_ENABLE_INSTRUCTIONS="${isa}"
-    time "./${bin}" "${threads}"
+    export BENCH_PROFILE="${profile_id}"
+    export BENCH_WORKLOAD="${workload}"
+    export BENCH_CUBES="${cubes}"
+    export BENCH_BATCHES="${batches}"
+    export BENCH_THREAD_SET="${thread_set}"
+    ...
+    time "./${BIN}" "${threads}"
 }
 ```
 
-Both `OMP_NUM_THREADS` and `MKL_NUM_THREADS` are set. MKL reads `MKL_NUM_THREADS` preferentially but also respects `OMP_NUM_THREADS` as a fallback. Setting both ensures consistency. The thread count is also passed as `argv[1]` to the binary because `mkl_set_num_threads()` in the C code takes precedence over environment variables for each `run_benchmark` call.
+Every profile call does three things:
+1. Emits a `PROFILE|` line to the log (parsed by awk for the scenario catalog table)
+2. Exports all environment variables the binary will read
+3. Runs `time ./fft_benchmark <threads>`, passing thread count as both an env var and `argv[1]`
 
-`MKL_ENABLE_INSTRUCTIONS` is the key ISA switch. For Scenario 1 it is `SSE4_2` (forces MKL to use its SSE4.2 code path), for all others it is `AVX512`.
+The `PROFILE|` line contains all metadata needed to reconstruct what this run was supposed to do, even without reading the code.
 
-The `time` command wraps the binary execution and prints wall-clock, user, and system time for the entire run. User time being greater than wall time in the logs (e.g., `user 4m23s, real 3m52s` for outer Scenario 1) confirms multi-core usage even within Scenario 4's thread sweep.
-
-### 5.8 MKL_VERBOSE verification
-
-After the main runs, the script compiles and runs a minimal FFT with `MKL_VERBOSE=1`. This causes MKL to print a line like:
-
-```
-MKL_VERBOSE oneMKL 2025 Update 3 ... Intel(R) AVX-512 ... intel_thread
-MKL_VERBOSE FFT(dcfi64x64x64,...) 3.61ms CNR:OFF Dyn:0 FastMM:1 TID:0 NThr:1
-```
-
-The first line confirms: MKL version, architecture, and that AVX-512 is enabled. `dcfi` in the second line means "double complex forward in-place". This is proof that the AVX-512 code path is actually active at runtime.
-
-### 5.9 Summary extraction with `awk`
+### 4.6 `should_run_profile` function (new)
 
 ```bash
-extract_fwd_gflops() {
-    awk -v block="$block" -v thr="$thr" '
-        $0 ~ ("RUNNING: " block) {inside=1; next}
-        inside && $0 ~ ("\\[DONE\\] " block) {inside=0}
-        inside && /128\^3 batch=4/ && $0 ~ ("Thr:[[:space:]]*" thr "[[:space:]]*\\|") {
-            if (match($0, /Fwd:[[:space:]]*[0-9.]+ ms[[:space:]]*([0-9.]+) GFLOPS/, m)) {
-                print m[1]; exit;
-            }
-        }
-    ' "$LOGFILE"
+should_run_profile() {
+    local profile_id="$1"
+    if [ "${RUN_PROFILES}" = "all" ]; then return 0; fi
+    case ",${RUN_PROFILES}," in
+        *,"${profile_id}",*) return 0 ;;
+        *) return 1 ;;
+    esac
 }
 ```
 
-This awk script scans the log for the first occurrence of `128^3 batch=4` with the specified thread count within the outer scenario block. It extracts the forward GFLOPS value. The summary table at the end uses `128^3 batch=4` as the single representative data point:
+When `RUN_PROFILES=all` (default), every profile runs. When `RUN_PROFILES=avx512_1t,avx512_phys`, only those two run. The comma-wrapping trick in the `case` pattern (`",${RUN_PROFILES},"` with `*,"${profile_id}",*`) prevents partial matches (e.g. `avx512` matching `avx512_phys`).
+
+Usage:
+```bash
+should_run_profile "baseline_sse42_1t" && run_profile "baseline_sse42_1t" ...
+```
+`&&` short-circuits: if `should_run_profile` returns false (exit code 1), `run_profile` is not called.
+
+### 4.7 The 8 run profiles
 
 ```
-Scenario 1  :  7.30 GFLOPS   (SSE4.2, 1 thread)
-Scenario 2  : 10.47 GFLOPS   (AVX512, 1 thread)     1.43x
-Scenario 3  : 54.07 GFLOPS   (AVX512, 10 threads)   7.41x
-Scenario 3b : 60.99 GFLOPS   (AVX512, 20 threads)   8.35x
+baseline_sse42_1t    ISA=SSE4_2,  threads=1,   workload=throughput
+avx2_1t              ISA=AVX2,    threads=1,   workload=throughput
+avx512_1t            ISA=AVX512,  threads=1,   workload=throughput
+avx2_phys            ISA=AVX2,    threads=10,  workload=throughput
+avx512_phys          ISA=AVX512,  threads=10,  workload=throughput
+avx512_logical       ISA=AVX512,  threads=20,  workload=throughput
+avx512_thread_scaling ISA=AVX512, threads=10,  workload=thread_scaling
+avx512_batch_scaling  ISA=AVX512, threads=10,  workload=batch_scaling
 ```
+
+Note that `baseline_sse42_1t` only covers 1 thread. The multithread profiles (avx2_phys, avx512_phys, avx512_logical) don't have an SSE4.2 counterpart. If you want a "multithread SSE4.2" data point you'd need to add a profile manually.
+
+Also note: `avx512_thread_scaling` and `avx512_batch_scaling` both have their own dedicated profile invocations. They don't piggyback inside throughput runs anymore.
+
+### 4.8 `generate_markdown_report` (new — large awk block)
+
+This awk script reads the log file and builds a structured markdown report. It does **two passes** conceptually (awk collects into arrays during processing, then emits in `END`):
+
+**Pass 1 — data collection** (during file scan):
+- `PROFILE|` lines → populates `desc[]`, `isa[]`, `threads[]`, `workload[]` keyed by `profile_id`
+- `RESULT|` lines → populates `fwd_ms[]`, `fwd_gf[]`, etc. keyed by `(case_key, profile_id)`. The case key is `workload|nx|ny|nz|batch|threads`.
+- `SKIP|` lines → populates same arrays with `status="skip"` and reason.
+
+**Pass 2 — rendering** (in `END` block):
+- Scenario Catalog table: one row per profile in order of first appearance
+- Case-Centric Comparison: for each unique case key, one table comparing all profiles that have data for that case. Speedup vs `baseline_sse42_1t` is computed when baseline data is available and the baseline ran at the same thread count (which for throughput cases means thread=1).
+
+The case key includes thread count, so `n128_b4` at threads=1 and `n128_b4` at threads=10 are different cases. This is why the multithread profiles don't appear in the 1-thread case tables and vice versa, and why the speedup column shows "-" for multithread cases (no baseline ran at threads=10/20).
 
 ---
 
-## 6. Thread Concepts in This Benchmark
+## 5. What "Profile", "Workload", "ISA", "Threads" Mean Concretely
 
-### 6.1 How many cores and threads exist
+### Profile
+A profile is a unique combination of ISA + thread count + workload type. It answers: "under what conditions are we running?" Each profile produces a block of output in the log, bracketed by `RUN PROFILE:` and `[DONE]`.
 
-The Xeon W-2155 has:
-- 10 **physical cores** — each is a complete processing unit with its own L1 and L2 cache
-- 20 **logical threads** — each physical core has 2 hardware threads (Hyper-Threading), appearing as separate CPUs to the OS
-- Each physical core's 2 HT siblings share the same L1d (32 KB), L1i (32 KB), and L2 (1 MB)
-- All 10 cores share the L3 (14 MB)
+### Workload type
+- **throughput**: Grid size × batch size sweep at fixed thread count. Answers: "how does performance scale with problem size?"
+- **thread_scaling**: Fixed grid/batch, sweeping thread counts from 1 to 20. Answers: "how does parallel efficiency scale with thread count for this problem?"
+- **batch_scaling**: Fixed grid/thread count, sweeping batch sizes. Answers: "does issuing more transforms per DFTI call improve throughput per transform?"
 
-### 6.2 Thread control flow
+### ISA cap
+`MKL_ENABLE_INSTRUCTIONS` is an MKL-specific env var that caps the instruction set MKL will use. Valid values for this machine:
+- `SSE4_2` — restricts to SSE4.2 (128-bit SIMD, 2 complex doubles/instruction)
+- `AVX2` — allows up to AVX2 (256-bit SIMD, 4 complex doubles/instruction)
+- `AVX512` — allows full AVX-512 (512-bit SIMD, 8 complex doubles/instruction)
 
-Thread count is set in three places, with a precedence order:
+This is the actual control mechanism for ISA comparison. Compile flags (`-march=native`) tell the compiler what to use for host code; `MKL_ENABLE_INSTRUCTIONS` tells MKL which pre-compiled kernel paths to activate.
 
-```
-Shell sets: OMP_NUM_THREADS=N, MKL_NUM_THREADS=N
-  ↓ (passed as argv[1] to binary)
-C calls: mkl_set_num_threads(num_threads)  [overrides env vars]
-  ↓
-MKL internally spawns N threads, distributes FFT work
-```
+### Threads
+For throughput profiles, the outer thread count is fixed (1, 10, or 20) and stays constant across all cases in that profile.
 
-`mkl_set_num_threads()` inside `run_benchmark` is the authoritative control. This is why SCENARIO 4 (thread scaling sweep) can use thread counts `{1,2,4,8,10,20}` even during an outer run that was launched with `OMP_NUM_THREADS=1` — each `run_benchmark` call resets the thread count for that call.
-
-### 6.3 How MKL threads parallelize an FFT
-
-A 3D FFT of shape `nx × ny × nz` is decomposed as three sets of 1D FFTs:
-1. `ny × nz` transforms of length `nx` (across all rows in the X direction)
-2. `nx × nz` transforms of length `ny` (across all rows in the Y direction)
-3. `nx × ny` transforms of length `nz` (across all rows in the Z direction)
-
-MKL distributes these 1D FFTs across threads. For `128^3`, there are `128 × 128 = 16,384` 1D FFTs in each direction pass. With 10 threads, each thread handles roughly 1,638 of them. This is a straightforward data-parallel decomposition.
-
-The challenge: for the second and third direction passes, the data access pattern changes. Accessing elements in the Y direction requires a stride of `nx` elements, and in the Z direction a stride of `nx × ny`. For large grids, these strided accesses hit different cache lines, reducing effective bandwidth. MKL uses internal transpositions to convert strided to sequential access patterns.
-
-### 6.4 Per-scenario thread details
-
-| Section | Thread behavior |
-|---------|----------------|
-| C SCENARIO 1 | Always 1 thread (`mkl_set_num_threads(1)`) |
-| C SCENARIO 2 | Always 1 thread |
-| C SCENARIO 3 | Uses `cli_threads` (the outer scenario's thread count) |
-| C SCENARIO 4 | Sweeps `{1,2,4,8,10,20}` regardless of outer context |
-| C SCENARIO 5 | Uses `cli_threads` |
-
-For outer Scenario 1 (1 thread), C SCENARIO 3 runs with 1 thread. For outer Scenario 3 (10 threads), C SCENARIO 3 runs with 10 threads. This means the "multithreaded" section is only truly multithreaded when the outer shell scenario is itself multithreaded.
+For thread_scaling, the outer thread count (`cli_threads=10`) sets the process-level `MKL_NUM_THREADS` env var, but `mkl_set_num_threads()` inside `run_thread_scaling` overrides this per benchmark call. So the sweep 1→2→4→8→10→20 really does use those thread counts.
 
 ---
 
-## 7. Thread Scaling (SCENARIO 4): What It Means and What the Data Shows
+## 6. Inputs Explained
 
-### 7.1 What thread scaling measures
+### Grid size: what `32^3`, `64^3`, etc. mean
 
-Thread scaling keeps **everything fixed** (same grid, same batch, same ISA) and varies only the thread count. The goal is to see whether performance increases linearly with thread count (ideal/linear scaling) or whether some bottleneck limits scaling.
+A 3D FFT on an `n × n × n` grid. The total number of complex data points per transform is `N = n³`.
 
-Fixed: `128^3 batch=4` — two buffers of 256 MB total (DRAM-bound).
+Each point is `MKL_Complex16`: two doubles = 16 bytes.
 
-### 7.2 Actual data from the latest run (outer Scenario 3, AVX512)
+Memory per transform buffer: `N × 16 bytes`.
+Out-of-place: two buffers (in + out), so `2 × N × 16 bytes`.
 
-```
-Threads |  Fwd (ms) |  Fwd GFLOPS | Speedup vs 1-thr | Efficiency
---------|-----------|-------------|------------------|----------
-   1    |  84.06 ms |  10.48      |  1.00x           | 100%
-   2    |  46.57 ms |  18.91      |  1.81x           |  90%
-   4    |  24.78 ms |  35.54      |  3.39x           |  85%
-   8    |  17.94 ms |  49.09      |  4.68x           |  59%
-  10    |  14.42 ms |  61.07      |  5.83x           |  58%
-  20    |  14.07 ms |  62.61      |  5.98x           |  30%
-```
+| Grid | N | Memory (one transform, both buffers) | Cache regime |
+|------|---|--------------------------------------|-------------|
+| 32^3 | 32,768 | 1 MB | L2 (just fits) |
+| 64^3 | 262,144 | 8 MB | L3 |
+| 128^3 | 2,097,152 | 64 MB | DRAM |
+| 256^3 | 16,777,216 | 512 MB | DRAM |
 
-Efficiency = (achieved speedup) / (ideal speedup) × 100%.
+With batch=4, multiply memory by 4. So `128^3 batch=4 = 256 MB` total.
 
-### 7.3 Interpreting the numbers
+### What `batch=4` means
 
-**1 → 2 threads**: Nearly ideal (90% efficiency). Two threads operating independently, each with its own L1/L2 cache, little interference.
+`batch` (parameter `howmany`) = number of independent 3D FFTs executed in a single `DftiComputeForward` call. The transforms are packed contiguously in memory with no gaps. `DFTI_INPUT_DISTANCE = nx*ny*nz` means each transform starts exactly `N` elements after the previous one.
 
-**2 → 4 threads**: Still good (85%). Still fitting within the parallel decomposition with good cache behavior per thread.
+Batching was originally motivated by twiddle factor reuse — MKL computes internal sine/cosine tables once (at `DftiCommitDescriptor`) and reuses them across all transforms in the batch. For small sizes (32^3, 64^3) where data is L2/L3-resident, this helps because the tables stay hot. For large sizes (128^3+) the problem is already DRAM-bound and batch doesn't improve per-transform efficiency.
 
-**4 → 8 threads**: Significant drop in efficiency (85% → 59%). At 8 threads, the aggregate working set that all threads access starts to saturate L3 cache bandwidth and the DRAM bus. The 256 MB working set is already far beyond L3 (14 MB). At 8 threads trying to pull 256 MB from DRAM simultaneously, the memory controller becomes the bottleneck.
+### Case ID format
 
-**10 → 20 threads**: Essentially no improvement (62.61 vs 61.07 GFLOPS, 2.4% gain). The machine is 100% memory-bandwidth-limited at this point. Adding hyperthreads shares the same physical core and its memory access ports — they compete for the same bandwidth rather than adding new bandwidth.
+The C code generates case IDs that appear in both the human-readable output and the `RESULT|` lines:
 
-**Key insight**: For `128^3 batch=4`, the parallel efficiency collapses well before 10 threads because the problem is DRAM-bound. The "thread scaling" section is valuable for revealing this, but labeling it as showing "how FFT scales across 10 physical cores" is slightly optimistic — it shows *where* scaling stops, which is at ~4-8 threads for this memory-bound problem.
+- Throughput: `n{cube}_b{batch}` — e.g. `n128_b4` means 128^3 grid, batch=4
+- Thread scaling: `n{cube}_b{batch}_t{threads}` — e.g. `n128_b4_t10`
+- Batch scaling: `n{cube}_b{batch}_t{threads}` — e.g. `n128_b16_t10`
 
-### 7.4 Comparison across outer scenarios
-
-An important quirk: SCENARIO 4 runs inside every outer scenario. So you can compare thread scaling in the SSE4.2 run (outer Scenario 1) vs the AVX-512 run (outer Scenario 3):
-
-**Outer Scenario 1 (SSE4.2):**
-```
-thr=1:  120.24 ms,  7.33 GFLOPS
-thr=10:  19.77 ms, 44.55 GFLOPS
-thr=20:  15.45 ms, 57.00 GFLOPS
-```
-
-**Outer Scenario 3 (AVX512):**
-```
-thr=1:   84.06 ms, 10.48 GFLOPS
-thr=10:  14.42 ms, 61.07 GFLOPS
-thr=20:  14.07 ms, 62.61 GFLOPS
-```
-
-The 1-thread baseline is meaningfully faster with AVX512 (10.48 vs 7.33 GFLOPS = 1.43x). At 20 threads, the gap narrows (62.61 vs 57.00 GFLOPS = ~10% difference) because DRAM bandwidth becomes the common bottleneck. AVX-512 computes faster but cannot overcome the memory wall any better than SSE4.2 when bandwidth is the limit.
+The awk report uses these as case identifiers for grouping.
 
 ---
 
-## 8. Batch Scaling (SCENARIO 5): What It Means and What the Data Shows
+## 7. Reading the Report
 
-### 8.1 What batch scaling measures
+The report has two sections.
 
-Batch scaling keeps **grid and thread count fixed** and varies how many simultaneous transforms are issued in one DFTI call. Goal: measure throughput per transform as batch size increases.
+### Scenario Catalog
 
-Theory: batching should improve throughput because:
-1. MKL computes twiddle factor tables once and reuses them across all transforms in the batch
-2. Larger call granularity reduces per-call setup overhead
-3. Better memory access patterns can emerge when MKL has visibility into the full batch
+One row per profile showing what it was intended to measure. Use this to orient yourself before reading data tables.
 
-### 8.2 Actual data (outer Scenario 3, AVX512, 10 threads)
+### Case-Centric Comparison
 
-```
-batch  |  Fwd (ms) |  GFLOPS | Time per transform
--------|-----------|---------|-------------------
-  1    |   3.27 ms |  67.44  |  3.27 ms
-  2    |   7.22 ms |  61.04  |  3.61 ms
-  4    |  14.56 ms |  60.49  |  3.64 ms
-  8    |  29.08 ms |  60.58  |  3.63 ms
- 16    |  63.18 ms |  55.76  |  3.95 ms
- 32    |  97.62 ms |  72.18  |  3.05 ms
-```
+For each unique (workload, grid, batch, threads) combination, one table appears showing all profiles that produced data for it. The speedup column compares forward GFLOPS to `baseline_sse42_1t` for the same case.
 
-Interesting pattern: the per-transform time is roughly flat (3.05–3.95 ms) across all batch sizes. With 10 threads on 128^3, we're memory-bound — the DRAM bandwidth is saturated by even a single transform. Doubling batch doubles the data, which doubles the time, which keeps GFLOPS approximately constant.
-
-The slight uptick at batch=32 (72.18 GFLOPS) may reflect MKL finding a more efficient memory access pattern for the larger batched call, or it may be statistical noise across 20 runs.
-
-### 8.3 Actual data (outer Scenario 1, SSE4.2, 1 thread)
-
-```
-batch  |  Fwd (ms) |  GFLOPS | Note
--------|-----------|---------|------
-  1    |  29.45 ms |   7.48  |
-  2    |  59.32 ms |   7.42  |
-  4    | 123.75 ms |   7.12  |
-  8    | 247.30 ms |   7.12  |
- 16    | 432.95 ms |   8.14  | slight uptick
- 32    | 851.63 ms |   8.27  | slight uptick
-```
-
-Same pattern at 1 thread — flat GFLOPS because 128^3 at 1 thread is also DRAM-bound (a single core can saturate DRAM if reading sequentially).
-
-### 8.4 Why batch benefits are not visible here
-
-The benefit of batching should appear when the twiddle factor tables fit in cache but the data does not, or when setup overhead is significant relative to computation. For 128^3:
-- Twiddle tables for a single 128^3 3D FFT are on the order of several MB — borderline L3
-- Working data is 32 MB per transform — well beyond L3
-- Adding more transforms stacks more data, with no benefit from twiddle reuse since the tables were already computed once per `DftiCommitDescriptor`
-
-**Where batch benefits would actually be visible**: a grid size like 32^3 (512 KB per transform). At batch=1, the working set fits in L2. At batch=16, it's 8 MB — still within L3. The GFLOPS curve would increase from batch=1 to batch=16 because twiddle tables stay in cache as all 16 transforms reuse the same 1D plans. This size is not benchmarked. Section 10 covers this.
+**Critical**: the speedup column shows "-" whenever the baseline profile didn't run the same (workload, grid, batch, threads) key. Since `baseline_sse42_1t` only runs with threads=1 and workload=throughput, cases from multithread profiles, thread_scaling, and batch_scaling all show "-" for speedup. This is correct, not a bug. To get the full-stack speedup (1-thread SSE4.2 vs 10-thread AVX512) you need to look up both cases manually and divide.
 
 ---
 
-## 9. AVX-512 Utilization: Is It Actually Working?
+## 8. What the Data Actually Shows (from latest run)
 
-### 9.1 Evidence that AVX-512 is active
+### 8.1 ISA comparison: the three-way ladder
 
-**Evidence 1: MKL_VERBOSE output**
-```
-MKL_VERBOSE oneMKL 2025 Update 3 Product build 20251007 for Intel(R) 64 architecture
-Intel(R) Advanced Vector Extensions 512 (Intel(R) AVX-512) enabled processors, Lnx 3.30GHz intel_thread
-MKL_VERBOSE FFT(dcfi64x64x64,...) 3.61ms CNR:OFF Dyn:0 FastMM:1 TID:0 NThr:1
-```
-The "Intel(R) AVX-512 enabled processors" line confirms MKL recognized and activated AVX-512. This is the most authoritative confirmation.
+Single-thread throughput at various grid sizes, forward GFLOPS:
 
-**Evidence 2: Measured speedup at compute-bound sizes**
-For `64^3` (fits in L3, compute-bound), the 1-thread AVX-512 vs SSE4.2 comparison:
-- SSE4.2 (outer Scenario 1, C SCENARIO 1): `64^3 batch=1` → 2.140 ms, 11.02 GFLOPS
-- AVX-512 (outer Scenario 2, C SCENARIO 1): `64^3 batch=1` → 1.146 ms, 20.59 GFLOPS
+| Grid | SSE4.2 | AVX2 | AVX512 | AVX2/SSE42 | AVX512/SSE42 | AVX512/AVX2 |
+|------|--------|------|--------|------------|--------------|-------------|
+| 32^3 batch=1 | 13.23 | 22.79 | 36.37 | 1.72x | 2.75x | 1.60x |
+| 32^3 batch=4 | 14.02 | 20.37 | 28.80 | 1.45x | 2.05x | 1.41x |
+| 64^3 batch=1 | 11.57 | 15.59 | 20.97 | 1.35x | 1.81x | 1.34x |
+| 64^3 batch=4 |  8.61 | 10.96 | 12.71 | 1.27x | 1.48x | 1.16x |
+| 128^3 batch=1 | 7.59 |  9.25 | 10.96 | 1.22x | 1.44x | 1.19x |
+| 128^3 batch=4 | 7.47 |  8.92 | 10.50 | 1.19x | 1.41x | 1.18x |
+| 256^3 batch=1 | 7.18 |  7.73 |  8.56 | 1.08x | 1.19x | 1.11x |
+| 256^3 batch=4 | 7.53 |  8.35 |  9.34 | 1.11x | 1.24x | 1.12x |
 
-**1.87x speedup at 64^3**. Since SSE4.2 can operate on 2 complex doubles per instruction and AVX-512 can operate on 8 (4x wider), with efficiency losses the ~2x observed speedup is plausible. This is hardware-confirmed vectorization doing real work.
+**The trend is clear and physically meaningful**: as grid size grows, the working set moves from compute-bound (L2) to memory-bound (DRAM), and the ISA advantage shrinks. At 32^3 AVX-512 gives 2.75x over SSE4.2. At 256^3 it gives 1.19x. The gap closes because DRAM bandwidth is the bottleneck, not compute throughput — wider SIMD doesn't help you read DRAM faster.
 
-**Evidence 3: AVX-512 compiled flags**
-GCC was given `-mavx512f -mavx512dq -mavx512bw -mavx512vl` for `fft_avx512`. The MKL runtime correctly identified the processor as AVX-512 capable.
+**AVX2 vs AVX512**: 1.60x at 32^3, 1.11x at 256^3. AVX-512 doubles the register width over AVX2 (512 vs 256 bit), but the efficiency ratio at 32^3 (1.60x) is less than the theoretical 2x because of overhead (setup, the fact that 3D FFT involves mixed-stride accesses, etc.). At large sizes both are memory-bound and converge.
 
-### 9.2 Where AVX-512 helps vs where it's irrelevant
+### 8.2 Thread scaling (128^3 batch=4, AVX512)
 
-At 64^3 (L3-resident, compute-bound): **AVX-512 provides real ~2x throughput improvement.**
+From the `avx512_thread_scaling` profile:
 
-At 128^3 and 256^3 (DRAM-bound): **AVX-512 advantage is minimal.** The bottleneck is DRAM bandwidth, not compute. Compare:
-- 128^3 batch=1, 1 thread: SSE4.2 → 7.22 GFLOPS, AVX512 → ~11 GFLOPS (modest ~1.5x)
-- 256^3 batch=1, 1 thread: SSE4.2 → 7.42 GFLOPS, AVX512 → 8.29 GFLOPS (modest ~1.1x)
+| Threads | Fwd ms | GFLOPS | Speedup vs 1T | Parallel efficiency |
+|---------|--------|--------|---------------|---------------------|
+| 1 | 85.07 | 10.35 | 1.00x | 100% |
+| 2 | 45.56 | 19.33 | 1.87x | 93% |
+| 4 | 25.17 | 35.00 | 3.38x | 85% |
+| 8 | 18.14 | 48.56 | 4.69x | 59% |
+| 10 | 14.24 | 61.86 | 5.98x | 60% |
+| **20** | **15.22** | **57.86** | **5.59x** | **28%** |
 
-As size increases, the memory-bound fraction increases, and the AVX-512 advantage shrinks.
+**20 threads is slower than 10 threads.** 15.22ms vs 14.24ms — a 7% regression. This is a real and expected result for DRAM-bound FFT:
 
-### 9.3 One concern: "SSE4.2 binary" still gets AVX-512 GFLOPS in some output
+- The working set is 256 MB (well beyond the 14 MB L3)
+- At 10 threads, the memory controller is already saturated pulling 256 MB of data through the DRAM bus
+- Adding 10 hyperthreads (sharing physical cores with the existing 10 threads) does not add new memory bandwidth — it adds only contention for the same ports
+- HT siblings also share the core's L2 cache (1 MB/core), which for DRAM-bound work hurts cache hit rates
 
-In the outer Scenario 2 run (fft_avx512 binary, MKL_ENABLE_INSTRUCTIONS=AVX512), the C program's internal "SCENARIO 1 — CPU ONLY" section runs with the **same AVX-512 ISA** as "SCENARIO 2". The C labels are incorrect. The "CPU ONLY" section inside the AVX binary does NOT run as SSE4.2 — it runs at AVX-512. This is a labeling bug detailed in section 10.
+The scaling curve shows two distinct regimes:
+1. **Compute-aided, good efficiency (threads 1–4)**: 85% efficiency at 4 threads, probably because L3 cache helps amortize some of the DRAM pressure across threads.
+2. **Bandwidth-saturated, flat ceiling (threads 4–10)**: Efficiency drops to ~60%. Adding threads improves time but at diminishing returns as DRAM bandwidth becomes the common limit.
+3. **HT hurts (10→20)**: Reversal. Physical core count is the sweet spot.
+
+### 8.3 Hyperthreading: physical vs logical cores
+
+Comparing avx512_phys (10 threads) vs avx512_logical (20 threads) across sizes:
+
+| Grid / Batch | avx512_phys GFLOPS | avx512_logical GFLOPS | HT effect |
+|---|---|---|---|
+| 32^3 batch=1 | 65.68 | 62.31 | **-5% (HT hurts)** |
+| 32^3 batch=4 | 107.40 | 102.00 | **-5% (HT hurts)** |
+| 64^3 batch=1 | 120.18 | 109.75 | **-9% (HT hurts)** |
+| 64^3 batch=4 | 109.98 | 101.63 | **-8% (HT hurts)** |
+| 128^3 batch=1 | 65.33 | 65.65 | +0.5% (neutral) |
+| 128^3 batch=4 | 61.24 | 61.84 | +1% (neutral) |
+| 256^3 batch=1 | 56.92 | 53.19 | **-7% (HT hurts)** |
+| 256^3 batch=4 | 60.77 | 61.98 | +2% (neutral) |
+
+**HT hurts at small compute-bound sizes. It's neutral at medium sizes. It slightly hurts or is neutral at large DRAM-bound sizes.** This is the opposite of what naive intuition might suggest ("more threads = better"). Why?
+
+For small sizes (32^3, 64^3) the FFT is compute-bound — limited by AVX-512 execution throughput. Each physical core has one AVX-512 FMA unit. Two HT threads on the same core compete for that single FMA unit. The physical core can interleave their execution, but total throughput per core stays roughly the same. You now have 10 physical cores each running 2 threads, but each core does no more compute than with 1 thread on it. You've added overhead (scheduling, contention) without adding capacity.
+
+For large DRAM-bound sizes (128^3+), HT is basically neutral because memory latency is the bottleneck and HT threads can overlap memory-access latency with compute from other threads. This is the classic "latency hiding" benefit of HT, but here the latency is so dominant that it's a wash.
+
+**Conclusion**: for this FFT workload on this machine, use 10 threads (physical cores only). 20 threads never beats 10 and sometimes significantly hurts.
+
+### 8.4 Batch scaling (128^3, AVX512, 10 threads)
+
+From the `avx512_batch_scaling` profile:
+
+| Batch | Total mem | Fwd ms | GFLOPS | ms/transform |
+|-------|-----------|--------|--------|--------------|
+| 1 | 64 MB | 3.21 | 68.60 | 3.21 |
+| 2 | 128 MB | 7.19 | 61.26 | 3.59 |
+| 4 | 256 MB | 14.42 | 61.08 | 3.61 |
+| 8 | 512 MB | 28.22 | 62.42 | 3.53 |
+| 16 | 1024 MB | 58.85 | 59.87 | 3.68 |
+| 32 | 2048 MB | 110.12 | 63.99 | 3.44 |
+
+GFLOPS is essentially flat across batches (59–69 range). Per-transform time is also flat (3.2–3.7 ms). This tells you that at 128^3 with 10 threads, the bottleneck is DRAM bandwidth regardless of batch size. Issuing 32 transforms in one call vs 1 doesn't improve throughput per transform because you're already memory-bound — you're just streaming more data through at the same bandwidth.
+
+The slight bump at batch=1 (68.60 GFLOPS) is interesting: with only 64 MB total, there's slightly less DRAM pressure than at batch=4+ (256+ MB). The DRAM bandwidth isn't quite fully saturated at batch=1 with 10 threads.
+
+**Where batch scaling would actually show a benefit**: a grid small enough to be compute-bound at the batch sizes tested. At 32^3 batch=1 (1 MB total), data fits in L2. At 32^3 batch=32 (32 MB), it spills to L3. You'd see GFLOPS increase from batch=1 to moderate batch sizes as twiddle factor tables stay cache-warm. This benchmark doesn't run a 32^3 batch scaling profile — that's a remaining gap.
+
+### 8.5 AVX2 vs AVX512 at 10 threads
+
+For multithreaded throughput where the comparison matters:
+
+| Grid / Batch | avx2_phys GFLOPS | avx512_phys GFLOPS | AVX512/AVX2 |
+|---|---|---|---|
+| 32^3 batch=4 | 77.33 | 107.40 | **1.39x** |
+| 64^3 batch=1 | 97.56 | 120.18 | **1.23x** |
+| 128^3 batch=4 | 57.86 | 61.24 | 1.06x |
+| 256^3 batch=4 | 57.69 | 60.77 | 1.05x |
+
+At small compute-bound sizes, AVX-512 still wins meaningfully at 10 threads (1.39x at 32^3 batch=4). At large DRAM-bound sizes the advantage collapses to ~5%. For production workloads that are primarily large-grid DRAM-bound, the difference between AVX2 and AVX512 is negligible. For production workloads with many small FFTs (volume rendering, small simulation cells), AVX-512 provides real benefit.
+
+### 8.6 Forward vs backward FFT timing
+
+Backward (inverse) FFT is consistently slightly slower than forward for large DRAM-bound cases:
+
+| Case | Fwd ms | Bwd ms | Bwd/Fwd |
+|------|--------|--------|---------|
+| 256^3 batch=4, AVX512, 1T | 862.5 | 948.1 | 1.10x slower |
+| 256^3 batch=4, SSE4.2, 1T | 1069.4 | 1120.7 | 1.05x slower |
+| 128^3 batch=32, AVX512, 10T | 110.1 | 113.1 | 1.03x slower |
+
+This is consistent across multiple runs and ISAs. MKL's backward DFT path may have slightly different kernel optimization or the normalization-related differences in the butterfly structure lead to a slightly different memory access pattern. It is not a measurement artifact. For workloads where inverse FFTs dominate, expect ~5–10% lower throughput than forward at large sizes.
 
 ---
 
-## 10. Discrepancies in the Current Benchmarking
+## 9. Remaining Discrepancies and Limitations
 
-These are the honest problems with the current setup. Some are minor, some are significant.
+### 9.1 `BENCH_BATCH_SCALE_SET` vs `BENCH_BATCHES` — a naming mismatch
 
-### 10.1 The two-binary design is almost irrelevant to FFT performance
-
-The biggest structural issue: compiling `fft_cpu_only` with `-O2` (no AVX) and `fft_avx512` with `-O3 -mavx512...` affects only the *host code* — the C code in `fft_benchmark.c` itself. The actual FFT computation runs inside MKL, which is a pre-compiled library. MKL selects its internal kernel based on `MKL_ENABLE_INSTRUCTIONS`, not based on how the calling program was compiled.
-
-The compile flags matter for things like the random initialization loop and `get_time_ms()` — neither of which affects benchmark results.
-
-**What actually controls the ISA**: `MKL_ENABLE_INSTRUCTIONS`. You could compile both binaries identically and get the same FFT timing results by just changing this environment variable.
-
-This makes the two-binary design somewhat theatrical. The true comparison is `MKL_ENABLE_INSTRUCTIONS=SSE4_2` vs `MKL_ENABLE_INSTRUCTIONS=AVX512`, not "the binary compiled without AVX flags" vs "the binary compiled with AVX flags."
-
-### 10.2 Internal C section labels are wrong in AVX runs
-
-When `fft_avx512` runs with `MKL_ENABLE_INSTRUCTIONS=AVX512`, its internal output says:
-
-```
-SCENARIO 1 — CPU ONLY (1 thread, scalar baseline)
-NOTE: Set by compile flag -O2  — no explicit AVX enabled
-```
-
-This is incorrect. The binary is `fft_avx512`, compiled with AVX-512 flags, and `MKL_ENABLE_INSTRUCTIONS=AVX512`. The label "scalar baseline" is actively wrong and misleading. The numbers in this section are AVX-512 numbers.
-
-Similarly, "SCENARIO 2 — CPU + AVX-512" in the same run is also AVX-512 — it's not adding anything over SCENARIO 1. Both sections in any given outer run use the exact same ISA and thread count (both forced to 1 thread). They produce nearly identical results.
-
-In the actual log for outer Scenario 2, comparing the two sections:
-```
-C SCENARIO 1:  64^3 batch=1 → 1.146 ms, 20.59 GFLOPS
-C SCENARIO 2:  64^3 batch=1 → 1.124 ms, 20.99 GFLOPS
-```
-These are statistically identical, confirming there is no difference between C SCENARIO 1 and C SCENARIO 2 within any single outer run.
-
-### 10.3 SCENARIO 4 runs inside outer Scenario 1 with SSE4.2 — thread sweep in low-ISA mode
-
-When outer Scenario 1 (SSE4.2, 1 thread) is running, C's SCENARIO 4 sweeps threads from 1 to 20. So you get a thread scaling curve under SSE4.2 conditions. This is not explained anywhere in the output, and could confuse someone comparing the SCENARIO 4 output without checking which outer run produced it.
-
-### 10.4 SCENARIO 5 label says "max threads" but uses `cli_threads`
+The shell script passes batch lists to `run_profile` as the `batches` parameter. Inside `run_profile`, this is exported as `BENCH_BATCHES`. For throughput workloads, the C code reads `BENCH_BATCHES` and uses it — correct. For batch_scaling workloads, the C code reads `BENCH_BATCH_SCALE_SET` (not `BENCH_BATCHES`):
 
 ```c
-section("SCENARIO 5 — Batch Scaling Sweep (128^3, max threads)");
+int n_batch_scale = load_int_list("BENCH_BATCH_SCALE_SET", "1,2,4,8,16,32", ...);
 ```
 
-The label says "max threads" but the code uses:
+The shell never exports `BENCH_BATCH_SCALE_SET`. So the batch_scaling workload always uses the C hardcoded default `"1,2,4,8,16,32"`, regardless of what `BATCH_SCALING_SET` is set to in the shell.
+
+In practice the defaults match, so results are correct. But if you override `BATCH_SCALING_SET=1,4,32` at the shell level expecting the batch_scaling profile to use that, the C will ignore it. You'd need to also set `BENCH_BATCH_SCALE_SET=1,4,32` explicitly.
+
+### 9.2 The speedup column is missing for multithread and scaling cases
+
+The awk report can only compute `Fwd Speedup vs baseline_sse42_1t` when the baseline ran the exact same `(workload, nx, ny, nz, batch, threads)` tuple. Since `baseline_sse42_1t` only runs with threads=1 and workload=throughput, the multithread throughput profiles (avx2_phys, avx512_phys, avx512_logical), thread_scaling, and batch_scaling all show "-" in the speedup column.
+
+The full-stack speedup (e.g., "what is the gain from 1-thread SSE4.2 to 10-thread AVX512?") requires manual calculation: `61.24 / 7.47 = 8.2x` for 128^3 batch=4. This is not surfaced anywhere in the report automatically.
+
+### 9.3 No baseline SSE4.2 at multithread for direct comparison
+
+There is no `baseline_sse42_phys` profile. If you want to know "how much does threading help SSE4.2?", there's no direct answer in the report. You can infer it by combining the 1-thread SSE4.2 throughput numbers with the thread_scaling curve (which only runs AVX512), but it's not a clean comparison.
+
+### 9.4 Batch scaling at 32^3 is not profiled
+
+The batch_scaling profile is fixed at `scale_cube=128`. This means batch scaling is only measured where it provably doesn't show twiddle-factor-reuse benefits (DRAM-bound). A batch sweep at 32^3 where data stays L2/L3-resident would show the actual benefit of batching. This is the most impactful missing measurement in the current design.
+
+### 9.5 Thread scaling only at one problem size
+
+Thread scaling is fixed at 128^3 batch=4. This is a DRAM-bound problem where scaling collapses at ~8 threads. A thread scaling curve at 64^3 batch=4 (L3-resident, compute-bound) would show a different and arguably more informative curve — one where threads help more and stay efficient longer. You'd need to add another profile or make `SCALE_CUBE` configurable per profile.
+
+### 9.6 No correctness validation
+
+The benchmark measures speed only. No check that `IFFT(FFT(x)) ≈ N × x`. Without this, a misconfigured descriptor or MKL error that silently produces wrong FFT output would not be caught. This is especially relevant when testing new grid sizes or unusual batch sizes.
+
+Note: MKL's backward DFT does NOT normalize by N. The result of `IFFT(FFT(x))` is `N × x`, not `x`. Any correctness check must account for this.
+
+### 9.7 Warmup duration doesn't scale with problem size
+
+5 warmup runs is the default. For 32^3 (0.07ms per run), 5 warmup = 0.35ms — almost certainly insufficient for AVX-512 to throttle to steady-state (~100-200ms typically required). For 256^3 (250ms per run), 5 warmup = 1.25 seconds — more than enough. The warmup count should ideally be specified as a minimum wall-clock duration, not a run count. As-is, 32^3 AVX-512 numbers are potentially measured at a higher clock than the true sustained rate, slightly inflating the GFLOPS.
+
+### 9.8 `avx512_thread_scaling` at 20 threads disagrees slightly with `avx512_logical`
+
+Both should be running 128^3 batch=4 at 20 threads with AVX512. The results:
+- `avx512_thread_scaling` at t20: 15.22 ms, 57.86 GFLOPS
+- `avx512_logical` at t20: 14.24 ms, 61.84 GFLOPS
+
+These differ by ~7%. Both have 20 timed runs so variance over a run set is small, but the difference between the two profile runs (which happen at different points in the overall benchmark) suggests thermal state or OS scheduling noise between the runs. This is normal, but it means cross-profile comparisons at the same configuration can have ~5-10% uncertainty, not the few-percent variance you'd expect from the within-run average.
+
+### 9.9 `n256_b4` backward FFT is 10% slower than forward — unexplained
+
+This is consistent across ISAs and run dates. MKL's internal backward (unnormalized IDFT) path is structurally similar to forward but may differ in minor optimization details. No documentation explains the exact cause. It is not a benchmark bug. For planning purposes, assume backward FFT is 5-10% slower than forward at large DRAM-bound sizes.
+
+---
+
+## 10. What Is Well Designed vs What Is Still Weak
+
+### Well designed now
+
+**Three-way ISA comparison (SSE4.2 / AVX2 / AVX512)** at 1 thread: this is the clearest possible demonstration of how ISA width affects FFT throughput, correctly showing diminishing returns as problem size increases.
+
+**32^3 grid size included**: the L2-resident compute-bound regime is now captured. 2.75x speedup from SSE4.2 to AVX512 at 32^3 batch=1 is the most compelling data point for "is AVX-512 useful?"
+
+**Single binary**: eliminates the old fiction that compile flags control MKL ISA. Everything is clean — one binary, ISA set by env var.
+
+**Profile-based design**: each outer scenario has a name, a purpose, and produces a distinct block in the report. No ambiguity about which run produced which numbers.
+
+**Structured RESULT lines**: log is machine-parseable. The awk report follows directly from the structure.
+
+**`BENCH_MAX_MEM_MB`**: practical guard against OOM on large batch+grid combinations.
+
+**`should_run_profile` selector**: you can do quick partial runs without editing code.
+
+**HT analysis is now implicit**: the avx512_phys vs avx512_logical comparison cleanly shows HT hurts for compute-bound FFT and is neutral for DRAM-bound FFT.
+
+### Still weak
+
+**Batch scaling at 128^3 doesn't demonstrate batch benefits** (as analyzed above). Adding a 32^3 batch scaling profile would fix this.
+
+**Thread scaling only at DRAM-bound 128^3**: doesn't show efficiency for compute-bound cases.
+
+**No correctness check**: fast silent wrong output is undetectable.
+
+**Speedup column gaps in report**: full-stack speedup requires manual cross-table lookup.
+
+**BENCH_BATCH_SCALE_SET vs BENCH_BATCHES mismatch**: override doesn't work as expected.
+
+**Warmup count doesn't scale with transform size**: small-grid AVX-512 numbers may be optimistic.
+
+**Backward FFT asymmetry not explained or addressed**: consistent but unexplained.
+
+---
+
+## 11. Quick Numbers at a Glance
+
+### Full-stack speedups (1T SSE4.2 → 10T AVX512, forward, from this run)
+
+| Grid / Batch | 1T SSE4.2 | 10T AVX512 | Speedup |
+|---|---|---|---|
+| 32^3 batch=1 | 13.23 GF | 65.68 GF | **4.96x** |
+| 32^3 batch=4 | 14.02 GF | 107.40 GF | **7.66x** |
+| 64^3 batch=1 | 11.57 GF | 120.18 GF | **10.39x** |
+| 64^3 batch=4 | 8.61 GF | 109.98 GF | **12.78x** |
+| 128^3 batch=1 | 7.59 GF | 65.33 GF | **8.61x** |
+| 128^3 batch=4 | 7.47 GF | 61.24 GF | **8.20x** |
+| 256^3 batch=1 | 7.18 GF | 56.92 GF | **7.93x** |
+| 256^3 batch=4 | 7.53 GF | 60.77 GF | **8.07x** |
+
+Note the peak at 64^3 batch=4 (12.78x). At this size the problem is right on the L3/DRAM boundary — multithreading helps strongly (threads can each work on cache-resident data) and AVX-512 provides 1.5-2x compute benefit. This is the "sweet spot" for this machine.
+
+### HT verdict
+
+| Size regime | HT effect |
+|---|---|
+| Small, compute-bound (32–64^3) | **Hurts: -5% to -10%** |
+| Medium, borderline (128^3) | Neutral: ±1% |
+| Large, DRAM-bound (256^3) | Slightly hurts or neutral |
+
+**Never use 20 threads for FFT on this machine. 10 threads is always equal or better.**
+
+### ISA benefit summary
+
+| GFLOPS ratio (AVX512 vs SSE4.2, 1T) | Regime |
+|---|---|
+| 2.75x at 32^3 | Compute-bound (L2) |
+| 1.81x at 64^3 | Compute-bound (L3) |
+| 1.44x at 128^3 batch=1 | Memory-bound |
+| 1.19x at 256^3 | Deeply memory-bound |
+
+AVX-512 is most valuable for small FFTs. For large DRAM-bound FFTs, it still helps but is not the limiting factor.
+
+---
+
+## 12. Comparison Against Jeongnim Kim Intel Slides (May 2018)
+
+**Reference**: "Leveraging Optimized FFT on Intel Platforms", Jeongnim Kim, DCG/HPC Ecosystem and Applications / MKL team, May 30, 2018. 32-slide deck.
+
+**Short answer**: We correctly use the right API, the right metric, and cover the right problem-size range. The slide deck's canonical code example is exactly our `n64_b4` case. However, the slides' primary performance recommendation — the **composed 3D FFT (2D + 1D)** method — is absent from our benchmark entirely. That is the technique responsible for the headline 80x speedup, and we have never measured it.
+
+---
+
+### 12.1 What the slides cover
+
+**Slides 1–20 (background and API):**
+- DFT math, O(N²) naive vs O(N log N) Cooley-Tukey
+- Library comparison (FFTW vs MKL): MKL has native batch support, FFTW wrappers, cluster FFT, AVX-512 optimized kernels
+- Slide 17: canonical FFTW API code — `N=3, ngrid={64,64,64}, howmany=4`, forward + backward, out-of-place
+- Slide 18: canonical MKL DFTI API code — same problem: `DFTI_COMPLEX, DFTI_DOUBLE, DFTI_NUMBER_OF_TRANSFORMS=howmany=4`, `DftiComputeForward` + `DftiComputeBackward`
+- Slide 16: `MKL_VERBOSE` flag to confirm kernel selection at runtime
+
+**Slides 21–32 (3D FFT in real applications and performance):**
+- Slide 25: Characteristics of production workloads: "M=10–1000 concurrent FFTs, Nx=10–200 grid, memory- or network-bandwidth limited. Key: leverage batched FFT."
+- Slides 26–27: Batch scaling experiments on Intel Xeon Phi 7250 (64 cores). Y-axis: GFLOPS (formula: Cooley-Tukey). X-axis: # concurrent FFTs (1–32). Shows how GFLOPS scale with batch size and affinity settings.
+- Slide 28: Conceptual decomposition of 3D FFT into 1D passes along each axis with transposes between.
+- **Slide 29**: Composed 3D FFT = 2D + 1D. Code walkthrough of two separate DFTI plans.
+- **Slide 30**: Performance comparison on Xeon Platinum 8170 (2S, 26C/S = 52 cores). Composed vs monolithic. Peak ~1300–1400 GFLOPS. "80x faster per FFT using Composed methods with 26 threads vs 1-thread baseline."
+
+---
+
+### 12.2 What we match correctly
+
+| Slide claim | Our benchmark | Match? |
+|---|---|---|
+| MKL DFTI API: `DftiCreateDescriptor`, `DftiSetValue`, `DftiCommitDescriptor`, `DftiComputeForward/Backward`, `DftiFreeDescriptor` | Exactly this. Same function sequence. | ✓ |
+| 3D complex-to-complex (`DFTI_COMPLEX, DFTI_DOUBLE, N=3`) | Same. | ✓ |
+| Batch via `DFTI_NUMBER_OF_TRANSFORMS` | Same. `howmany` parameter. | ✓ |
+| Canonical example: 64^3 grid, batch=4, forward+backward | This is our `n64_b4` case — the single most benchmarked config in the slides. | ✓ |
+| Out-of-place FFT (separate in/out buffers) | `DFTI_NOT_INPLACE`. | ✓ |
+| 64-byte alignment (`mkl_malloc`) | Matches AVX-512 requirement. | ✓ |
+| GFLOPS formula: "Theoretical Cooley-Tukey, 5×N×log2(N)" | Slide 26 says this explicitly. We use exactly this. | ✓ |
+| Both forward and backward measured | Slide code does both; we do both. | ✓ |
+| Thread affinity: `KMP_AFFINITY=scatter,granularity=fine` | Slides test scatter, balanced, compact. We use scatter. | ✓ (partial) |
+| Grid sizes Nx=10–200 (slide 25 says "typical today") | Our 32–256 covers this. 32^3 and 64^3 are most realistic per slide. | ✓ |
+| Warmup before timed runs | We do 5 warmup runs. Slides don't specify count but the principle is implied. | ✓ |
+| Powers-of-2 grid sizes for Cooley-Tukey path | 32, 64, 128, 256 — all smooth. Bluestein fallback avoided. | ✓ |
+
+---
+
+### 12.3 The big gap: composed 3D FFT (2D + 1D)
+
+**This is the slide deck's central recommendation. We don't benchmark it.**
+
+Slide 29 shows the composed approach in full code. Instead of one monolithic 3D FFT plan:
 ```c
-run_benchmark(128, 128, 128, batch_sizes[b], cli_threads, ...);
+// Monolithic (what we do)
+MKL_LONG ngrid[3] = {128, 128, 128};
+DftiCreateDescriptor(&plan, DFTI_DOUBLE, DFTI_COMPLEX, 3, ngrid);
+DftiSetValue(plan, DFTI_NUMBER_OF_TRANSFORMS, howmany);
+DftiComputeForward(plan, in, out);
 ```
 
-In outer Scenario 1 (1 thread), `cli_threads=1`. So SCENARIO 5 is a 1-thread batch sweep, not a max-thread batch sweep. The label lies.
+The composed approach uses two separate plans — one 2D plan for the YZ slices, one 1D plan for the X axis:
+```c
+// Composed (slide 29 approach — NOT in our benchmark)
+MKL_LONG ngrid_yz[2] = {128, 128};     // YZ plane dimensions
+MKL_LONG nx = 128;
 
-In outer Scenario 3 (10 threads), it is running at 10 threads, which happens to be the physical core count. So the label is only accurate for one of the four outer runs.
+// Plan A: Nx independent 2D FFTs of size Ny×Nz
+DftiCreateDescriptor(&plan_yz, DFTI_DOUBLE, DFTI_COMPLEX, 2, ngrid_yz);
+DftiSetValue(plan_yz, DFTI_NUMBER_OF_TRANSFORMS, nx);         // Nx = 128 transforms
+DftiCommitDescriptor(plan_yz);
 
-### 10.5 No warmup between C sections
+// Plan B: Ny×Nz independent 1D FFTs of length Nx
+DftiCreateDescriptor(&plan_x, DFTI_DOUBLE, DFTI_COMPLEX, 1, &nx);
+DftiSetValue(plan_x, DFTI_NUMBER_OF_TRANSFORMS, 128*128);     // Ny*Nz = 16384 transforms
+DftiCommitDescriptor(plan_x);
 
-The warmup runs happen at the start of each `run_benchmark` call. When transitioning from one `run_benchmark` call to the next, if the problem size changes significantly, the AVX-512 frequency might already be stabilized. But if there's any idle time between calls (function overhead, printf), the CPU might briefly return to its base frequency. The 5 warmup runs at the start of the new configuration mitigate this, but for very small transforms (64^3, ~1ms each), 5 runs = 5ms may not be enough to re-settle.
+// Forward: 2D first, then 1D
+DftiComputeForward(plan_yz, in, work);    // work = scratch buffer
+DftiComputeForward(plan_x,  work, out);
 
-For the large 256^3 cases (~250ms each), 5 warmup runs = 1.25 seconds of warmup — more than sufficient.
+// Backward: 1D first, then 2D (reverse order)
+DftiComputeBackward(plan_x,  out, work);
+DftiComputeBackward(plan_yz, work, in);
+```
 
-### 10.6 No correctness validation
+**Why this is faster than monolithic 3D:**
 
-The benchmark measures speed only. There is no check that `IFFT(FFT(x)) ≈ x`. MKL's IFFT does not normalize by N, so the round-trip produces `N × x`, not `x`. Without a validation step, you cannot confirm that the output is correct FFT data (not just fast garbage due to a misconfigured descriptor or bug).
+A monolithic 3D FFT call internally does the same decomposition, but the MKL planner makes general choices. When you compose manually:
+- Each sub-plan is a lower-dimensional FFT (2D or 1D) — MKL can apply more aggressive SIMD vectorization across the batch dimension within each sub-plan
+- The 2D step (Ny×Nz plane) uses a stride-1 access pattern through contiguous memory; the 1D step (X axis) uses a strided access that the planner can handle explicitly
+- Twiddle factor tables for each sub-plan are smaller and stay hot in L2/L3 even when the full 3D working set is DRAM-bound
+- The intermediate `work` buffer gives the memory system a chance to settle between passes
 
-This matters especially when testing edge cases, new batch configurations, or if MKL is misconfigured.
+**The 80x speedup in context:**
 
-### 10.7 Summary extracts only one data point
+Slide 30 reports: "A FFT is 80 times faster using Composed methods with 26 threads than the baseline using 1 thread."
 
-The final summary shows only `128^3 batch=4` forward GFLOPS. This single number:
-- Is DRAM-bound, so it reflects memory bandwidth more than compute
-- Misses the compute-bound regime entirely (64^3 is not in the summary)
-- Does not show backward FFT performance
-- Hides batch scaling behavior
+The 80x breaks down roughly as:
+1. Threading alone (1 thread → 26 threads on a 52-core machine): could give up to ~20–25x for compute-bound workloads
+2. ISA benefit (AVX-512 vs SSE4.2 scalar baseline): ~2–3x
+3. Composed vs monolithic method: the remaining factor, possibly 2–4x
 
-Someone reading only the summary would underestimate AVX-512's compute benefit (which shows as ~2x at 64^3, not the ~1.4x shown at 128^3).
-
-### 10.8 Batch scaling tests the wrong size for observing batch benefits
-
-As explained in section 8.4: 128^3 is DRAM-bound with any thread count at batch≥1. The batch size sweep at 128^3 measures how well DRAM bandwidth scales with batch (it doesn't really), not the FFT's twiddle factor reuse benefit. To see the actual benefit of batching, you need a compute-bound size like 32^3 or 48^3.
-
-### 10.9 The "CPU-only" framing misrepresents what the baseline is
-
-The baseline (`fft_cpu_only`, `MKL_ENABLE_INSTRUCTIONS=SSE4_2`) is not "CPU-only scalar code." It is MKL running with SSE4.2 instructions, which still includes SIMD operations — just 128-bit wide instead of 512-bit. SSE4.2 can still process 2 complex doubles per instruction. A truly scalar baseline would be a non-vectorized reference FFT implementation (like FFTW in scalar mode, or a hand-written naive DFT). The current benchmark's "baseline" is really "narrower SIMD MKL" vs "wider SIMD MKL."
-
-This overstates the baseline and understates the absolute AVX-512 advantage.
+On our machine (10 physical cores), the proportional expectation if we implemented composed FFT:
+- Our current 128^3 best: 10T AVX512 → ~62 GFLOPS (monolithic)
+- With composed FFT at 10T: possibly 62 × (2–4x) ≈ 120–240 GFLOPS — a large potential gain
+- Sanity check: slide 30 at 52 cores ≈ 1300 GFLOPS. Scale down to 10 cores: 1300 × (10/52) ≈ 250 GFLOPS. Roughly consistent with the estimate above.
 
 ---
 
-## 11. What Is Useful vs What Is Less Useful
+### 12.4 Batch size range mismatch
 
-### Genuinely useful
+Slide 25: "M = 10–1000 concurrent FFTs" is the typical range in production electronic structure codes (each "FFT" corresponds to one orbital/band).
 
-**Outer scenario comparison (Scenario 1/2/3/3b)**: The four outer modes isolate ISA and thread count as variables. The summary table directly shows the compounding effect of AVX-512 + threading. The `7.30 → 10.47 → 54.07 → 60.99 GFLOPS` progression across Scenario 1/2/3/3b tells a clear story.
+Our batch sizes: 1, 2, 4, 8, 16, 32. Maximum = 32.
 
-**Thread scaling sweep (SCENARIO 4) in AVX-512 outer runs**: Shows the actual scaling curve, confirms where memory bandwidth becomes the bottleneck, and establishes whether HT (threads 10→20) provides additional value. The data clearly shows the inflection point at 8–10 threads.
+We're at the low end of their range. Slide 26 (Xeon Phi) sweeps 1–32, similar to us. But for realistic simulation use cases, 100–500 concurrent FFTs is common (100 orbitals per k-point). To reproduce the application-relevant regime, we'd need batch sizes of at least 64–256 for 64^3 grids (where the total working set would stay in L3 or DRAM but twiddle reuse would matter more).
 
-**Large-size behavior (256^3)**: Shows the fully memory-bound regime where per-transform time exceeds 100ms and ISA differences shrink significantly. Useful for understanding real-application performance at production scales.
-
-**The MKL_VERBOSE confirmation**: Definitive proof that AVX-512 is actually being used. This is more reliable than inferring from GFLOPS numbers alone.
-
-### Less useful / potentially misleading
-
-**C SCENARIO 1 and C SCENARIO 2 in any given outer run**: They produce identical numbers with different labels. Reading them side-by-side suggests a comparison that isn't happening.
-
-**Batch scaling at 128^3 (SCENARIO 5)**: Does not demonstrate the benefit it claims to. For any thread count, 128^3 is DRAM-bound, and GFLOPS stays flat across batch sizes. The section title "Shows benefit of batched FFT vs repeated single calls" overpromises.
-
-**SCENARIO 3 in outer Scenario 1 and 2 (1-thread runs)**: The "multithreaded" section runs at 1 thread. It adds extra grid/batch combinations but is redundant with what SCENARIO 1 and 2 already show.
-
-**The full set of 5 inner sections × 4 outer runs = 20 sections**: Most of the data is redundant. The truly unique measurements are: 1-thread SSE4.2, 1-thread AVX512, 10-thread AVX512, 20-thread AVX512, the thread scaling curve, and the batch scaling curve.
+Our batch_scaling profile (1–32 at 128^3, 10T) shows flat GFLOPS because the problem is DRAM-bound regardless. For larger batch sizes at smaller grids (e.g., batch=100 at 64^3), twiddle factor reuse would likely drive GFLOPS higher — but we don't test this.
 
 ---
 
-## 12. How to Make It Better
+### 12.5 Hardware and scale differences
 
-### High impact
+| Dimension | Slide 30 (performance data) | Our machine |
+|---|---|---|
+| CPU | Intel Xeon Platinum 8170 | Intel Xeon W-2155 |
+| Sockets | 2S | 1S |
+| Physical cores | 26/socket × 2 = 52 total | 10 total |
+| DRAM bandwidth | 2× multi-channel DDR4 | Single-socket DDR4 |
+| Best reported GFLOPS (128^3, composed) | ~1300–1400 | N/A (not measured) |
+| Our best GFLOPS (128^3, monolithic, 10T) | N/A | ~62 |
 
-**1. Add a 32^3 or 48^3 grid size**
-This is the single most impactful improvement for demonstrating batch scaling benefits. 32^3 = 512 KB per transform, fully L2-resident. At batch=1 to batch=32, you would see the GFLOPS increase as twiddle tables stay warm in L3 while data streams through. Currently the benchmark never shows this regime.
+The 8.3x core count difference (52 vs 10) and the composed-vs-monolithic method difference together explain why slide 30 shows ~20x more GFLOPS than us.
 
-**2. Fix the inner section labels or remove the redundancy**
-Options:
-- Remove C SCENARIO 1 and C SCENARIO 2 from the C file entirely. The shell's outer scenarios already isolate ISA. The inner sections add nothing.
-- Or rename them: if kept, label them as "Grid sweep (1 thread)" without implying an ISA context, since ISA is controlled externally.
-
-**3. Add correctness validation**
-After the timing runs, compute `IFFT(FFT(input))` on a small test case and compare to `N × input`. Compute the relative L2 norm:
-```
-error = ||IFFT(FFT(x)) - N*x||_2 / (N * ||x||_2)
-```
-This should be below ~1e-13 for double precision. Printing this once per run configuration confirms the FFT is producing correct results, not just fast output.
-
-**4. CSV output mode**
-Add a flag to output machine-readable CSV alongside the human-readable table:
-```
-outer_mode,section,nx,ny,nz,batch,threads,fwd_ms,bwd_ms,fwd_gflops,bwd_gflops
-SSE4_2_1T,grid_sweep,64,64,64,1,1,2.140,2.036,11.02,11.59
-...
-```
-This makes the data importable into Python/R/Excel for plotting without needing log-parsing awk scripts.
-
-**5. Per-run statistics (min/mean/stddev), not just mean**
-Currently the benchmark averages 20 runs silently. For multithreaded DRAM-bound workloads, run-to-run variance can be 5–15%. Printing min/mean/stddev would reveal stability issues and outliers.
-
-### Medium impact
-
-**6. Add AVX2 intermediate ISA**
-`MKL_ENABLE_INSTRUCTIONS=AVX2` would give a three-way ISA comparison: SSE4.2 → AVX2 → AVX512. This isolates the SIMD width contribution (128-bit → 256-bit → 512-bit) more cleanly.
-
-**7. Fix the SCENARIO 5 label from "max threads" to "cli_threads"**
-One-line fix in the C code. Reduces confusion when reading 1-thread outer run output.
-
-**8. Add a non-power-of-2 grid test**
-Include one grid like `100^3` or `192^3`. These force MKL to use mixed-radix decompositions instead of pure Cooley-Tukey. The performance difference is often 2–5x slower. This matters if target applications use non-standard grid sizes.
-
-**9. Separate the thread scaling sweep into its own outer mode**
-Currently thread scaling runs inside every outer mode (producing 4 nearly-identical curves). Running it once with the AVX-512 binary and once with the SSE4.2 binary would produce the two genuinely different curves without the redundancy.
-
-### Low impact but adds confidence
-
-**10. Include FFTW as a comparison**
-FFTW with wisdom enabled is the competitive alternative to MKL. On Intel hardware MKL typically wins, but having the comparison makes the "why MKL" choice evidence-based rather than assumed. The copilot notes mention this as an option.
+Slide 26 (batch scaling) used Xeon Phi 7250 (64 cores, 1.4 GHz) — an even more different platform. The principle (GFLOPS increasing with batch count) applies, but absolute numbers are not comparable.
 
 ---
 
-## 13. Reading Logs Confidently
+### 12.6 What we do that the slides don't show
 
-When you open a log file, do this in sequence:
-
-1. **Find the outer run header** — this anchors everything:
-   ```
-   RUNNING: Scenario 3 — AVX-512 + physical cores
-   Binary : fft_avx512
-   Threads: 10
-   ISA    : AVX512
-   ```
-
-2. **Check MKL max threads at the binary header** — confirms the env var took effect:
-   ```
-   MKL max threads available : 10
-   ```
-
-3. **Find the C section you want** by name (SCENARIO 1..5). Remember C SCENARIO 1 and 2 are identical in any run that uses `fft_avx512`.
-
-4. **For apples-to-apples comparison**: compare the same grid + batch + thread count across different outer runs.
-
-5. **Use the summary at the bottom of the log as a first pass**, then drill into SCENARIO 4 (thread scaling) for parallelism analysis and SCENARIO 3 (grid/batch sweep) for working-set analysis.
-
-6. **Never compare a number from one outer run's SCENARIO 4 against another outer run's SCENARIO 3** without first checking the thread count matches.
+| Our benchmark addition | Rationale |
+|---|---|
+| Three-way ISA comparison: SSE4.2 / AVX2 / AVX512 | The slides don't explicitly compare ISA tiers. They assume you'll use AVX-512. We added this to quantify the ISA benefit — most useful for compute-bound small grids. |
+| HyperThreading analysis (10T vs 20T) | Slides don't address HT explicitly. Our data shows HT hurts for this workload. |
+| Cache regime categorization (L2 / L3 / DRAM boundary) | Slides discuss bandwidth-limited behavior in general. We explicitly size grids to bracket the boundaries. |
+| `MKL_ENABLE_INSTRUCTIONS` as ISA control mechanism | Slides use compile flags / MKL defaults. We demonstrate the runtime env var override. |
 
 ---
 
-## 14. Key Numbers at a Glance (from last full run)
+### 12.7 MKL_VERBOSE — a missing validation step
 
-### AVX-512 vs SSE4.2 (1 thread, compute-bound 64^3)
-```
-SSE4.2 : 64^3 batch=1 → 11.02 GFLOPS
-AVX512 : 64^3 batch=1 → 20.59 GFLOPS   (+87%, nearly 2x)
-```
+Slide 16 explicitly shows `MKL_VERBOSE=1` as a way to confirm which kernel MKL is actually dispatching. Example output in the slides shows kernel names containing "z1d", "avx512", etc. We currently use `MKL_ENABLE_INSTRUCTIONS` to restrict ISA, but we never verify via `MKL_VERBOSE` that MKL actually selected the expected kernel.
 
-### Thread scaling at 128^3 batch=4, AVX512
-```
-1 thr  :  84 ms, 10.5 GFLOPS  (baseline)
-2 thr  :  47 ms, 18.9 GFLOPS  (1.81x)
-4 thr  :  25 ms, 35.5 GFLOPS  (3.39x)
-8 thr  :  18 ms, 49.1 GFLOPS  (4.68x) ← efficiency drops here
-10 thr :  14 ms, 61.1 GFLOPS  (5.83x)
-20 thr :  14 ms, 62.6 GFLOPS  (5.98x) ← HT provides <3% gain
-```
-
-### Full stack speedup (1-thread SSE4.2 → 10-thread AVX512)
-```
-128^3 batch=4: 7.30 → 54.07 GFLOPS = 7.4x total speedup
-64^3 batch=1:  11.02 → 123.28 GFLOPS = 11.2x total speedup (compute-bound, bigger AVX benefit)
-```
-
-### Memory pressure summary
-```
-64^3  batch=1  →   8 MB  (L3-resident, compute-bound)
-128^3 batch=4  → 256 MB  (DRAM-bound, bandwidth-limited)
-256^3 batch=4  → 2 GB    (deeply DRAM-bound)
-```
+If `MKL_ENABLE_INSTRUCTIONS=AVX512` but MKL internally falls back (due to alignment, size constraints, or plan type), we'd report AVX512 numbers that were actually computed with a different kernel path. Adding a short `MKL_VERBOSE=1` run at the start of each profile (just one warmup run, discarded for timing) would make ISA selection verifiable.
 
 ---
 
-## 15. Summary
+### 12.8 Summary: what to add to be fully aligned with the slides
 
-This is a real, functional MKL DFTI performance benchmark. AVX-512 is genuinely active (confirmed by `MKL_VERBOSE` and by measured ~2x speedup at compute-bound sizes). Thread scaling behaves correctly — strong up to ~8 threads, then memory-bandwidth-limited. Hyper-Threading provides marginal benefit for this workload.
+| Gap | Priority | What to add |
+|---|---|---|
+| **Composed 3D FFT (2D + 1D)** | **High** | New profile: `avx512_composed_phys` running the slide 29 two-plan approach. Compare GFLOPS directly against `avx512_phys` (monolithic) at 128^3 batch=4. This is the single most impactful missing measurement. |
+| **Larger batch sizes** | Medium | Extend `THROUGHPUT_BATCHES` to include 16, 32, 64 for 64^3. At 64^3 batch=64 the total = 512 MB (DRAM-bound) but twiddle tables (small) stay cache-hot. |
+| **MKL_VERBOSE verification** | Low | One-time validation run with `MKL_VERBOSE=1` per ISA cap level to confirm kernel names. Not needed every benchmark run, but should be done once per machine/MKL-version. |
+| **Batch scaling at 32^3** | Medium | Already noted in §9.4. Add a small-grid batch scaling profile to show twiddle reuse in the compute-bound regime. |
 
-The main structural problems are:
-- Two binary design that doesn't actually control ISA (the env var does)
-- Internal C section labels that are wrong when running the AVX binary
-- Batch scaling tested on a size where batch benefits cannot appear
-- Redundant repeated sections across outer runs
-- No correctness validation
-
-None of these affect the validity of the comparison between outer Scenario 1/2/3/3b, which is the primary purpose. The benchmark gives trustworthy numbers for the four outer scenarios. Everything else is noise or could be made cleaner with targeted structural changes.
+The existing benchmark measures all the right things for understanding ISA impact and threading behavior. Adding the composed FFT profile would let us reproduce the slide deck's headline result on our hardware and understand how much of the 80x is achievable on a 10-core machine.

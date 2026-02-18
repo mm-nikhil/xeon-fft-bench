@@ -1,0 +1,103 @@
+============================================================
+  FFT BENCHMARK RUN
+  Date     : Tue Feb 17 16:31:00 IST 2026
+  Hostname : amdtoolsserver.morphingmachines
+  Log file : ./fft_logs/fft_benchmark_20260217_163100.log
+============================================================
+
+[SETUP] Sourcing Intel oneAPI environment if available...
+
+[CHECK] MKL environment:
+        MKLROOT     = /home/nikhil/.local
+        Include dir = /home/nikhil/.local/include
+        Lib dir     = /home/nikhil/.local/lib
+        Runtime lib = -l:libmkl_rt.so.2
+
+[CHECK] Compiler availability:
+        gcc found: gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22)
+
+[INFO] BENCH_NRUNS=20, BENCH_WARMUP=5
+[INFO] KMP_AFFINITY=scatter,granularity=fine
+[INFO] NOTE: MKL chooses kernels at runtime; ISA is controlled with MKL_ENABLE_INSTRUCTIONS.
+
+------------------------------------------------------------
+[COMPILE] Scenario 1 binary: gcc -O2 -std=c99
+------------------------------------------------------------
+          Binary: fft_cpu_only
+
+------------------------------------------------------------
+[COMPILE] Scenario 2/3 binary: gcc -O3 -mavx512f -mavx512dq -mavx512bw -mavx512vl -std=c99
+------------------------------------------------------------
+          Binary: fft_avx512
+
+============================================================
+ RUNNING: Scenario 1 — CPU baseline (single thread)
+ Binary : fft_cpu_only
+ Threads: 1
+ ISA    : SSE4_2
+============================================================
+
+
+########################################################
+#         FFT BENCHMARK — Intel MKL DFT                #
+#         Random Initialized 3D Complex FFT             #
+########################################################
+MKL max threads available : 1
+Threads requested (cli)   : 1
+Timed runs per config     : 20
+Warmup runs               : 5 (untimed, stabilize AVX freq)
+
+Column guide:
+  Fwd = forward FFT (time + GFLOPS)
+  Bwd = inverse FFT (time + GFLOPS)
+  Mem = total memory used by in+out buffers
+
+Cache reference (W-2155):
+  L1d  32KB  → fits 1D FFT N < 2K complex doubles
+  L2    1MB  → fits 3D FFT up to ~40^3
+  L3   14MB  → fits 3D FFT up to ~96^3  (64^3 = 4MB  ✓)
+  DRAM       → 128^3 = 32MB  (spills L3)   256^3 = 256MB
+
+========================================================================================
+  SCENARIO 1 — CPU ONLY (1 thread, scalar baseline)
+========================================================================================
+  NOTE: Set by compile flag -O2  — no explicit AVX enabled
+
+64^3 batch=1           | Grid:   64x  64x  64 | Batch:  1 | Thr: 1 | Fwd:    2.115 ms    11.16 GFLOPS | Bwd:    2.123 ms    11.11 GFLOPS | Mem:    8.0 MB
+64^3 batch=4           | Grid:   64x  64x  64 | Batch:  4 | Thr: 1 | Fwd:   11.078 ms     8.52 GFLOPS | Bwd:   11.185 ms     8.44 GFLOPS | Mem:   32.0 MB
+128^3 batch=1          | Grid:  128x 128x 128 | Batch:  1 | Thr: 1 | Fwd:   30.641 ms     7.19 GFLOPS | Bwd:   30.586 ms     7.20 GFLOPS | Mem:   64.0 MB
+128^3 batch=4          | Grid:  128x 128x 128 | Batch:  4 | Thr: 1 | Fwd:  124.286 ms     7.09 GFLOPS | Bwd:  125.212 ms     7.03 GFLOPS | Mem:  256.0 MB
+256^3 batch=1          | Grid:  256x 256x 256 | Batch:  1 | Thr: 1 | Fwd:  266.299 ms     7.56 GFLOPS | Bwd:  282.841 ms     7.12 GFLOPS | Mem:  512.0 MB
+
+========================================================================================
+  SCENARIO 2 — CPU + AVX-512 (1 thread, vectorized)
+========================================================================================
+  NOTE: Effective only when compiled with -xCORE-AVX512
+        MKL selects AVX-512 kernel automatically
+
+64^3 batch=1           | Grid:   64x  64x  64 | Batch:  1 | Thr: 1 | Fwd:    2.108 ms    11.19 GFLOPS | Bwd:    2.136 ms    11.05 GFLOPS | Mem:    8.0 MB
+64^3 batch=4           | Grid:   64x  64x  64 | Batch:  4 | Thr: 1 | Fwd:   11.046 ms     8.54 GFLOPS | Bwd:   11.106 ms     8.50 GFLOPS | Mem:   32.0 MB
+128^3 batch=1          | Grid:  128x 128x 128 | Batch:  1 | Thr: 1 | Fwd:   30.485 ms     7.22 GFLOPS | Bwd:   30.405 ms     7.24 GFLOPS | Mem:   64.0 MB
+128^3 batch=4          | Grid:  128x 128x 128 | Batch:  4 | Thr: 1 | Fwd:  124.121 ms     7.10 GFLOPS | Bwd:  125.947 ms     6.99 GFLOPS | Mem:  256.0 MB
+256^3 batch=1          | Grid:  256x 256x 256 | Batch:  1 | Thr: 1 | Fwd:  280.615 ms     7.17 GFLOPS | Bwd:  286.816 ms     7.02 GFLOPS | Mem:  512.0 MB
+
+========================================================================================
+  SCENARIO 3 — AVX-512 + Multithreaded
+========================================================================================
+  Threads: 1  (override with: ./fft_benchmark <N>)
+
+64^3 batch=1           | Grid:   64x  64x  64 | Batch:  1 | Thr: 1 | Fwd:    2.389 ms     9.87 GFLOPS | Bwd:    2.479 ms     9.52 GFLOPS | Mem:    8.0 MB
+64^3 batch=4           | Grid:   64x  64x  64 | Batch:  4 | Thr: 1 | Fwd:   11.947 ms     7.90 GFLOPS | Bwd:   12.019 ms     7.85 GFLOPS | Mem:   32.0 MB
+64^3 batch=16          | Grid:   64x  64x  64 | Batch: 16 | Thr: 1 | Fwd:   48.713 ms     7.75 GFLOPS | Bwd:   47.999 ms     7.86 GFLOPS | Mem:  128.0 MB
+128^3 batch=1          | Grid:  128x 128x 128 | Batch:  1 | Thr: 1 | Fwd:   30.892 ms     7.13 GFLOPS | Bwd:   30.850 ms     7.14 GFLOPS | Mem:   64.0 MB
+128^3 batch=4          | Grid:  128x 128x 128 | Batch:  4 | Thr: 1 | Fwd:  124.033 ms     7.10 GFLOPS | Bwd:  123.907 ms     7.11 GFLOPS | Mem:  256.0 MB
+128^3 batch=16         | Grid:  128x 128x 128 | Batch: 16 | Thr: 1 | Fwd:  440.769 ms     7.99 GFLOPS | Bwd:  498.376 ms     7.07 GFLOPS | Mem: 1024.0 MB
+256^3 batch=1          | Grid:  256x 256x 256 | Batch:  1 | Thr: 1 | Fwd:  281.739 ms     7.15 GFLOPS | Bwd:  280.172 ms     7.19 GFLOPS | Mem:  512.0 MB
+256^3 batch=4          | Grid:  256x 256x 256 | Batch:  4 | Thr: 1 | Fwd: 1037.733 ms     7.76 GFLOPS | Bwd: 1087.497 ms     7.41 GFLOPS | Mem: 2048.0 MB
+
+========================================================================================
+  SCENARIO 4 — Thread Scaling Sweep (128^3 batch=4)
+========================================================================================
+  Shows how FFT scales across your 10 physical cores
+
+128^3 thr=1            | Grid:  128x 128x 128 | Batch:  4 | Thr: 1 | Fwd:  126.241 ms     6.98 GFLOPS | Bwd:  125.513 ms     7.02 GFLOPS | Mem:  256.0 MB

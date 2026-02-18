@@ -1,0 +1,7 @@
+0 [140637641076992] INFO perfrun.launcher <> - Launcher main begin
+1 [140637641076992] INFO perfrun.launcher <> - MessageCatalogInit finished
+1 [140637641076992] INFO perfrun.launcher <> - Launcher instance created
+1 [140637641076992] INFO perfrun.launcher <> - argc = 7; cmdline = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin64/amplxe-runss --ui-output-format xml --ui-output-fd 5 --option-file /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103341/hotspots_10t/config/runss.options 
+46 [140637641076992] INFO perfrun.perfcollector <> - SEP tool path: /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin64/sep
+50 [140637641076992] WARN perfrun.launcher <> - IParser::parseStream method returned an error: Option 'pmu-type' received value from the next argument: '--event-config=CPU_CLK_UNHALTED.THREAD,CPU_CLK_UNHALTED.REF_TSC:sample:sa=3300000,INST_RETIRED.ANY:sample:sa=3300000,CPU_CLK_UNHALTED.DISTRIBUTED,UOPS_RETIRED.RETIRE_SLOTS:sample:sa=2000003', but it seems to be an option. Use '-option=value' declaration form or make sure that value is not missed, at file: vcs/perfrun1/launcher/src/cmdline_parser.cpp:804
+50 [140637641076992] ERROR perfrun.launcher <> - Messenger::say: Option 'pmu-type' received value from the next argument: '--event-config=CPU_CLK_UNHALTED.THREAD,CPU_CLK_UNHALTED.REF_TSC:sample:sa=3300000,INST_RETIRED.ANY:sample:sa=3300000,CPU_CLK_UNHALTED.DISTRIBUTED,UOPS_RETIRED.RETIRE_SLOTS:sample:sa=2000003', but it seems to be an option. Use '-option=value' declaration form or make sure that value is not missed

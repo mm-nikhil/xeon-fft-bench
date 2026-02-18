@@ -1,0 +1,107 @@
+0 [139738763878656] INFO perfrun.launcher <> - Launcher main begin
+1 [139738763878656] INFO perfrun.launcher <> - MessageCatalogInit finished
+1 [139738763878656] INFO perfrun.launcher <> - Launcher instance created
+1 [139738763878656] INFO perfrun.launcher <> - argc = 7; cmdline = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin64/amplxe-runss --ui-output-format xml --ui-output-fd 5 --option-file /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/config/runss.options 
+45 [139738763878656] INFO perfrun.perfcollector <> - SEP tool path: /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin64/sep
+48 [139738763878656] INFO perfrun.launcher <> - create msngr2::ICliToolContext
+49 [139738763878656] INFO perfrun.launcher <> - create file finder object
+49 [139738763878656] INFO perfrun.launcher <> - create a result directory: pattern = /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t pid = 4294967295
+62 [139738763878656] INFO perfrun.sdk <> - checked that the directory /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t is a local directory
+62 [139738763878656] INFO perfrun.sdk <> - the directory /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t is a local directory with FS type ID 1481003842
+62 [139738763878656] INFO perfrun.launcher <> - create data directory = /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0
+62 [139738763878656] INFO perfrun.launcher <> - Creating the master collection flag
+89 [139738763878656] INFO perfrun.launcher <> - Done creating the master collection flag
+102 [139738648016640] INFO perfrun.launcher <> - plugin [remoteplug] was disabled because it doesn't support the given collection type.
+103 [139738648016640] INFO perfrun.sdk <> - Allocating TMU :/home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0/systemcollector-1497405-amdtoolsserver.morphingmachines.sc
+103 [139738648016640] INFO perfrun.system <> - Tpss based collection
+103 [139738648016640] INFO perfrun.launcher <> - plugin [ptracecollector] was disabled because it doesn't support the given collection type.
+103 [139738648016640] INFO perfrun.launcher <> - plugin [gpu] was disabled because it doesn't support the given collection type.
+103 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+103 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+103 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+103 [139738648016640] INFO perfrun.mrte <> - system-wide mode is 0
+103 [139738648016640] INFO perfrun.mrte <> - Getting  mrte profiling environment ...
+109 [139738648016640] INFO perfrun.mrte <> - INTEL_MRTE_DATA_DIR=/home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0
+109 [139738648016640] INFO perfrun.mrte <> - INTEL_MRTE_HOST_NAME=amdtoolsserver.morphingmachines
+109 [139738648016640] INFO perfrun.mrte <> - JAVA_TOOL_OPTIONS=-agentlib:amplxe_samplingmrte_javaprof_1.0 -Dsun.boot.library.path=/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime:/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime
+109 [139738648016640] INFO perfrun.mrte <> - LD_LIBRARY_PATH=/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime:/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime
+109 [139738648016640] INFO perfrun.mrte <> - CORECLR_ENABLE_PROFILING=1
+109 [139738648016640] INFO perfrun.mrte <> - CORECLR_PROFILER={AA5E4821-E3B1-479c-B7FF-5AD047D22CED}
+109 [139738648016640] INFO perfrun.mrte <> - CORECLR_PROFILER_PATH=/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/libamplxe_samplingmrte_clrprof_1.0.so
+109 [139738648016640] INFO perfrun.mrte <> - INTEL_MRTE_PROFILER_MODE=mixed
+109 [139738648016640] INFO perfrun.mrte <> - Data directory: /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0
+109 [139738648016640] INFO perfrun.mrte <> - Mrte plugin is initialized
+109 [139738648016640] INFO perfrun.launcher <> - plugin [emon] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [cuscol] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [stdsrc] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [sep] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [vtsspp] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [perf] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [aoclprofile] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.tpss <> - initialize tpss controller
+109 [139738648016640] INFO perfrun.tpss <> - configure collection mode: value = cpu:stack
+109 [139738648016640] INFO perfrun.tpss <> - configure collection mode: value = threading:stack
+109 [139738648016640] INFO perfrun.tpss <> - configure collection mode: value = waiting:stack
+109 [139738648016640] INFO perfrun.tpss <> - configure collection mode: value = io:stack
+109 [139738648016640] INFO perfrun.tpss <> - default obj-size-min=1024
+109 [139738648016640] INFO perfrun.tpss <> - default hash-table-size=0
+109 [139738648016640] INFO perfrun.launcher <> - plugin [media] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [parallelfs] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [power] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [l0_metrics] was disabled because it doesn't support the given collection type.
+109 [139738648016640] INFO perfrun.launcher <> - plugin [stall_reasons] was disabled because it doesn't support the given collection type.
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: LD_LIBRARY_PATH = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime:/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_LIBITTNOTIFY32 = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime/libittnotify_collector.so
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_LIBITTNOTIFY64 = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime/libittnotify_collector.so
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_ITTNOTIFY_GROUPS = 
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_JIT_PROFILER32 = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime/libittnotify_collector.so
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_JIT_PROFILER64 = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime/libittnotify_collector.so
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: OMP_TOOL_LIBRARIES = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime/libittnotify_collector.so:/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime/libittnotify_collector.so
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: CCL_ITT_LEVEL = 1
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: ENABLE_JITPROFILING = 1
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: CL_CONFIG_USE_VTUNE = True
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_DATA_DIR = /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_HOST_NAME = amdtoolsserver.morphingmachines
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: JAVA_TOOL_OPTIONS = -agentlib:amplxe_samplingmrte_javaprof_1.0 -Dsun.boot.library.path=/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime:/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: LD_LIBRARY_PATH = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/runtime:/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: CORECLR_ENABLE_PROFILING = 1
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: CORECLR_PROFILER = {AA5E4821-E3B1-479c-B7FF-5AD047D22CED}
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: CORECLR_PROFILER_PATH = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/libamplxe_samplingmrte_clrprof_1.0.so
+109 [139738763878656] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_PROFILER_MODE = mixed
+109 [139738763878656] INFO perfrun.launcher <> - RpcServer: run RPC server to handle requests
+110 [139738763878656] INFO perfrun.launcher <> - Launcher: command line to start before modification = ./fft_avx512 20
+110 [139738763878656] INFO perfrun.launcher <> - Launcher: command line to start after modification = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin64/pin -error_file /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0/pinerr.tpsslog -detach_reattach -follow_execv -tool_load_option deepbind -t64 /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/libtpsstool.so -t /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib32/libtpsstool.so -server_name tpss_ipc.1497405 -prd_dir /home/nikhil/workspace/vtune/oneapi/vtune/2025.8 -- ./fft_avx512 20
+110 [139738763878656] INFO perfrun.launcher <> - ProcessCreator object was created
+110 [139738763878656] INFO perfrun.launcher <> - Launcher: the process was started in suspend mode
+112 [139738648016640] WARN perfrun.system <> - Could not do anything with /sys/kernel/debug/kvm: boost::filesystem::status: Permission denied [system:13]: "/sys/kernel/debug/kvm", at file: vcs/perfrun1/plugins/system/src/trace_writer.cpp:791
+113 [139738648016640] WARN perfrun.sdk <> - Failed to find xl binary on any of the system paths: /bin, /sbin, /usr/bin, /usr/sbin., at file: vcs/perfrun1/sdk/src/utils.cpp:205
+113 [139738648016640] WARN perfrun.system <> - Could not start ContainerMapping collector, at file: vcs/perfrun1/plugins/system/src/controller.cpp:450
+148 [139738648016640] INFO perfrun.vdso <> - Helper runtool '/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin32/amplxe-runss -dump-vdso -r /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t --tmp-dir /tmp/amplxe-tmp-nikhil' returned 0
+210 [139738648016640] INFO perfrun.vdso <> - Helper runtool '/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin64/amplxe-runss -dump-vdso -r /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t --tmp-dir /tmp/amplxe-tmp-nikhil' returned 0
+210 [139738648016640] INFO perfrun.itt <> - start itt controller for pid #1497410
+210 [139738648016640] INFO perfrun.tpss <> - start tpss controller for pid #1497410
+261 [139738763878656] INFO perfrun.launcher <> - Launcher: all plugins were started
+261 [139738763878656] INFO perfrun.launcher <> - DirectoryMonitor object was created
+261 [139738763878656] INFO perfrun.launcher <> - DirectoryMonitor: a callback was added
+261 [139738763878656] INFO perfrun.launcher <> - DirectoryMonitor was started with pingTime = 1000
+261 [139738763878656] INFO perfrun.launcher <> - DeadlineTimer is going to be constructed
+261 [139738763878656] INFO perfrun.launcher <> - DeadlineTimer: a callback was added
+291 [139738763878656] INFO perfrun.launcher <> - Launcher: resume the profiled application and  wait its termination or stop command
+17230 [139738763878656] INFO perfrun.launcher <> - Launcher: the profiled application was terminated  with exit code = 0
+17237 [139738648016640] INFO perfrun.itt <> - detach itt controller
+17237 [139738648016640] INFO perfrun.itt <> - detach itt controller done
+17237 [139738648016640] INFO perfrun.tpss <> - stop tpss controller
+17237 [139738648016640] INFO perfrun.sdk <> - De-allocating TMU: /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0/systemcollector-1497405-amdtoolsserver.morphingmachines.sc
+17237 [139738648016640] INFO perfrun.system <> - closed the system trace file: /home/nikhil/workspace/xeon-fft-bench/src/vtune_results/20260218_103823/threading_20t/data.0/systemcollector-1497405-amdtoolsserver.morphingmachines.sc
+17237 [139738763878656] INFO perfrun.launcher <> - Launcher: all plugins were stopped.
+17237 [139738763878656] INFO perfrun.launcher <> - DeadlineTimer is going to be destroyed
+17237 [139738763878656] INFO perfrun.launcher <> - DeadlineTimer was destroyed
+17237 [139738763878656] INFO perfrun.launcher <> - DirectoryMonitor object was destroyed
+17237 [139738763878656] WARN perfrun.launcher <> - Stop command is ignored because it is received when collection is already stopped, at file: vcs/perfrun1/launcher/src/command_handler.cpp:226
+17238 [139738763878656] INFO perfrun.launcher <> - Application exit code: 0
+17238 [139738763878656] INFO perfrun.launcher <> - Exit code: 0

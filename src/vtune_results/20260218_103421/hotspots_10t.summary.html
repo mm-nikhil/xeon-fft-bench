@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<html><style>
+        .metric-name {
+        font-weight: 600;
+        min-width: 14em;
+        display: inline-block;
+        }
+
+        .metric-value {
+        margin-left: 1em;
+        color: #336;
+        }
+
+        .metric-value-with-issue {
+        margin-left: 1em;
+        color: #C33;
+        }
+
+        li {
+        list-style-type: none;
+        }
+
+        ul {
+        margin-left: 1.5em;
+        padding-left: 0em;
+        }
+
+        body {
+        margin: 0;
+        paddind: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #336;
+        }
+
+        pre {
+        white-space:pre-wrap;
+        max-width: 40em;
+        color: #633;
+        }
+
+        .issue {
+        border-left: 3px solid #C33;
+        padding: 0.3em 0.3em 0.3em 1em;
+        }
+
+        table {
+        margin: 0 1.5em;
+        }
+
+        th, td {
+        text-align: left;
+        }
+
+        td {
+        color: #333;
+        }
+
+        th {
+        border-bottom: 2px solid #336;
+        font-weight: 600;
+        }
+
+        .table-value {
+        margin-right: 1.5em;
+        }
+
+        .brand {
+        background-color: #0071c5;
+        padding: 0.5em 1.5em;
+        width: 100%;
+        color: white;
+        font-weight: 600;
+        }
+
+        .recommendation-placeholder {
+        background-color: #eaecee;
+        padding: 1em;
+        }
+
+        .recommendation-placeholder p {
+        font-weight: 600;
+        margin: 0;
+        }
+
+        .recommendation {
+        border-left: 3px solid #bbb;
+        padding: 0.3em 0.3em 0.3em 1em;
+        margin: 0 0 0 1.5em;
+        }
+
+        .recommendation-metric {
+        font-weight: 600;
+        min-width: 14em;
+        display: inline-block;
+        margin: 0 0 0 1.5em;
+        }
+
+      </style><body><div class="brand">Intel<sup>&reg;</sup> VTune<sup>&trade;</sup> Profiler 2025.8.0</div><ul><li><span class="metric-name">Elapsed Time:
+        </span><span class="metric-value">21.862s</span><ul><li><span class="metric-name">CPU Time:
+        </span><span class="metric-value">79.460s</span><ul><li><span class="metric-name">Effective Time:
+        </span><span class="metric-value">53.503s</span></li></ul><ul><li><span class="metric-name">Spin Time:
+        </span><span class="metric-value-with-issue">25.957s<div class="issues"><pre class="issue">A significant portion of CPU time is spent waiting. Use this metric to discover which synchronizations are spinning. Consider adjusting spin wait parameters, changing the lock implementation (for example, by backing off then descheduling), or adjusting the synchronization granularity.</pre></div></span><ul><li><span class="metric-name">Imbalance or Serial Spinning:
+        </span><span class="metric-value-with-issue">25.037s<div class="issues"><pre class="issue">The threading runtime function related to time spent on imbalance or serial spinning consumed a significant amount of CPU time. This can be caused by a load imbalance, insufficient concurrency for all working threads, or busy waits of worker threads while serial code is executed. If there is an imbalance, apply dynamic work scheduling or reduce the size of work chunks or tasks. If there is insufficient concurrency, consider collapsing the outer and inner loops. If there is a wait for completion of serial code, explore options for parallelization with Intel Advisor, algorithm, or microarchitecture tuning of the application's serial code with VTune Profiler Basic Hotspots or Microarchitecture Exploration analysis respectively. For OpenMP* applications, use the Per-Barrier OpenMP Potential Gain metric set in the HPC Performance Characterization analysis to discover the reason for high imbalance or serial spin time.</pre></div></span></li></ul><ul><li><span class="metric-name">Lock Contention:
+        </span><span class="metric-value">0s</span></li></ul><ul><li><span class="metric-name">Other:
+        </span><span class="metric-value">0.920s</span></li></ul></li></ul><ul><li><span class="metric-name">Overhead Time:
+        </span><span class="metric-value">0s</span><ul><li><span class="metric-name">Creation:
+        </span><span class="metric-value">0s</span></li></ul><ul><li><span class="metric-name">Scheduling:
+        </span><span class="metric-value">0s</span></li></ul><ul><li><span class="metric-name">Reduction:
+        </span><span class="metric-value">0s</span></li></ul><ul><li><span class="metric-name">Atomics:
+        </span><span class="metric-value">0s</span></li></ul><ul><li><span class="metric-name">Other:
+        </span><span class="metric-value">0s</span></li></ul></li></ul></li></ul><ul><li><span class="metric-name">Total Thread Count:
+        </span><span class="metric-value">10</span></li></ul><ul><li><span class="metric-name">Paused Time:
+        </span><span class="metric-value">0s</span></li></ul></li></ul><ul><li><span class="metric-name">Top Hotspots:
+        </span><span class="metric-value"/><table><tr><th><span class="table-value">Function</span></th><th><span class="table-value">Module</span></th><th><span class="table-value">CPU Time</span></th><th><span class="table-value">% of CPU Time(%)</span></th></tr><tr><td><span class="table-value">__kmp_fork_barrier</span></td><td><span class="table-value">libiomp5.so</span></td><td><span class="table-value">25.777s</span></td><td><span class="table-value">32.4%</span></td></tr><tr><td><span class="table-value">avx512_copy_64bytes</span></td><td><span class="table-value">libmkl_avx512.so.2</span></td><td><span class="table-value">12.631s</span></td><td><span class="table-value">15.9%</span></td></tr><tr><td><span class="table-value">rand</span></td><td><span class="table-value">libc.so.6</span></td><td><span class="table-value">8.757s</span></td><td><span class="table-value">11.0%</span></td></tr><tr><td><span class="table-value">[MKL FFT]@avx512_mg_colbatch_plain_fwd_16_d</span></td><td><span class="table-value">libmkl_avx512.so.2</span></td><td><span class="table-value">6.661s</span></td><td><span class="table-value">8.4%</span></td></tr><tr><td><span class="table-value">avx512_copy_64bytes</span></td><td><span class="table-value">libmkl_avx512.so.2</span></td><td><span class="table-value">5.110s</span></td><td><span class="table-value">6.4%</span></td></tr><tr><td><span class="table-value">[Others]</span></td><td><span class="table-value">N/A</span></td><td><span class="table-value">20.523s</span></td><td><span class="table-value">25.8%</span></td></tr></table></li></ul><ul><li><span class="metric-name">Collection and Platform Info:
+        </span><span class="metric-value"/><ul><li><span class="metric-name">Application Command Line:
+        </span><span class="metric-value">./fft_avx512 "10" </span></li></ul><ul><li><span class="metric-name">Operating System:
+        </span><span class="metric-value">4.18.0-553.30.1.el8_10.x86_64 Red Hat Enterprise Linux release 8.10 (Ootpa)</span></li></ul><ul><li><span class="metric-name">Computer Name:
+        </span><span class="metric-value">amdtoolsserver.morphingmachines</span></li></ul><ul><li><span class="metric-name">Result Size:
+        </span><span class="metric-value">6.8 MB </span></li></ul><ul><li><span class="metric-name">Collection start time:
+        </span><span class="metric-value">05:04:28 18/02/2026 UTC</span></li></ul><ul><li><span class="metric-name">Collection stop time:
+        </span><span class="metric-value">05:04:51 18/02/2026 UTC</span></li></ul><ul><li><span class="metric-name">Collector Type:
+        </span><span class="metric-value">User-mode sampling and tracing</span></li></ul><ul><li><span class="metric-name">CPU:
+        </span><span class="metric-value"/><ul><li><span class="metric-name">Name:
+        </span><span class="metric-value">Unknown</span></li></ul><ul><li><span class="metric-name">Frequency:
+        </span><span class="metric-value">3.312 GHz</span></li></ul><ul><li><span class="metric-name">Logical CPU Count:
+        </span><span class="metric-value">20</span></li></ul><ul><li><span class="metric-name">LLC size:
+        </span><span class="metric-value">14.4 MB </span></li></ul><ul><li><span class="metric-name">Cache Allocation Technology:
+        </span><span class="metric-value"/><ul><li><span class="metric-name">Level 2 capability:
+        </span><span class="metric-value">not detected</span></li></ul><ul><li><span class="metric-name">Level 3 capability:
+        </span><span class="metric-value">available</span></li></ul></li></ul></li></ul></li></ul></body></html>
+

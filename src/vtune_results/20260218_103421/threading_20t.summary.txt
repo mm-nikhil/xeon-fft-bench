@@ -1,0 +1,92 @@
+Elapsed Time: 21.278s
+    Paused Time: 0s
+Effective CPU Utilization: 12.6% (2.515 out of 20 logical CPUs)
+ | The metric value is low, which may signal a poor logical CPU cores
+ | utilization caused by load imbalance, threading runtime overhead, contended
+ | synchronization, or thread/process underutilization. Explore sub-metrics to
+ | estimate the efficiency of MPI and OpenMP parallelism or run the Locks and
+ | Waits analysis to identify parallel bottlenecks for other parallel runtimes.
+ |
+    OpenMP Analysis. Collection Time: 21.278
+        Serial Time (outside parallel regions): 17.112s (80.4%)
+         | Serial Time of your application is high. It directly impacts
+         | application Elapsed Time and scalability. Explore options for
+         | parallelization, algorithm or microarchitecture tuning of the serial
+         | part of the application.
+         |
+
+            Top Serial Hotspots (outside parallel regions)
+            Function                      Module              Serial CPU Time
+            ----------------------------  ------------------  ---------------
+            rand                          libc.so.6                    8.776s
+            avx512_copy_64bytes           libmkl_avx512.so.2           1.340s
+            __memset_evex_unaligned_erms  libc.so.6                    1.119s
+            avx512_copy_64bytes           libmkl_avx512.so.2           0.930s
+            run_benchmark                 fft_avx512                   0.764s
+            [Others]                      N/A                          4.002s
+        Parallel Region Time: 4.166s (19.6%)
+            Estimated Ideal Time: 4.072s (19.1%)
+            OpenMP Potential Gain: 0.095s (0.4%)
+    Total Thread Count: 10
+     | The number of threads in the application is significantly lower than the
+     | number of logical cores on the machine. Check if it is resulted by thread
+     | number hard coding that limits application scalability.
+     |
+        Thread Oversubscription: 0s (0.0% of CPU Time)
+    Wait Time with poor CPU Utilization: 69.314s (100.0% of Wait Time)
+
+        Top Waiting Objects
+        Sync Object                      Wait Time with poor CPU Utilization  (% from Object Wait Time)(%)  Wait Count
+        -------------------------------  -----------------------------------  ----------------------------  ----------
+        Condition Variable 0x589e54d0                                69.290s                        100.0%         101
+        Stream /proc/cpuinfo 0x6626ef04                               0.013s                        100.0%           1
+        Sleep                                                         0.011s                        100.0%          20
+        Stream /proc/cpuinfo 0x88af9eb3                               0.000s                        100.0%           1
+        Stream /proc/meminfo 0xf9dc83e6                               0.000s                        100.0%           1
+        [Others]                                                      0.000s                        100.0%           8
+    Spin and Overhead Time: 25.348s (32.1% of CPU Time)
+     | The threading runtime function related to time spent on imbalance or
+     | serial spinning consumed a significant amount of CPU time. This can be
+     | caused by a load imbalance, insufficient concurrency for all working
+     | threads, or busy waits of worker threads while serial code is executed.
+     | If there is an imbalance, apply dynamic work scheduling or reduce the
+     | size of work chunks or tasks. If there is insufficient concurrency,
+     | consider collapsing the outer and inner loops. If there is a wait for
+     | completion of serial code, explore options for parallelization with Intel
+     | Advisor, algorithm, or microarchitecture tuning of the application's
+     | serial code with VTune Profiler Basic Hotspots or Microarchitecture
+     | Exploration analysis respectively. For OpenMP* applications, use the Per-
+     | Barrier OpenMP Potential Gain metric set in the HPC Performance
+     | Characterization analysis to discover the reason for high imbalance or
+     | serial spin time.
+     |
+
+        Top Functions with Spin or Overhead Time
+        Function                      Module           Spin and Overhead Time  (% from CPU Time)(%)
+        ----------------------------  ---------------  ----------------------  --------------------
+        __kmp_fork_barrier            libiomp5.so                     25.258s                 32.0%
+        __kmp_join_call               libiomp5.so                      0.040s                  0.1%
+        __kmp_fork_call               libiomp5.so                      0.030s                  0.0%
+        __kmp_itt_stack_callee_leave  libiomp5.so                      0.010s                  0.0%
+        pthread_create                libpthread.so.0                  0.010s                  0.0%
+Collection and Platform Info
+    Application Command Line: ./fft_avx512 "20" 
+    Operating System: 4.18.0-553.30.1.el8_10.x86_64 Red Hat Enterprise Linux release 8.10 (Ootpa)
+    Computer Name: amdtoolsserver.morphingmachines
+    Result Size: 7.9 MB 
+    Collection start time: 05:06:41 18/02/2026 UTC
+    Collection stop time: 05:07:02 18/02/2026 UTC
+    Collector Type: User-mode sampling and tracing
+    CPU
+        Name: Unknown
+        Frequency: 3.312 GHz
+        Logical CPU Count: 20
+        LLC size: 14.4 MB 
+        Cache Allocation Technology
+            Level 2 capability: not detected
+            Level 3 capability: available
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: vtune -report summary -report-knob show-issues=false -r <my_result_dir>.
+Alternatively, you may view the report in the csv format: vtune -report
+<report_name> -format=csv.

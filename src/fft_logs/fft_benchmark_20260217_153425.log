@@ -1,0 +1,20 @@
+============================================================
+  FFT BENCHMARK RUN
+  Date     : Tue Feb 17 15:34:25 IST 2026
+  Hostname : amdtoolsserver.morphingmachines
+  Log file : ./fft_logs/fft_benchmark_20260217_153425.log
+============================================================
+
+[SETUP] Sourcing Intel oneAPI environment...
+        WARNING: Intel oneAPI not found at /opt/intel
+        Trying module load...
+        WARNING: No MKL module found. Trying system MKL...
+
+[CHECK] MKL environment:
+        MKLROOT  = NOT SET
+        ONEAPI_ROOT = NOT SET
+
+ERROR: MKLROOT is not set. Cannot proceed.
+       Please run: source /opt/intel/oneapi/setvars.sh
+       Or install Intel oneAPI Base Toolkit from:
+       https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html

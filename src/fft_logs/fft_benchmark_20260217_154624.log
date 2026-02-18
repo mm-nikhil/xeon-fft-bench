@@ -1,0 +1,38 @@
+============================================================
+  FFT BENCHMARK RUN
+  Date     : Tue Feb 17 15:46:24 IST 2026
+  Hostname : amdtoolsserver.morphingmachines
+  Log file : ./fft_logs/fft_benchmark_20260217_154624.log
+============================================================
+
+[SETUP] Sourcing Intel oneAPI environment if available...
+
+[CHECK] MKL environment:
+        MKLROOT     = /home/nikhil/.local
+        Include dir = /home/nikhil/.local/include
+        Lib dir     = /home/nikhil/.local/lib
+        Runtime lib = -l:libmkl_rt.so.2
+
+[CHECK] Compiler availability:
+        gcc found: gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22)
+
+[INFO] BENCH_NRUNS=3, BENCH_WARMUP=1
+[INFO] KMP_AFFINITY=scatter,granularity=fine
+[INFO] OMP_PROC_BIND=spread, OMP_PLACES=cores
+[INFO] NOTE: MKL chooses kernels at runtime; ISA is controlled with MKL_ENABLE_INSTRUCTIONS.
+
+------------------------------------------------------------
+[COMPILE] Scenario 1 binary: gcc -O2 -std=c99
+------------------------------------------------------------
+fft_benchmark.c: In function ‘get_time_ms’:
+fft_benchmark.c:21:21: error: storage size of ‘ts’ isn’t known
+     struct timespec ts;
+                     ^~
+fft_benchmark.c:22:5: warning: implicit declaration of function ‘clock_gettime’; did you mean ‘localtime’? [-Wimplicit-function-declaration]
+     clock_gettime(CLOCK_MONOTONIC, &ts);
+     ^~~~~~~~~~~~~
+     localtime
+fft_benchmark.c:22:19: error: ‘CLOCK_MONOTONIC’ undeclared (first use in this function)
+     clock_gettime(CLOCK_MONOTONIC, &ts);
+                   ^~~~~~~~~~~~~~~
+fft_benchmark.c:22:19: note: each undeclared identifier is reported only once for each function it appears in

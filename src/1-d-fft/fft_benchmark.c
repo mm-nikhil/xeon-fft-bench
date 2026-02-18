@@ -23,11 +23,11 @@ static double get_time_ms(void)
     return ts.tv_sec * 1000.0 + ts.tv_nsec / 1.0e6;
 }
 
-static void random_init(MKL_Complex16 *data, int n)
+static void random_init(MKL_Complex8 *data, int n)
 {
     for (int i = 0; i < n; i++) {
-        data[i].real = (double)rand() / (double)RAND_MAX;
-        data[i].imag = (double)rand() / (double)RAND_MAX;
+        data[i].real = (float)rand() / (float)RAND_MAX;
+        data[i].imag = (float)rand() / (float)RAND_MAX;
     }
 }
 
@@ -135,7 +135,7 @@ static void run_benchmark(const char *profile_id,
 
     MKL_LONG distance = (MKL_LONG)n;
     MKL_LONG total = (MKL_LONG)howmany * distance;
-    double mem_mb = (2.0 * (double)total * (double)sizeof(MKL_Complex16)) / (1024.0 * 1024.0);
+    double mem_mb = (2.0 * (double)total * (double)sizeof(MKL_Complex8)) / (1024.0 * 1024.0);
 
     if (max_mem_mb > 0.0 && mem_mb > max_mem_mb) {
         printf("[skip] %-16s | Len:%7d | Batch:%6d | Thr:%2d | Mem:%7.1f MB > limit %.1f MB\n",
@@ -148,8 +148,8 @@ static void run_benchmark(const char *profile_id,
         return;
     }
 
-    MKL_Complex16 *in = (MKL_Complex16 *)mkl_malloc((size_t)total * sizeof(MKL_Complex16), 64);
-    MKL_Complex16 *out = (MKL_Complex16 *)mkl_malloc((size_t)total * sizeof(MKL_Complex16), 64);
+    MKL_Complex8 *in = (MKL_Complex8 *)mkl_malloc((size_t)total * sizeof(MKL_Complex8), 64);
+    MKL_Complex8 *out = (MKL_Complex8 *)mkl_malloc((size_t)total * sizeof(MKL_Complex8), 64);
     if (!in || !out) {
         fprintf(stderr, "ERROR: allocation failed for n=%d batch=%d (%.1f MB)\n",
                 n, howmany, mem_mb);
@@ -160,11 +160,11 @@ static void run_benchmark(const char *profile_id,
 
     srand(42);
     random_init(in, (int)total);
-    memset(out, 0, (size_t)total * sizeof(MKL_Complex16));
+    memset(out, 0, (size_t)total * sizeof(MKL_Complex8));
 
     DFTI_DESCRIPTOR_HANDLE plan = NULL;
     MKL_LONG len = (MKL_LONG)n;
-    MKL_LONG status = DftiCreateDescriptor(&plan, DFTI_DOUBLE, DFTI_COMPLEX, 1, len);
+    MKL_LONG status = DftiCreateDescriptor(&plan, DFTI_SINGLE, DFTI_COMPLEX, 1, len);
     status |= DftiSetValue(plan, DFTI_NUMBER_OF_TRANSFORMS, (MKL_LONG)howmany);
     status |= DftiSetValue(plan, DFTI_INPUT_DISTANCE, distance);
     status |= DftiSetValue(plan, DFTI_OUTPUT_DISTANCE, distance);
@@ -220,9 +220,8 @@ static void run_benchmark(const char *profile_id,
     double flops = 5.0 * n_total * log2(n_total) * (double)howmany;
     double fwd_gflops = flops / (fwd_ms * 1.0e6);
     double bwd_gflops = flops / (bwd_ms * 1.0e6);
-
     printf("[run ] %-16s | Len:%7d | Batch:%6d | Thr:%2d | "
-           "Fwd:%8.3f ms %8.2f GF/s | Bwd:%8.3f ms %8.2f GF/s | Mem:%7.1f MB\n",
+           "Fwd:%10.4f ms %8.2f GF/s | Bwd:%10.4f ms %8.2f GF/s | Mem:%7.2f MB\n",
            case_id,
            n, howmany, num_threads,
            fwd_ms, fwd_gflops,
@@ -357,34 +356,34 @@ int main(int argc, char **argv)
     int thread_set[MAX_LIST];
     int batch_scale_set[MAX_LIST];
 
-    int n_lengths = load_int_list("BENCH_LENGTHS", "32,64,128,256", lengths, MAX_LIST, 2, 1 << 26);
-    int n_batches = load_int_list("BENCH_BATCHES", "1,4", batches, MAX_LIST, 1, 1 << 20);
+    int n_lengths = load_int_list("BENCH_LENGTHS", "1024,4096,16384,65536,262144", lengths, MAX_LIST, 2, 1 << 26);
+    int n_batches = load_int_list("BENCH_BATCHES", "1,4,16", batches, MAX_LIST, 1, 1 << 20);
     int n_thread_set = load_int_list("BENCH_THREAD_SET", "1,2,4,8,10,20", thread_set, MAX_LIST, 1, 4096);
-    int n_batch_scale = load_int_list("BENCH_BATCH_SCALE_SET", "1,2,4,8,16,32", batch_scale_set, MAX_LIST, 1, 1 << 20);
+    int n_batch_scale = load_int_list("BENCH_BATCH_SCALE_SET", "1,4,16,64,256", batch_scale_set, MAX_LIST, 1, 1 << 20);
 
     if (n_lengths <= 0) {
-        lengths[0] = 32; lengths[1] = 64; lengths[2] = 128;
+        lengths[0] = 1024; lengths[1] = 4096; lengths[2] = 16384;
         n_lengths = 3;
     }
     if (n_batches <= 0) {
-        batches[0] = 1; batches[1] = 4;
-        n_batches = 2;
+        batches[0] = 1; batches[1] = 4; batches[2] = 16;
+        n_batches = 3;
     }
     if (n_thread_set <= 0) {
         thread_set[0] = 1; thread_set[1] = 2; thread_set[2] = 4; thread_set[3] = 8;
         n_thread_set = 4;
     }
     if (n_batch_scale <= 0) {
-        batch_scale_set[0] = 1; batch_scale_set[1] = 2; batch_scale_set[2] = 4;
+        batch_scale_set[0] = 1; batch_scale_set[1] = 4; batch_scale_set[2] = 16;
         n_batch_scale = 3;
     }
 
-    int scale_length = env_int("BENCH_SCALE_LENGTH", 128, 2, 1 << 26);
-    int scale_batch = env_int("BENCH_SCALE_BATCH", 4, 1, 1 << 20);
+    int scale_length = env_int("BENCH_SCALE_LENGTH", 16384, 2, 1 << 26);
+    int scale_batch = env_int("BENCH_SCALE_BATCH", 64, 1, 1 << 20);
     int scale_threads = env_int("BENCH_SCALE_THREADS", cli_threads, 1, 4096);
 
     printf("\n############################################################\n");
-    printf("# FFT BENCHMARK (Intel oneMKL DFTI, 1D)                    #\n");
+    printf("# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #\n");
     printf("############################################################\n");
     printf("profile_id       : %s\n", profile_id);
     printf("profile_desc     : %s\n", profile_desc);

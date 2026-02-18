@@ -7,10 +7,10 @@
 #   MKLROOT=/path/to/mkl
 #   BENCH_NRUNS=20 BENCH_WARMUP=5 BENCH_MAX_MEM_MB=3072
 #   NTHREADS_PHYSICAL=10 NTHREADS_LOGICAL=20
-#   THROUGHPUT_LENGTHS=32,64,128,256 THROUGHPUT_BATCHES=1,4
+#   THROUGHPUT_LENGTHS=1024,4096,16384,65536,262144 THROUGHPUT_BATCHES=1,4,16
 #   THREAD_SCALING_SET=1,2,4,8,10,20
-#   BATCH_SCALING_SET=1,2,4,8,16,32
-#   SCALE_LENGTH=128 SCALE_BATCH=4
+#   BATCH_SCALING_SET=1,4,16,64,256
+#   SCALE_LENGTH=16384 SCALE_BATCH=64
 # =============================================================
 
 set -euo pipefail
@@ -33,16 +33,16 @@ BENCH_WARMUP="${BENCH_WARMUP:-5}"
 BENCH_MAX_MEM_MB="${BENCH_MAX_MEM_MB:-3072}"
 RUN_PROFILES="${RUN_PROFILES:-all}"
 
-THROUGHPUT_LENGTHS="${THROUGHPUT_LENGTHS:-32,64,128,256}"
-THROUGHPUT_BATCHES="${THROUGHPUT_BATCHES:-1,4}"
+THROUGHPUT_LENGTHS="${THROUGHPUT_LENGTHS:-1024,4096,16384,65536,262144}"
+THROUGHPUT_BATCHES="${THROUGHPUT_BATCHES:-1,4,16}"
 THREAD_SCALING_SET="${THREAD_SCALING_SET:-1,2,4,8,10,20}"
-BATCH_SCALING_SET="${BATCH_SCALING_SET:-1,2,4,8,16,32}"
-SCALE_LENGTH="${SCALE_LENGTH:-128}"
-SCALE_BATCH="${SCALE_BATCH:-4}"
+BATCH_SCALING_SET="${BATCH_SCALING_SET:-1,4,16,64,256}"
+SCALE_LENGTH="${SCALE_LENGTH:-16384}"
+SCALE_BATCH="${SCALE_BATCH:-64}"
 
 # Runtime policy for reproducibility.
 export KMP_AFFINITY="scatter,granularity=fine"
-export KMP_BLOCKTIME="0"
+export KMP_BLOCKTIME="200"
 export MKL_DYNAMIC="FALSE"
 export MKL_VERBOSE="0"
 
@@ -167,6 +167,19 @@ echo "[CONFIG] run profiles=${RUN_PROFILES}"
 echo "[CONFIG] throughput lengths=${THROUGHPUT_LENGTHS}, batches=${THROUGHPUT_BATCHES}"
 echo "[CONFIG] thread scaling set=${THREAD_SCALING_SET}, scale length=${SCALE_LENGTH}, scale batch=${SCALE_BATCH}"
 echo "[CONFIG] batch scaling set=${BATCH_SCALING_SET}, scale length=${SCALE_LENGTH}"
+if awk -F',' '
+    BEGIN { bad=0 }
+    {
+        for (i = 1; i <= NF; i++) {
+            gsub(/^[ \t]+|[ \t]+$/, "", $i);
+            if (($i + 0) < 1024) { bad=1; break; }
+        }
+    }
+    END { exit bad ? 0 : 1 }
+' <<< "${THROUGHPUT_LENGTHS}"; then
+    echo "[WARN] throughput lengths include values < 1024."
+    echo "       For 1D multithread runs, tiny lengths are overhead-dominated and can look falsely slow."
+fi
 echo ""
 
 run_profile() {
@@ -351,6 +364,12 @@ generate_markdown_report() {
             return wk "|" cid "|" n "|" b "|" t
         }
 
+        function fmt_ms(v) {
+            if (v >= 0.1) return sprintf("%.1f", v)
+            if (v >= 0.01) return sprintf("%.3f", v)
+            return sprintf("%.4f", v)
+        }
+
         BEGIN {
             print "# FFT Benchmark Report (1D)"
             print ""
@@ -472,23 +491,23 @@ generate_markdown_report() {
                         }
 
                         if (status[ck, pid] == "ok") {
-                            printf("| %s | %s | %s | %s | %s | %s | %.3f | %.2f | %.3f | %.2f | %.1f | %s |\n",
+                            printf("| %s | %s | %s | %s | %s | %s | %s | %.2f | %s | %.2f | %.2f | %s |\n",
                                    case_id[ck],
                                    case_n[ck],
                                    case_batch[ck],
                                    row_threads,
                                    pid,
                                    isa[pid],
-                                   fwd_ms[ck, pid],
+                                   fmt_ms(fwd_ms[ck, pid]),
                                    fwd_gf[ck, pid],
-                                   bwd_ms[ck, pid],
+                                   fmt_ms(bwd_ms[ck, pid]),
                                    bwd_gf[ck, pid],
                                    mem_mb[ck, pid],
                                    spd)
                         } else {
                             rs = reason[ck, pid]
                             if (rs == "") rs = "skip"
-                            printf("| %s | %s | %s | %s | %s | %s | - | - | - | - | %.1f | - |\n",
+                            printf("| %s | %s | %s | %s | %s | %s | - | - | - | - | %.2f | - |\n",
                                    case_id[ck],
                                    case_n[ck],
                                    case_batch[ck],

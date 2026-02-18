@@ -453,9 +453,10 @@ generate_markdown_report() {
 
             print "## Consolidated Results"
             print ""
-            print "Metrics use explicit units: milliseconds (`ms`), gigaflops (`GFLOPS`), and memory (`MB`)."
+            print "Metrics use explicit units: milliseconds (`ms`), single-precision gigaflops (`SP GFLOPS`), and memory (`MB`)."
+            print "Small-size multithread caveat: tiny 1D transforms are often overhead-dominated, so use larger N/batch rows for thread-scaling conclusions."
             print ""
-            print "| Case | Length | Batch | Threads | Run Profile | ISA Cap | Fwd ms | Fwd GFLOPS | Bwd ms | Bwd GFLOPS | Mem MB | Fwd Speedup vs baseline_sse42_1t |"
+            print "| Case | Length | Batch | Threads | Run Profile | ISA Cap | Fwd ms | Fwd SP GFLOPS | Bwd ms | Bwd SP GFLOPS | Mem MB | Fwd Speedup vs baseline_sse42_1t |"
             print "|---|---|---|---|---|---|---|---|---|---|---|---|"
 
             wk_name[1] = "throughput"

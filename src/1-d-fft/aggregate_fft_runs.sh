@@ -154,7 +154,10 @@ END {
         avg_fwd_gf = (ok > 0 ? sum_fwd_gf[k] / ok : -1.0)
         avg_bwd_ms = (ok > 0 ? sum_bwd_ms[k] / ok : -1.0)
         avg_bwd_gf = (ok > 0 ? sum_bwd_gf[k] / ok : -1.0)
-        avg_mem_mb = (ok > 0 ? sum_mem_mb[k] / ok : (sk > 0 ? sum_skip_mem_mb[k] / sk : -1.0))
+        # Exact memory footprint for 1D single-precision complex FFT:
+        # in + out buffers = 2 * (n * batch * sizeof(MKL_Complex8))
+        # sizeof(MKL_Complex8)=8 bytes => total bytes = 16*n*batch.
+        avg_mem_kib = (16.0 * n * b) / 1024.0
 
         fwd_sp = "-"
         fwd_inc = "-"
@@ -183,7 +186,7 @@ END {
 
         printf("%d\t%d\t%s\t%s\t%d\t%d\t%d\t%s\t%s\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%d\t%d\t%d\t%s\t%s\t%s\t%s\t%s\t%s\n",
                workload_rank(w), profile_rank(p), w, c, n, b, t, p, p_isa[p],
-               avg_fwd_ms, avg_fwd_gf, avg_bwd_ms, avg_bwd_gf, avg_mem_mb,
+               avg_fwd_ms, avg_fwd_gf, avg_bwd_ms, avg_bwd_gf, avg_mem_kib,
                ok, sk, expected_runs, quality, fwd_sp, fwd_inc, bwd_sp, bwd_inc, note) >> rows_out
     }
 }
@@ -206,10 +209,12 @@ sort -t$'\t' -k1,1n "$TMP_PROFILES" -o "$TMP_PROFILES"
     echo "- Average per metric: arithmetic mean over successful samples."
     echo "- For each row key: \`profile + workload + case + length + batch + threads\`."
     echo "- Throughput comparison:"
-    echo "  \`Fwd Speedup = avg_fwd_gflops(profile) / avg_fwd_gflops(baseline_sse42_1t)\`"
+    echo "  \`Fwd Speedup = avg_fwd_sp_gflops(profile) / avg_fwd_sp_gflops(baseline_sse42_1t)\`"
     echo "  \`Fwd % Increase = (Fwd Speedup - 1) * 100\`"
-    echo "  \`Bwd Speedup = avg_bwd_gflops(profile) / avg_bwd_gflops(baseline_sse42_1t)\`"
+    echo "  \`Bwd Speedup = avg_bwd_sp_gflops(profile) / avg_bwd_sp_gflops(baseline_sse42_1t)\`"
     echo "  \`Bwd % Increase = (Bwd Speedup - 1) * 100\`"
+    echo "- GFLOPS columns are single-precision throughput (\`SP GFLOPS\`)."
+    echo "- Small-size multithread caveat: rows with very small work items (for example, low \`N\` and low batch) are overhead-dominated and should not be used for thread-scaling conclusions."
     echo
     echo "## Run Files"
     echo
@@ -228,17 +233,11 @@ sort -t$'\t' -k1,1n "$TMP_PROFILES" -o "$TMP_PROFILES"
     echo "- Expected samples per row: ${RUN_COUNT}"
     BAD_ROWS="$(awk -F'\t' '$18 != "ok" {c++} END{print c+0}' "$TMP_ROWS")"
     echo "- Rows with missing samples: ${BAD_ROWS}"
-    if [ "$BAD_ROWS" -gt 0 ]; then
-        echo
-        echo "| Workload | Case | Length | Batch | Threads | Profile | OK Samples | Skip Samples | Expected | Quality |"
-        echo "|---|---|---:|---:|---:|---|---:|---:|---:|---|"
-        awk -F'\t' '$18 != "ok" {printf("| %s | %s | %d | %d | %d | %s | %d | %d | %d | %s |\n", $3,$4,$5,$6,$7,$8,$15,$16,$17,$18)}' "$TMP_ROWS"
-    fi
     echo
     echo "## Averaged Results"
     echo
-    echo "| Workload | Case | Length | Batch | Threads | Profile | ISA | Avg Fwd ms | Avg Fwd GFLOPS | Avg Bwd ms | Avg Bwd GFLOPS | Avg Mem MB | OK Samples | Skip Samples | Fwd Speedup vs baseline | Fwd % Increase | Bwd Speedup vs baseline | Bwd % Increase |"
-    echo "|---|---|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
+    echo "| Workload | Case | Length | Batch | Threads | Profile | ISA | Avg Fwd ms | Avg Fwd SP GFLOPS | Avg Bwd ms | Avg Bwd SP GFLOPS | Avg Mem KiB | Fwd Speedup vs baseline | Fwd % Increase | Bwd Speedup vs baseline | Bwd % Increase |"
+    echo "|---|---|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
     awk -F'\t' '
         function fmt(v, n) { return sprintf("%." n "f", v) }
         {
@@ -247,18 +246,18 @@ sort -t$'\t' -k1,1n "$TMP_PROFILES" -o "$TMP_PROFILES"
                 fwd_gf = fmt($11, 2)
                 bwd_ms = fmt($12, 6)
                 bwd_gf = fmt($13, 2)
-                memmb = fmt($14, 4)
+                memkib = fmt($14, 4)
             } else {
                 fwd_ms = "-"
                 fwd_gf = "-"
                 bwd_ms = "-"
                 bwd_gf = "-"
-                memmb = fmt($14, 4)
+                memkib = fmt($14, 4)
             }
-            printf("| %s | %s | %d | %d | %d | %s | %s | %s | %s | %s | %s | %s | %d | %d | %s | %s | %s | %s |\n",
+            printf("| %s | %s | %d | %d | %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
                    $3, $4, $5, $6, $7, $8, $9,
-                   fwd_ms, fwd_gf, bwd_ms, bwd_gf, memmb,
-                   $15, $16, $19, $20, $21, $22)
+                   fwd_ms, fwd_gf, bwd_ms, bwd_gf, memkib,
+                   $19, $20, $21, $22)
         }
     ' "$TMP_ROWS"
 } > "$OUT_MD"

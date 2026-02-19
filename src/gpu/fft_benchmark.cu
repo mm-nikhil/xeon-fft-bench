@@ -159,6 +159,8 @@ static void run_benchmark(const char *profile_id,
     cufftComplex *h_out = NULL;
     cufftHandle plan;
     int plan_created = 0;
+    int rank = 1;
+    int dims[1] = {0};
     int ok = 1;
     cudaError_t ce;
     cufftResult cr;
@@ -211,8 +213,7 @@ static void run_benchmark(const char *profile_id,
         }
     }
 
-    int rank = 1;
-    int dims[1] = {n};
+    dims[0] = n;
     cr = cufftPlanMany(&plan, rank, dims, NULL, 1, n, NULL, 1, n, CUFFT_C2C, howmany);
     if (cr != CUFFT_SUCCESS) {
         emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, cufft_status_string(cr));

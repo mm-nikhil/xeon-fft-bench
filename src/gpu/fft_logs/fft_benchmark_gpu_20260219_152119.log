@@ -1,0 +1,162 @@
+============================================================
+  FFT BENCHMARK RUN (GPU, cuFFT, 1D)
+  Date       : Thu Feb 19 15:21:19 IST 2026
+  Hostname   : aorus
+  Log file   : ./fft_logs/fft_benchmark_gpu_20260219_152119.log
+  Report file: ./fft_logs/fft_benchmark_gpu_20260219_152119.report.md
+============================================================
+
+[CHECK] GPU context
+Thu Feb 19 15:21:19 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3080        Off |   00000000:08:00.0 Off |                  N/A |
+|  0%   44C    P8             21W /  320W |     170MiB /  10240MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            2776      G   /usr/lib/xorg/Xorg                       94MiB |
+|    0   N/A  N/A            2947      G   /usr/bin/gnome-shell                     12MiB |
+|    0   N/A  N/A            3561      G   gnome-control-center                      3MiB |
+|    0   N/A  N/A           30872      G   /usr/lib/xorg/Xorg                       14MiB |
++-----------------------------------------------------------------------------------------+
+
+[CHECK] nvcc      : Build cuda_11.5.r11.5/compiler.30672275_0
+[CHECK] host c++  : g++ (Ubuntu 10.5.0-1ubuntu1~22.04.2) 10.5.0
+
+[COMPILE] nvcc -O3 -std=c++14 -ccbin g++ fft_benchmark.cu
+          Binary: fft_benchmark
+
+[CONFIG] timed runs=5, warmup=2, mem_cap_mb=8192
+[CONFIG] run profiles=all
+[CONFIG] throughput lengths=1024,16384, batches=1,4,16
+[CONFIG] batch scaling set=1,4,16,64, scale length=16384
+
+============================================================
+RUN PROFILE: cufft_gpu
+Description : cuFFT throughput sweep on RTX 3080 (1D single precision)
+Workload    : throughput
+============================================================
+PROFILE|cufft_gpu|cuFFT throughput sweep on RTX 3080 (1D single precision)|CUDA_CUFFT|1|throughput|1024,16384|1,4,16|-|16384|-|1
+
+############################################################
+# FFT BENCHMARK (cuFFT, 1D, single precision)              #
+############################################################
+profile_id       : cufft_gpu
+profile_desc     : cuFFT throughput sweep on RTX 3080 (1D single precision)
+workload         : throughput
+timed runs       : 5
+warmup runs      : 2
+mem cap (MB)     : 8192.0
+threads_field    : 1
+lengths: 1024,16384
+batches: 1,4,16
+batch_scale_set: 1,4,16,64
+scale_length     : 16384
+gpu_name         : NVIDIA GeForce RTX 3080
+compute_cap      : 8.6
+sm_count         : 68
+warp_size        : 32
+max_threads_sm   : 1536
+max_threads_blk  : 1024
+global_mem_mb    : 9872.4
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread field)
+====================================================================
+threads_field=1
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 1 | Fwd:    0.0039 ms    13.16 GF/s | Bwd:    0.0037 ms    13.89 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n1024_b1|1024|1|1|1|1|0.003891|13.157895|0.003686|13.888888|0.02
+[run ] n1024_b4         | Len:   1024 | Batch:     4 | Thr: 1 | Fwd:    0.0045 ms    45.45 GF/s | Bwd:    0.0041 ms    50.00 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n1024_b4|1024|1|1|4|1|0.004506|45.454545|0.004096|50.000001|0.06
+[run ] n1024_b16        | Len:   1024 | Batch:    16 | Thr: 1 | Fwd:    0.0043 ms   190.48 GF/s | Bwd:    0.0041 ms   200.00 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n1024_b16|1024|1|1|16|1|0.004301|190.476192|0.004096|200.000005|0.25
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0106 ms   107.76 GF/s | Bwd:    0.0105 ms   109.74 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n16384_b1|16384|1|1|1|1|0.010643|107.757067|0.010451|109.736682|0.25
+[run ] n16384_b4        | Len:  16384 | Batch:     4 | Thr: 1 | Fwd:    0.0104 ms   439.22 GF/s | Bwd:    0.0106 ms   431.29 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n16384_b4|16384|1|1|4|1|0.010445|439.215694|0.010637|431.287614|1.00
+[run ] n16384_b16       | Len:  16384 | Batch:    16 | Thr: 1 | Fwd:    0.0160 ms  1148.72 GF/s | Bwd:    0.0156 ms  1178.95 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n16384_b16|16384|1|1|16|1|0.015974|1148.717988|0.015565|1178.947421|4.00
+
+Benchmark workload complete.
+
+
+real	0m0.321s
+user	0m0.037s
+sys	0m0.284s
+[DONE] cufft_gpu
+
+============================================================
+RUN PROFILE: cufft_gpu_batch_scaling
+Description : cuFFT batch scaling sweep on fixed length
+Workload    : batch_scaling
+============================================================
+PROFILE|cufft_gpu_batch_scaling|cuFFT batch scaling sweep on fixed length|CUDA_CUFFT|1|batch_scaling|1024,16384|1,4,16|-|16384|-|1
+
+############################################################
+# FFT BENCHMARK (cuFFT, 1D, single precision)              #
+############################################################
+profile_id       : cufft_gpu_batch_scaling
+profile_desc     : cuFFT batch scaling sweep on fixed length
+workload         : batch_scaling
+timed runs       : 5
+warmup runs      : 2
+mem cap (MB)     : 8192.0
+threads_field    : 1
+lengths: 1024,16384
+batches: 1,4,16
+batch_scale_set: 1,4,16,64
+scale_length     : 16384
+gpu_name         : NVIDIA GeForce RTX 3080
+compute_cap      : 8.6
+sm_count         : 68
+warp_size        : 32
+max_threads_sm   : 1536
+max_threads_blk  : 1024
+global_mem_mb    : 9872.4
+
+
+====================================================================
+WORKLOAD: batch_scaling (fixed length, vary batch)
+====================================================================
+length=16384 threads_field=1
+[run ] n16384_b1_t1     | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0106 ms   107.69 GF/s | Bwd:    0.0104 ms   110.34 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b1_t1|16384|1|1|1|1|0.010650|107.692309|0.010394|110.344826|0.25
+[run ] n16384_b4_t1     | Len:  16384 | Batch:     4 | Thr: 1 | Fwd:    0.0104 ms   439.22 GF/s | Bwd:    0.0106 ms   431.81 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b4_t1|16384|1|1|4|1|0.010445|439.215694|0.010624|431.807242|1.00
+[run ] n16384_b16_t1    | Len:  16384 | Batch:    16 | Thr: 1 | Fwd:    0.0162 ms  1134.18 GF/s | Bwd:    0.0157 ms  1166.95 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b16_t1|16384|1|1|16|1|0.016179|1134.177249|0.015725|1166.951528|4.00
+[run ] n16384_b64_t1    | Len:  16384 | Batch:    64 | Thr: 1 | Fwd:    0.0363 ms  2023.43 GF/s | Bwd:    0.0352 ms  2083.72 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b64_t1|16384|1|1|64|1|0.036275|2023.429834|0.035226|2083.720930|16.00
+
+Benchmark workload complete.
+
+
+real	0m0.239s
+user	0m0.039s
+sys	0m0.201s
+[DONE] cufft_gpu_batch_scaling
+
+============================================================
+ALL RUNS COMPLETE
+Log    : ./fft_logs/fft_benchmark_gpu_20260219_152119.log
+Report : ./fft_logs/fft_benchmark_gpu_20260219_152119.report.md
+Lines  : 154
+Done at: Thu Feb 19 15:21:20 IST 2026
+============================================================
+
+Quick inspect:
+  grep '^PROFILE|' ./fft_logs/fft_benchmark_gpu_20260219_152119.log
+  grep '^RESULT|' ./fft_logs/fft_benchmark_gpu_20260219_152119.log | head
+  cat ./fft_logs/fft_benchmark_gpu_20260219_152119.report.md

@@ -53,6 +53,9 @@ function workload_rank(w) {
     if (w == "batch_scaling") return 2
     return 9
 }
+function fft_flops_1d(n, b) {
+    return 5.0 * n * (log(n) / log(2.0)) * b
+}
 $1 == "PROFILE" {
     p = $2
     if (!(p in seen_profile)) {
@@ -61,6 +64,7 @@ $1 == "PROFILE" {
     }
     p_desc[p] = $3
     p_workload[p] = $6
+    p_timing[p] = $9
     next
 }
 $1 == "RESULT" {
@@ -74,9 +78,7 @@ $1 == "RESULT" {
     seen[k] = 1
     ok[k]++
     sum_fwd_ms[k] += $10 + 0.0
-    sum_fwd_gf[k] += $11 + 0.0
     sum_bwd_ms[k] += $12 + 0.0
-    sum_bwd_gf[k] += $13 + 0.0
     sum_mem[k] += $14 + 0.0
     next
 }
@@ -97,7 +99,7 @@ $1 == "SKIP" {
 END {
     for (i = 1; i <= n_profiles; i++) {
         p = profile_order[i]
-        printf("%s\t%s\t%s\n", p, p_desc[p], p_workload[p]) >> profiles_out
+        printf("%s\t%s\t%s\t%s\n", p, p_desc[p], p_workload[p], p_timing[p]) >> profiles_out
     }
 
     for (k in seen) {
@@ -107,9 +109,10 @@ END {
         n_sk = skip[k] + 0
         if (n_ok > 0) {
             avg_fwd_ms = sum_fwd_ms[k] / n_ok
-            avg_fwd_gf = sum_fwd_gf[k] / n_ok
             avg_bwd_ms = sum_bwd_ms[k] / n_ok
-            avg_bwd_gf = sum_bwd_gf[k] / n_ok
+            flops = fft_flops_1d(n, b)
+            avg_fwd_gf = (avg_fwd_ms > 0.0 ? flops / (avg_fwd_ms * 1.0e6) : -1.0)
+            avg_bwd_gf = (avg_bwd_ms > 0.0 ? flops / (avg_bwd_ms * 1.0e6) : -1.0)
             avg_mem = sum_mem[k] / n_ok
             st = ((n_ok + n_sk) == expected_runs ? "ok" : "incomplete")
             note = "-"
@@ -140,6 +143,9 @@ sort -t$'\t' -k1,1 "$TMP_PROFILES" -o "$TMP_PROFILES"
     echo "- Manifest: \`$MANIFEST\`"
     echo "- Runs combined: ${RUN_COUNT}"
     echo "- Precision mode: single precision (cuFFT C2C)"
+    echo "- Average latency (\`ms\`): arithmetic mean over successful samples."
+    echo "- GFLOPS derivation: recomputed from averaged latency."
+    echo "  \`avg_sp_gflops = (5 * N * log2(N) * batch) / (avg_ms * 1e6)\`"
     echo
     echo "## Run Files"
     echo
@@ -149,9 +155,9 @@ sort -t$'\t' -k1,1 "$TMP_PROFILES" -o "$TMP_PROFILES"
     echo
     echo "## Scenario Catalog"
     echo
-    echo "| Run Profile | Description | Workload |"
-    echo "|---|---|---|"
-    awk -F'\t' '{printf("| %s | %s | %s |\n", $1, $2, $3)}' "$TMP_PROFILES"
+    echo "| Run Profile | Description | Workload | Timing Mode |"
+    echo "|---|---|---|---|"
+    awk -F'\t' '{printf("| %s | %s | %s | %s |\n", $1, $2, $3, $4)}' "$TMP_PROFILES"
     echo
     echo "## Data Quality Check"
     echo

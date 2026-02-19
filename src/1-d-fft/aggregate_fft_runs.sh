@@ -54,6 +54,10 @@ function workload_rank(w) {
     return 9
 }
 
+function fft_flops_1d(n, b) {
+    return 5.0 * n * (log(n) / log(2.0)) * b
+}
+
 function profile_rank(p) {
     if (p == "baseline_sse42_1t") return 1
     if (p == "avx2_1t") return 2
@@ -99,9 +103,7 @@ $1 == "RESULT" {
     seen_row[k] = 1
     count_ok[k]++
     sum_fwd_ms[k] += $10 + 0.0
-    sum_fwd_gf[k] += $11 + 0.0
     sum_bwd_ms[k] += $12 + 0.0
-    sum_bwd_gf[k] += $13 + 0.0
     sum_mem_mb[k] += $14 + 0.0
     next
 }
@@ -137,8 +139,11 @@ END {
         ok = count_ok[k] + 0
         if (w == "throughput" && p == "baseline_sse42_1t" && ok > 0) {
             tk = w SUBSEP c SUBSEP n SUBSEP b
-            base_fwd_gf[tk] = sum_fwd_gf[k] / ok
-            base_bwd_gf[tk] = sum_bwd_gf[k] / ok
+            avg_base_fwd_ms = sum_fwd_ms[k] / ok
+            avg_base_bwd_ms = sum_bwd_ms[k] / ok
+            flops = fft_flops_1d(n, b)
+            base_fwd_gf[tk] = (avg_base_fwd_ms > 0.0 ? flops / (avg_base_fwd_ms * 1.0e6) : 0.0)
+            base_bwd_gf[tk] = (avg_base_bwd_ms > 0.0 ? flops / (avg_base_bwd_ms * 1.0e6) : 0.0)
         }
     }
 
@@ -151,9 +156,10 @@ END {
         sk = count_skip[k] + 0
 
         avg_fwd_ms = (ok > 0 ? sum_fwd_ms[k] / ok : -1.0)
-        avg_fwd_gf = (ok > 0 ? sum_fwd_gf[k] / ok : -1.0)
         avg_bwd_ms = (ok > 0 ? sum_bwd_ms[k] / ok : -1.0)
-        avg_bwd_gf = (ok > 0 ? sum_bwd_gf[k] / ok : -1.0)
+        flops = fft_flops_1d(n, b)
+        avg_fwd_gf = (ok > 0 && avg_fwd_ms > 0.0 ? flops / (avg_fwd_ms * 1.0e6) : -1.0)
+        avg_bwd_gf = (ok > 0 && avg_bwd_ms > 0.0 ? flops / (avg_bwd_ms * 1.0e6) : -1.0)
         # Exact memory footprint for 1D single-precision complex FFT:
         # in + out buffers = 2 * (n * batch * sizeof(MKL_Complex8))
         # sizeof(MKL_Complex8)=8 bytes => total bytes = 16*n*batch.
@@ -206,7 +212,9 @@ sort -t$'\t' -k1,1n "$TMP_PROFILES" -o "$TMP_PROFILES"
     echo "## Aggregation Method"
     echo
     echo "- Input source: raw \`RESULT|\` and \`SKIP|\` lines from each log."
-    echo "- Average per metric: arithmetic mean over successful samples."
+    echo "- Average latency (\`ms\`): arithmetic mean over successful samples."
+    echo "- GFLOPS derivation: recomputed from averaged latency for each row."
+    echo "  \`avg_sp_gflops = (5 * N * log2(N) * batch) / (avg_ms * 1e6)\`"
     echo "- For each row key: \`profile + workload + case + length + batch + threads\`."
     echo "- Throughput comparison:"
     echo "  \`Fwd Speedup = avg_fwd_sp_gflops(profile) / avg_fwd_sp_gflops(baseline_sse42_1t)\`"

@@ -146,67 +146,102 @@ static void run_benchmark(const char *profile_id,
                           int threads_field,
                           int warmup_runs,
                           int nruns,
-                          double max_mem_mb)
+                          double max_mem_mb,
+                          int include_transfers,
+                          const char *timing_mode)
 {
     size_t total = (size_t)n * (size_t)howmany;
     size_t bytes = total * sizeof(cufftComplex);
     double mem_mb = (2.0 * (double)bytes) / (1024.0 * 1024.0);
+    cufftComplex *d_in = NULL;
+    cufftComplex *d_out = NULL;
+    cufftComplex *h_in = NULL;
+    cufftComplex *h_out = NULL;
+    cufftHandle plan;
+    int plan_created = 0;
+    int ok = 1;
+    cudaError_t ce;
+    cufftResult cr;
+    double fwd_ms = 0.0;
+    double bwd_ms = 0.0;
 
     if (max_mem_mb > 0.0 && mem_mb > max_mem_mb) {
         emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "memory_limit");
         return;
     }
 
-    cufftComplex *d_in = NULL;
-    cufftComplex *d_out = NULL;
-    cudaError_t ce = cudaMalloc((void **)&d_in, bytes);
+    ce = cudaMalloc((void **)&d_in, bytes);
     if (ce != cudaSuccess) {
         emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_malloc_in_failed");
         return;
     }
     ce = cudaMalloc((void **)&d_out, bytes);
     if (ce != cudaSuccess) {
-        cudaFree(d_in);
         emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_malloc_out_failed");
-        return;
+        goto cleanup;
     }
 
-    ce = cudaMemset(d_in, 0, bytes);
-    if (ce != cudaSuccess) {
-        cudaFree(d_in);
-        cudaFree(d_out);
-        emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_memset_failed");
-        return;
-    }
-    ce = cudaMemset(d_out, 0, bytes);
-    if (ce != cudaSuccess) {
-        cudaFree(d_in);
-        cudaFree(d_out);
-        emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_memset_failed");
-        return;
+    if (include_transfers) {
+        ce = cudaMallocHost((void **)&h_in, bytes);
+        if (ce != cudaSuccess) {
+            emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_malloc_host_in_failed");
+            goto cleanup;
+        }
+        ce = cudaMallocHost((void **)&h_out, bytes);
+        if (ce != cudaSuccess) {
+            emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_malloc_host_out_failed");
+            goto cleanup;
+        }
+        for (size_t i = 0; i < total; i++) {
+            h_in[i].x = (float)(i % 1024u) / 1024.0f;
+            h_in[i].y = (float)((i * 7u) % 1024u) / 1024.0f;
+            h_out[i].x = 0.0f;
+            h_out[i].y = 0.0f;
+        }
+    } else {
+        ce = cudaMemset(d_in, 0, bytes);
+        if (ce != cudaSuccess) {
+            emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_memset_failed");
+            goto cleanup;
+        }
+        ce = cudaMemset(d_out, 0, bytes);
+        if (ce != cudaSuccess) {
+            emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_memset_failed");
+            goto cleanup;
+        }
     }
 
-    cufftHandle plan;
     int rank = 1;
     int dims[1] = {n};
-    cufftResult cr = cufftPlanMany(&plan, rank, dims,
-                                   NULL, 1, n,
-                                   NULL, 1, n,
-                                   CUFFT_C2C, howmany);
+    cr = cufftPlanMany(&plan, rank, dims, NULL, 1, n, NULL, 1, n, CUFFT_C2C, howmany);
     if (cr != CUFFT_SUCCESS) {
-        cudaFree(d_in);
-        cudaFree(d_out);
         emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, cufft_status_string(cr));
-        return;
+        goto cleanup;
     }
+    plan_created = 1;
 
-    int ok = 1;
     for (int i = 0; i < warmup_runs; i++) {
+        if (include_transfers) {
+            ce = cudaMemcpyAsync(d_in, h_in, bytes, cudaMemcpyHostToDevice, 0);
+            if (ce != cudaSuccess) {
+                fprintf(stderr, "ERROR: warmup H2D failed for %s: %s\n", case_id, cudaGetErrorString(ce));
+                ok = 0;
+                break;
+            }
+        }
         cr = cufftExecC2C(plan, d_in, d_out, CUFFT_FORWARD);
         if (cr != CUFFT_SUCCESS) {
             fprintf(stderr, "ERROR: warmup forward failed for %s: %s\n", case_id, cufft_status_string(cr));
             ok = 0;
             break;
+        }
+        if (include_transfers) {
+            ce = cudaMemcpyAsync(h_out, d_out, bytes, cudaMemcpyDeviceToHost, 0);
+            if (ce != cudaSuccess) {
+                fprintf(stderr, "ERROR: warmup D2H failed for %s: %s\n", case_id, cudaGetErrorString(ce));
+                ok = 0;
+                break;
+            }
         }
     }
     if (ok) {
@@ -217,8 +252,6 @@ static void run_benchmark(const char *profile_id,
         }
     }
 
-    double fwd_ms = 0.0;
-    double bwd_ms = 0.0;
     if (ok) {
         cudaEvent_t ev_start, ev_end;
         ce = cudaEventCreate(&ev_start);
@@ -244,11 +277,29 @@ static void run_benchmark(const char *profile_id,
                 ok = 0;
             }
             for (int i = 0; i < nruns; i++) {
+                if (include_transfers) {
+                    ce = cudaMemcpyAsync(d_in, h_in, bytes, cudaMemcpyHostToDevice, 0);
+                    if (ce != cudaSuccess) {
+                        fprintf(stderr, "ERROR: timed H2D(forward) failed for %s: %s\n",
+                                case_id, cudaGetErrorString(ce));
+                        ok = 0;
+                        break;
+                    }
+                }
                 cr = cufftExecC2C(plan, d_in, d_out, CUFFT_FORWARD);
                 if (cr != CUFFT_SUCCESS) {
                     fprintf(stderr, "ERROR: timed forward failed for %s: %s\n", case_id, cufft_status_string(cr));
                     ok = 0;
                     break;
+                }
+                if (include_transfers) {
+                    ce = cudaMemcpyAsync(h_out, d_out, bytes, cudaMemcpyDeviceToHost, 0);
+                    if (ce != cudaSuccess) {
+                        fprintf(stderr, "ERROR: timed D2H(forward) failed for %s: %s\n",
+                                case_id, cudaGetErrorString(ce));
+                        ok = 0;
+                        break;
+                    }
                 }
             }
             if (ok) {
@@ -286,11 +337,29 @@ static void run_benchmark(const char *profile_id,
             }
             if (ok) {
                 for (int i = 0; i < nruns; i++) {
+                    if (include_transfers) {
+                        ce = cudaMemcpyAsync(d_out, h_out, bytes, cudaMemcpyHostToDevice, 0);
+                        if (ce != cudaSuccess) {
+                            fprintf(stderr, "ERROR: timed H2D(backward) failed for %s: %s\n",
+                                    case_id, cudaGetErrorString(ce));
+                            ok = 0;
+                            break;
+                        }
+                    }
                     cr = cufftExecC2C(plan, d_out, d_in, CUFFT_INVERSE);
                     if (cr != CUFFT_SUCCESS) {
                         fprintf(stderr, "ERROR: timed backward failed for %s: %s\n", case_id, cufft_status_string(cr));
                         ok = 0;
                         break;
+                    }
+                    if (include_transfers) {
+                        ce = cudaMemcpyAsync(h_in, d_in, bytes, cudaMemcpyDeviceToHost, 0);
+                        if (ce != cudaSuccess) {
+                            fprintf(stderr, "ERROR: timed D2H(backward) failed for %s: %s\n",
+                                    case_id, cudaGetErrorString(ce));
+                            ok = 0;
+                            break;
+                        }
                     }
                 }
                 if (ok) {
@@ -331,9 +400,9 @@ static void run_benchmark(const char *profile_id,
         double flops = 5.0 * (double)n * log2((double)n) * (double)howmany;
         double fwd_gflops = flops / (fwd_ms * 1.0e6);
         double bwd_gflops = flops / (bwd_ms * 1.0e6);
-        printf("[run ] %-16s | Len:%7d | Batch:%6d | Thr:%2d | "
+        printf("[run ] %-16s | Mode:%-7s | Len:%7d | Batch:%6d | Thr:%2d | "
                "Fwd:%10.4f ms %8.2f GF/s | Bwd:%10.4f ms %8.2f GF/s | Mem:%7.2f MB\n",
-               case_id, n, howmany, threads_field, fwd_ms, fwd_gflops, bwd_ms, bwd_gflops, mem_mb);
+               case_id, timing_mode, n, howmany, threads_field, fwd_ms, fwd_gflops, bwd_ms, bwd_gflops, mem_mb);
         printf("RESULT|%s|%s|%s|%d|%d|%d|%d|%d|%.6f|%.6f|%.6f|%.6f|%.2f\n",
                profile_id, workload, case_id, n, 1, 1, howmany, threads_field,
                fwd_ms, fwd_gflops, bwd_ms, bwd_gflops, mem_mb);
@@ -342,9 +411,12 @@ static void run_benchmark(const char *profile_id,
     }
     fflush(stdout);
 
-    cufftDestroy(plan);
-    cudaFree(d_in);
-    cudaFree(d_out);
+cleanup:
+    if (plan_created) cufftDestroy(plan);
+    if (h_in) cudaFreeHost(h_in);
+    if (h_out) cudaFreeHost(h_out);
+    if (d_in) cudaFree(d_in);
+    if (d_out) cudaFree(d_out);
 }
 
 static void run_throughput(const char *profile_id,
@@ -352,6 +424,8 @@ static void run_throughput(const char *profile_id,
                            int warmup_runs,
                            int nruns,
                            double max_mem_mb,
+                           int include_transfers,
+                           const char *timing_mode,
                            const int *lengths,
                            int n_lengths,
                            const int *batches,
@@ -365,7 +439,8 @@ static void run_throughput(const char *profile_id,
             char case_id[64];
             snprintf(case_id, sizeof(case_id), "n%d_b%d", lengths[i], batches[j]);
             run_benchmark(profile_id, "throughput", case_id, lengths[i], batches[j],
-                          threads_field, warmup_runs, nruns, max_mem_mb);
+                          threads_field, warmup_runs, nruns, max_mem_mb,
+                          include_transfers, timing_mode);
         }
     }
 }
@@ -376,6 +451,8 @@ static void run_batch_scaling(const char *profile_id,
                               int warmup_runs,
                               int nruns,
                               double max_mem_mb,
+                              int include_transfers,
+                              const char *timing_mode,
                               const int *batches,
                               int n_batches)
 {
@@ -386,7 +463,8 @@ static void run_batch_scaling(const char *profile_id,
         char case_id[64];
         snprintf(case_id, sizeof(case_id), "n%d_b%d_t%d", length, batches[i], threads_field);
         run_benchmark(profile_id, "batch_scaling", case_id, length, batches[i],
-                      threads_field, warmup_runs, nruns, max_mem_mb);
+                      threads_field, warmup_runs, nruns, max_mem_mb,
+                      include_transfers, timing_mode);
     }
 }
 
@@ -403,6 +481,17 @@ int main(void)
     if (!profile_desc || !*profile_desc) profile_desc = "manual run";
     const char *workload = getenv("BENCH_WORKLOAD");
     if (!workload || !*workload) workload = "throughput";
+    const char *timing_mode = getenv("BENCH_TIMING_MODE");
+    if (!timing_mode || !*timing_mode) timing_mode = "compute";
+    int include_transfers = 0;
+    if (strcmp(timing_mode, "compute") == 0) {
+        include_transfers = 0;
+    } else if (strcmp(timing_mode, "e2e") == 0) {
+        include_transfers = 1;
+    } else {
+        fprintf(stderr, "ERROR: unknown BENCH_TIMING_MODE='%s' (expected compute|e2e)\n", timing_mode);
+        return 2;
+    }
 
     int lengths[MAX_LIST];
     int batches[MAX_LIST];
@@ -454,6 +543,7 @@ int main(void)
     printf("profile_id       : %s\n", profile_id);
     printf("profile_desc     : %s\n", profile_desc);
     printf("workload         : %s\n", workload);
+    printf("timing_mode      : %s\n", timing_mode);
     printf("timed runs       : %d\n", nruns);
     printf("warmup runs      : %d\n", warmup_runs);
     printf("mem cap (MB)     : %.1f\n", max_mem_mb);
@@ -473,15 +563,19 @@ int main(void)
 
     if (strcmp(workload, "throughput") == 0) {
         run_throughput(profile_id, threads_field, warmup_runs, nruns, max_mem_mb,
+                       include_transfers, timing_mode,
                        lengths, n_lengths, batches, n_batches);
     } else if (strcmp(workload, "batch_scaling") == 0) {
         run_batch_scaling(profile_id, scale_length, threads_field, warmup_runs, nruns,
-                          max_mem_mb, batch_scale_set, n_batch_scale);
+                          max_mem_mb, include_transfers, timing_mode,
+                          batch_scale_set, n_batch_scale);
     } else if (strcmp(workload, "all") == 0) {
         run_throughput(profile_id, threads_field, warmup_runs, nruns, max_mem_mb,
+                       include_transfers, timing_mode,
                        lengths, n_lengths, batches, n_batches);
         run_batch_scaling(profile_id, scale_length, threads_field, warmup_runs, nruns,
-                          max_mem_mb, batch_scale_set, n_batch_scale);
+                          max_mem_mb, include_transfers, timing_mode,
+                          batch_scale_set, n_batch_scale);
     } else {
         fprintf(stderr, "ERROR: unknown BENCH_WORKLOAD='%s' (expected throughput|batch_scaling|all)\n",
                 workload);

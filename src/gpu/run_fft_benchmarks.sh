@@ -5,6 +5,7 @@
 #
 # Optional overrides:
 #   BENCH_NRUNS=20 BENCH_WARMUP=5 BENCH_MAX_MEM_MB=8192
+#   BENCH_TIMING_MODE=e2e   # compute or e2e (H2D+FFT+D2H)
 #   THROUGHPUT_LENGTHS=32,64,...,4194304 THROUGHPUT_BATCHES=1,4,16
 #   BATCH_SCALING_SET=1,4,16,64,256 SCALE_LENGTH=16384
 #   RUN_PROFILES=all
@@ -27,13 +28,22 @@ BENCH_NRUNS="${BENCH_NRUNS:-20}"
 BENCH_WARMUP="${BENCH_WARMUP:-5}"
 BENCH_MAX_MEM_MB="${BENCH_MAX_MEM_MB:-8192}"
 RUN_PROFILES="${RUN_PROFILES:-all}"
+BENCH_TIMING_MODE="${BENCH_TIMING_MODE:-e2e}"
 
 THROUGHPUT_LENGTHS="${THROUGHPUT_LENGTHS:-32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304}"
 THROUGHPUT_BATCHES="${THROUGHPUT_BATCHES:-1,4,16}"
 BATCH_SCALING_SET="${BATCH_SCALING_SET:-1,4,16,64,256}"
 SCALE_LENGTH="${SCALE_LENGTH:-16384}"
 
-export BENCH_NRUNS BENCH_WARMUP BENCH_MAX_MEM_MB
+case "${BENCH_TIMING_MODE}" in
+    compute|e2e) ;;
+    *)
+        echo "ERROR: BENCH_TIMING_MODE must be compute or e2e (got: ${BENCH_TIMING_MODE})"
+        exit 1
+        ;;
+esac
+
+export BENCH_NRUNS BENCH_WARMUP BENCH_MAX_MEM_MB BENCH_TIMING_MODE
 
 echo "============================================================"
 echo "  FFT BENCHMARK RUN (GPU, cuFFT, 1D)"
@@ -82,6 +92,7 @@ echo ""
 
 echo "[CONFIG] timed runs=${BENCH_NRUNS}, warmup=${BENCH_WARMUP}, mem_cap_mb=${BENCH_MAX_MEM_MB}"
 echo "[CONFIG] run profiles=${RUN_PROFILES}"
+echo "[CONFIG] timing mode=${BENCH_TIMING_MODE} (compute = kernel-only, e2e = H2D+FFT+D2H)"
 echo "[CONFIG] throughput lengths=${THROUGHPUT_LENGTHS}, batches=${THROUGHPUT_BATCHES}"
 echo "[CONFIG] batch scaling set=${BATCH_SCALING_SET}, scale length=${SCALE_LENGTH}"
 echo ""
@@ -90,10 +101,11 @@ run_profile() {
     local profile_id="$1"
     local profile_desc="$2"
     local workload="$3"
-    local lengths="$4"
-    local batches="$5"
-    local batch_scale_set="$6"
-    local scale_length="$7"
+    local timing_mode="$4"
+    local lengths="$5"
+    local batches="$6"
+    local batch_scale_set="$7"
+    local scale_length="$8"
 
     echo "============================================================"
     echo "RUN PROFILE: ${profile_id}"
@@ -101,11 +113,12 @@ run_profile() {
     echo "Workload    : ${workload}"
     echo "============================================================"
 
-    echo "PROFILE|${profile_id}|${profile_desc}|CUDA_CUFFT|1|${workload}|${lengths}|${batches}|-|${scale_length}|-|1"
+    echo "PROFILE|${profile_id}|${profile_desc}|CUDA_CUFFT|1|${workload}|${lengths}|${batches}|${timing_mode}|${scale_length}|-|1"
 
     export BENCH_PROFILE="${profile_id}"
     export BENCH_PROFILE_DESC="${profile_desc}"
     export BENCH_WORKLOAD="${workload}"
+    export BENCH_TIMING_MODE="${timing_mode}"
     export BENCH_LENGTHS="${lengths}"
     export BENCH_BATCHES="${batches}"
     export BENCH_BATCH_SCALE_SET="${batch_scale_set}"
@@ -131,8 +144,9 @@ should_run_profile() {
 
 should_run_profile "cufft_gpu" && run_profile \
     "cufft_gpu" \
-    "cuFFT throughput sweep on RTX 3080 (1D single precision)" \
+    "cuFFT throughput sweep on RTX 3080 (1D single precision, timing=${BENCH_TIMING_MODE})" \
     "throughput" \
+    "${BENCH_TIMING_MODE}" \
     "${THROUGHPUT_LENGTHS}" \
     "${THROUGHPUT_BATCHES}" \
     "${BATCH_SCALING_SET}" \
@@ -140,8 +154,9 @@ should_run_profile "cufft_gpu" && run_profile \
 
 should_run_profile "cufft_gpu_batch_scaling" && run_profile \
     "cufft_gpu_batch_scaling" \
-    "cuFFT batch scaling sweep on fixed length" \
+    "cuFFT batch scaling sweep on fixed length (timing=${BENCH_TIMING_MODE})" \
     "batch_scaling" \
+    "${BENCH_TIMING_MODE}" \
     "${THROUGHPUT_LENGTHS}" \
     "${THROUGHPUT_BATCHES}" \
     "${BATCH_SCALING_SET}" \
@@ -178,6 +193,7 @@ generate_markdown_report() {
             }
             p_desc[p] = $3
             p_workload[p] = $6
+            p_timing[p] = $9
             next
         }
         $1 == "RESULT" || $1 == "SKIP" {
@@ -216,11 +232,11 @@ generate_markdown_report() {
         END {
             print "## Scenario Catalog"
             print ""
-            print "| Run Profile | Description | Workload |"
-            print "|---|---|---|"
+            print "| Run Profile | Description | Workload | Timing Mode |"
+            print "|---|---|---|---|"
             for (i = 1; i <= n_profiles; i++) {
                 p = profile_order[i]
-                printf("| %s | %s | %s |\n", p, p_desc[p], p_workload[p])
+                printf("| %s | %s | %s | %s |\n", p, p_desc[p], p_workload[p], p_timing[p])
             }
             print ""
 

@@ -152,7 +152,7 @@ static void run_benchmark(const char *profile_id,
 {
     size_t total = (size_t)n * (size_t)howmany;
     size_t bytes = total * sizeof(cufftComplex);
-    double mem_mb = (2.0 * (double)bytes) / (1024.0 * 1024.0);
+    double mem_mb = ((include_transfers ? 4.0 : 2.0) * (double)bytes) / (1024.0 * 1024.0);
     cufftComplex *d_in = NULL;
     cufftComplex *d_out = NULL;
     cufftComplex *h_in = NULL;
@@ -201,9 +201,19 @@ static void run_benchmark(const char *profile_id,
             h_out[i].y = 0.0f;
         }
     } else {
-        ce = cudaMemset(d_in, 0, bytes);
+        cufftComplex *h_seed = (cufftComplex *)malloc(bytes);
+        if (!h_seed) {
+            emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "host_malloc_seed_failed");
+            goto cleanup;
+        }
+        for (size_t i = 0; i < total; i++) {
+            h_seed[i].x = (float)(i % 1024u) / 1024.0f;
+            h_seed[i].y = (float)((i * 7u) % 1024u) / 1024.0f;
+        }
+        ce = cudaMemcpy(d_in, h_seed, bytes, cudaMemcpyHostToDevice);
+        free(h_seed);
         if (ce != cudaSuccess) {
-            emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_memset_failed");
+            emit_skip(profile_id, workload, case_id, n, howmany, threads_field, mem_mb, "cuda_memcpy_seed_failed");
             goto cleanup;
         }
         ce = cudaMemset(d_out, 0, bytes);
@@ -325,6 +335,43 @@ static void run_benchmark(const char *profile_id,
                     fprintf(stderr, "ERROR: cudaEventElapsedTime(fwd) failed for %s: %s\n",
                             case_id, cudaGetErrorString(ce));
                     ok = 0;
+                }
+            }
+
+            if (ok) {
+                for (int i = 0; i < warmup_runs; i++) {
+                    if (include_transfers) {
+                        ce = cudaMemcpyAsync(d_out, h_out, bytes, cudaMemcpyHostToDevice, 0);
+                        if (ce != cudaSuccess) {
+                            fprintf(stderr, "ERROR: warmup H2D(backward) failed for %s: %s\n",
+                                    case_id, cudaGetErrorString(ce));
+                            ok = 0;
+                            break;
+                        }
+                    }
+                    cr = cufftExecC2C(plan, d_out, d_in, CUFFT_INVERSE);
+                    if (cr != CUFFT_SUCCESS) {
+                        fprintf(stderr, "ERROR: warmup backward failed for %s: %s\n", case_id, cufft_status_string(cr));
+                        ok = 0;
+                        break;
+                    }
+                    if (include_transfers) {
+                        ce = cudaMemcpyAsync(h_in, d_in, bytes, cudaMemcpyDeviceToHost, 0);
+                        if (ce != cudaSuccess) {
+                            fprintf(stderr, "ERROR: warmup D2H(backward) failed for %s: %s\n",
+                                    case_id, cudaGetErrorString(ce));
+                            ok = 0;
+                            break;
+                        }
+                    }
+                }
+                if (ok) {
+                    ce = cudaDeviceSynchronize();
+                    if (ce != cudaSuccess) {
+                        fprintf(stderr, "ERROR: warmup synchronize(backward) failed for %s: %s\n",
+                                case_id, cudaGetErrorString(ce));
+                        ok = 0;
+                    }
                 }
             }
 

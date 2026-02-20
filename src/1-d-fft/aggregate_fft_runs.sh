@@ -163,7 +163,7 @@ END {
         # Exact memory footprint for 1D single-precision complex FFT:
         # in + out buffers = 2 * (n * batch * sizeof(MKL_Complex8))
         # sizeof(MKL_Complex8)=8 bytes => total bytes = 16*n*batch.
-        avg_mem_kib = (16.0 * n * b) / 1024.0
+        avg_mem_mb = (16.0 * n * b) / (1024.0 * 1024.0)
 
         fwd_sp = "-"
         fwd_inc = "-"
@@ -192,7 +192,7 @@ END {
 
         printf("%d\t%d\t%s\t%s\t%d\t%d\t%d\t%s\t%s\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%d\t%d\t%d\t%s\t%s\t%s\t%s\t%s\t%s\n",
                workload_rank(w), profile_rank(p), w, c, n, b, t, p, p_isa[p],
-               avg_fwd_ms, avg_fwd_gf, avg_bwd_ms, avg_bwd_gf, avg_mem_kib,
+               avg_fwd_ms, avg_fwd_gf, avg_bwd_ms, avg_bwd_gf, avg_mem_mb,
                ok, sk, expected_runs, quality, fwd_sp, fwd_inc, bwd_sp, bwd_inc, note) >> rows_out
     }
 }
@@ -244,7 +244,7 @@ sort -t$'\t' -k1,1n "$TMP_PROFILES" -o "$TMP_PROFILES"
     echo
     echo "## Averaged Results"
     echo
-    echo "| Workload | Case | Length | Batch | Threads | Profile | ISA | Avg Fwd ms | Avg Fwd SP GFLOPS | Avg Bwd ms | Avg Bwd SP GFLOPS | Avg Mem KiB | Fwd Speedup vs baseline | Fwd % Increase | Bwd Speedup vs baseline | Bwd % Increase |"
+    echo "| Workload | Case | Length | Batch | Threads | Profile | ISA | Avg Fwd ms | Avg Fwd SP GFLOPS | Avg Bwd ms | Avg Bwd SP GFLOPS | Avg Mem MB | Fwd Speedup vs baseline | Fwd % Increase | Bwd Speedup vs baseline | Bwd % Increase |"
     echo "|---|---|---:|---:|---:|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|"
     awk -F'\t' '
         function fmt(v, n) { return sprintf("%." n "f", v) }
@@ -254,17 +254,17 @@ sort -t$'\t' -k1,1n "$TMP_PROFILES" -o "$TMP_PROFILES"
                 fwd_gf = fmt($11, 2)
                 bwd_ms = fmt($12, 6)
                 bwd_gf = fmt($13, 2)
-                memkib = fmt($14, 4)
+                memmb = fmt($14, 4)
             } else {
                 fwd_ms = "-"
                 fwd_gf = "-"
                 bwd_ms = "-"
                 bwd_gf = "-"
-                memkib = fmt($14, 4)
+                memmb = fmt($14, 4)
             }
             printf("| %s | %s | %d | %d | %d | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s | %s |\n",
                    $3, $4, $5, $6, $7, $8, $9,
-                   fwd_ms, fwd_gf, bwd_ms, bwd_gf, memkib,
+                   fwd_ms, fwd_gf, bwd_ms, bwd_gf, memmb,
                    $19, $20, $21, $22)
         }
     ' "$TMP_ROWS"

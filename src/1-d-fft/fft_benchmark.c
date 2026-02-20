@@ -203,6 +203,17 @@ static void run_benchmark(const char *profile_id,
     }
     double fwd_ms = (get_time_ms() - t0) / (double)nruns;
 
+    for (int i = 0; i < warmup_runs; i++) {
+        status = DftiComputeBackward(plan, out, in);
+        if (status != DFTI_NO_ERROR) {
+            fprintf(stderr, "ERROR: warmup backward failed: %ld\n", status);
+            DftiFreeDescriptor(&plan);
+            mkl_free(in);
+            mkl_free(out);
+            return;
+        }
+    }
+
     t0 = get_time_ms();
     for (int i = 0; i < nruns; i++) {
         status = DftiComputeBackward(plan, out, in);

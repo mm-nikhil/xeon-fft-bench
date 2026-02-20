@@ -213,6 +213,7 @@ run_profile() {
     export BENCH_WORKLOAD="${workload}"
     export BENCH_LENGTHS="${lengths}"
     export BENCH_BATCHES="${batches}"
+    export BENCH_BATCH_SCALE_SET="${batches}"
     export BENCH_THREAD_SET="${thread_set}"
     export BENCH_SCALE_LENGTH="${scale_length}"
     export BENCH_SCALE_BATCH="${scale_batch}"

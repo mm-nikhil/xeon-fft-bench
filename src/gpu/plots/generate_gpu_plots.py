@@ -256,36 +256,81 @@ def build_gpu_data(manifests: List[Path], gpu_root: Path) -> Tuple[pd.DataFrame,
 def parse_mkl_report_best(report: Path) -> pd.DataFrame:
     rows = []
     for line in report.read_text(errors="replace").splitlines():
-        if not line.startswith("| throughput | n"):
+        line = line.strip()
+        if not line.startswith("|") or line.startswith("|---"):
             continue
-        cols = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cols) < 11:
+
+        cols = [c.strip() for c in line.strip("|").split("|")]
+
+        # Legacy format:
+        # | workload | case | length | batch | threads | profile | isa | fwd_ms | fwd_gflops | bwd_ms | bwd_gflops | ... |
+        if len(cols) >= 11 and cols[0] == "throughput" and re.match(r"^n\d+_b\d+$", cols[1] or ""):
+            try:
+                n = int(cols[2])
+                batch = int(cols[3])
+                threads = int(cols[4])
+                fwd_ms = float(cols[7])
+                fwd_gflops = float(cols[8])
+                bwd_ms = float(cols[9])
+                bwd_gflops = float(cols[10])
+            except ValueError:
+                continue
+            flops = 5.0 * float(n) * math.log2(float(n)) * float(batch)
+            # Some markdown reports round tiny ms values to 0.0.
+            # Recover them from GFLOPS so latency overlays remain meaningful.
+            if fwd_ms <= 0.0 and fwd_gflops > 0.0:
+                fwd_ms = flops / (fwd_gflops * 1.0e6)
+            if bwd_ms <= 0.0 and bwd_gflops > 0.0:
+                bwd_ms = flops / (bwd_gflops * 1.0e6)
+            rows.append(
+                {
+                    "case_id": cols[1],
+                    "n": n,
+                    "batch": batch,
+                    "threads": threads,
+                    "profile_id": cols[5],
+                    "isa": cols[6],
+                    "fwd_ms": fwd_ms,
+                    "fwd_gflops": fwd_gflops,
+                    "bwd_ms": bwd_ms,
+                    "bwd_gflops": bwd_gflops,
+                }
+            )
             continue
-        try:
-            n = int(cols[2])
-            batch = int(cols[3])
-            threads = int(cols[4])
-            fwd_ms = float(cols[7])
-            fwd_gflops = float(cols[8])
-            bwd_ms = float(cols[9])
-            bwd_gflops = float(cols[10])
-        except ValueError:
-            # Skip incomplete/failed rows (for example "-" metrics from SKIP cases).
-            continue
-        rows.append(
-            {
-                "case_id": cols[1],
-                "n": n,
-                "batch": batch,
-                "threads": threads,
-                "profile_id": cols[5],
-                "isa": cols[6],
-                "fwd_ms": fwd_ms,
-                "fwd_gflops": fwd_gflops,
-                "bwd_ms": bwd_ms,
-                "bwd_gflops": bwd_gflops,
-            }
-        )
+
+        # Current format:
+        # | case | length | batch | threads | profile | isa | fwd_ms | fwd_gflops | bwd_ms | bwd_gflops | ... |
+        if len(cols) >= 10 and re.match(r"^n\d+_b\d+$", cols[0] or ""):
+            try:
+                n = int(cols[1])
+                batch = int(cols[2])
+                threads = int(cols[3])
+                fwd_ms = float(cols[6])
+                fwd_gflops = float(cols[7])
+                bwd_ms = float(cols[8])
+                bwd_gflops = float(cols[9])
+            except ValueError:
+                continue
+            flops = 5.0 * float(n) * math.log2(float(n)) * float(batch)
+            if fwd_ms <= 0.0 and fwd_gflops > 0.0:
+                fwd_ms = flops / (fwd_gflops * 1.0e6)
+            if bwd_ms <= 0.0 and bwd_gflops > 0.0:
+                bwd_ms = flops / (bwd_gflops * 1.0e6)
+            rows.append(
+                {
+                    "case_id": cols[0],
+                    "n": n,
+                    "batch": batch,
+                    "threads": threads,
+                    "profile_id": cols[4],
+                    "isa": cols[5],
+                    "fwd_ms": fwd_ms,
+                    "fwd_gflops": fwd_gflops,
+                    "bwd_ms": bwd_ms,
+                    "bwd_gflops": bwd_gflops,
+                }
+            )
+
     if not rows:
         raise ValueError(f"No throughput rows parsed from MKL report {report}")
 
@@ -475,105 +520,191 @@ def plot_gpu_vs_mkl(df_cmp: pd.DataFrame, out_dir: Path) -> int:
 
     set_ids = sorted(df_cmp["set_id"].unique())
     batches = sorted(df_cmp["batch"].unique())
-    palette = dict(zip(set_ids, sns.color_palette("tab10", n_colors=len(set_ids))))
     timing_modes = sorted(df_cmp["timing_mode"].dropna().unique().tolist())
     timing_mode_str = ",".join(timing_modes) if timing_modes else "unknown"
     timing_note = f"GPU timing={timing_mode_str}; MKL timing=compute-only"
+    latest_set = set_ids[-1]
+    latest = df_cmp[df_cmp["set_id"] == latest_set].copy()
+    latest.sort_values(by=["n", "batch"], inplace=True)
 
-    # Speedup trends by batch.
+    def _two_line_overlay(
+        batch_df: pd.DataFrame,
+        gpu_col: str,
+        mkl_col: str,
+        title: str,
+        ylabel: str,
+        better_when: str,
+        out_name: str,
+    ) -> None:
+        n_vals = batch_df["n"].to_numpy()
+        gpu = batch_df[gpu_col].to_numpy(dtype=float)
+        mkl = batch_df[mkl_col].to_numpy(dtype=float)
+
+        if better_when == "higher":
+            gpu_better = gpu > mkl
+            gpu_worse = gpu < mkl
+        else:
+            gpu_better = gpu < mkl
+            gpu_worse = gpu > mkl
+        tied = ~(gpu_better | gpu_worse)
+
+        plt.figure(figsize=(11.6, 6.2))
+        plt.plot(n_vals, mkl, marker="o", linewidth=2.2, color="#1f77b4", label="MKL best (latest CPU run)")
+        plt.plot(n_vals, gpu, marker="o", linewidth=2.2, color="#ff7f0e", label=f"GPU latest ({latest_set})")
+
+        if np.any(gpu_better):
+            plt.scatter(
+                n_vals[gpu_better],
+                gpu[gpu_better],
+                s=45,
+                color="#2ca02c",
+                edgecolors="black",
+                linewidths=0.4,
+                label="GPU better",
+                zorder=5,
+            )
+        if np.any(gpu_worse):
+            plt.scatter(
+                n_vals[gpu_worse],
+                gpu[gpu_worse],
+                s=45,
+                color="#d62728",
+                edgecolors="black",
+                linewidths=0.4,
+                label="GPU worse",
+                zorder=5,
+            )
+        if np.any(tied):
+            plt.scatter(
+                n_vals[tied],
+                gpu[tied],
+                s=45,
+                color="#7f7f7f",
+                edgecolors="black",
+                linewidths=0.4,
+                label="Tie",
+                zorder=5,
+            )
+
+        plt.xscale("log", base=2)
+        plt.grid(True, alpha=0.25)
+        plt.xlabel("Length (N)")
+        plt.ylabel(ylabel)
+        plt.title(
+            f"{title} | batch={int(batch_df['batch'].iloc[0])}\n"
+            f"{timing_note} | GPU better={int(gpu_better.sum())}/{len(batch_df)}"
+        )
+        plt.legend(fontsize=8, ncol=2)
+        plt.tight_layout()
+        out = out_dir / out_name
+        plt.savefig(out, dpi=160)
+        plt.close()
+
+    # Absolute overlays (two lines per chart): MKL vs latest GPU.
     for batch in batches:
-        sub = df_cmp[df_cmp["batch"] == batch].copy()
+        sub = latest[latest["batch"] == batch].sort_values("n")
         if sub.empty:
             continue
+        _two_line_overlay(
+            sub,
+            "fwd_gflops_mean",
+            "mkl_fwd_gflops",
+            "Forward SP GFLOPS: GPU vs MKL",
+            "SP GFLOPS",
+            "higher",
+            f"fwd_gflops_gpu_vs_mkl_batch_{batch}.png",
+        )
+        n_plots += 1
+        _two_line_overlay(
+            sub,
+            "bwd_gflops_mean",
+            "mkl_bwd_gflops",
+            "Backward SP GFLOPS: GPU vs MKL",
+            "SP GFLOPS",
+            "higher",
+            f"bwd_gflops_gpu_vs_mkl_batch_{batch}.png",
+        )
+        n_plots += 1
+        _two_line_overlay(
+            sub,
+            "fwd_ms_mean",
+            "mkl_fwd_ms",
+            "Forward latency: GPU vs MKL",
+            "ms",
+            "lower",
+            f"fwd_ms_gpu_vs_mkl_batch_{batch}.png",
+        )
+        n_plots += 1
+        _two_line_overlay(
+            sub,
+            "bwd_ms_mean",
+            "mkl_bwd_ms",
+            "Backward latency: GPU vs MKL",
+            "ms",
+            "lower",
+            f"bwd_ms_gpu_vs_mkl_batch_{batch}.png",
+        )
+        n_plots += 1
 
-        for speed_col, title in (
-            ("fwd_gflops_speedup_vs_mkl", "Forward GFLOPS speedup (GPU / MKL best)"),
-            ("bwd_gflops_speedup_vs_mkl", "Backward GFLOPS speedup (GPU / MKL best)"),
-        ):
-            plt.figure(figsize=(11.2, 5.8))
-            for set_id in set_ids:
-                s = sub[sub["set_id"] == set_id].sort_values("n")
-                if s.empty:
-                    continue
-                plt.plot(s["n"], s[speed_col], marker="o", linewidth=1.9, color=palette[set_id], label=set_id)
-            plt.axhline(1.0, color="black", linestyle="--", linewidth=1.0)
-            plt.xscale("log", base=2)
-            plt.grid(True, alpha=0.25)
-            plt.xlabel("Length (N)")
-            plt.ylabel("Speedup (x)")
-            plt.title(f"{title} | batch={batch}\n{timing_note}")
-            plt.legend(fontsize=8)
-            plt.tight_layout()
-            out = out_dir / f"{safe_name(speed_col)}_batch_{batch}.png"
-            plt.savefig(out, dpi=160)
-            plt.close()
-            n_plots += 1
-
-    # Scatter: MKL best vs GPU, by set.
-    for metric_gpu, metric_mkl, title in (
-        ("fwd_gflops_mean", "mkl_fwd_gflops", "Forward SP GFLOPS: GPU vs MKL best"),
-        ("bwd_gflops_mean", "mkl_bwd_gflops", "Backward SP GFLOPS: GPU vs MKL best"),
+    # Heatmaps make better/worse cases explicit at a glance.
+    for col, title, out_name in (
+        ("fwd_gflops_speedup_vs_mkl", "Forward GFLOPS speedup (GPU / MKL)", "heatmap_fwd_gflops_speedup.png"),
+        ("bwd_gflops_speedup_vs_mkl", "Backward GFLOPS speedup (GPU / MKL)", "heatmap_bwd_gflops_speedup.png"),
+        ("fwd_latency_speedup_vs_mkl", "Forward latency speedup (MKL / GPU)", "heatmap_fwd_latency_speedup.png"),
+        ("bwd_latency_speedup_vs_mkl", "Backward latency speedup (MKL / GPU)", "heatmap_bwd_latency_speedup.png"),
     ):
-        plt.figure(figsize=(8.2, 6.6))
-        all_x = []
-        all_y = []
-        for set_id in set_ids:
-            s = df_cmp[df_cmp["set_id"] == set_id]
-            if s.empty:
-                continue
-            x = s[metric_mkl].to_numpy()
-            y = s[metric_gpu].to_numpy()
-            all_x.extend(x.tolist())
-            all_y.extend(y.tolist())
-            plt.scatter(x, y, s=22, alpha=0.65, color=palette[set_id], label=set_id)
-        if all_x and all_y:
-            lo = min(min(all_x), min(all_y))
-            hi = max(max(all_x), max(all_y))
-            lo = max(lo, 1e-6)
-            plt.plot([lo, hi], [lo, hi], color="black", linestyle="--", linewidth=1.0)
-            plt.xscale("log")
-            plt.yscale("log")
-            plt.xlim(lo, hi)
-            plt.ylim(lo, hi)
-        plt.grid(True, alpha=0.25)
-        plt.xlabel("MKL best SP GFLOPS")
-        plt.ylabel("GPU SP GFLOPS")
-        plt.title(f"{title}\n{timing_note}")
-        plt.legend(fontsize=8)
+        piv = latest.pivot(index="n", columns="batch", values=col).sort_index()
+        plt.figure(figsize=(6.6, max(6.5, 0.32 * len(piv.index))))
+        sns.heatmap(
+            piv,
+            cmap="RdYlGn",
+            center=1.0,
+            linewidths=0.2,
+            linecolor="white",
+            cbar_kws={"shrink": 0.85},
+        )
+        plt.title(f"{title}\nlatest GPU set={latest_set}")
+        plt.xlabel("Batch")
+        plt.ylabel("Length (N)")
         plt.tight_layout()
-        out = out_dir / f"scatter_{safe_name(metric_gpu)}_vs_{safe_name(metric_mkl)}.png"
+        out = out_dir / out_name
         plt.savefig(out, dpi=160)
         plt.close()
         n_plots += 1
 
-    # Geomean summary bars.
-    summary_rows = []
-    for set_id in set_ids:
-        s = df_cmp[df_cmp["set_id"] == set_id]
-        summary_rows.append(
+    # Win counts by batch for quick reading.
+    win_rows = []
+    for batch, g in latest.groupby("batch", dropna=False):
+        win_rows.append(
             {
-                "set_id": set_id,
-                "fwd_geo": geomean(s["fwd_gflops_speedup_vs_mkl"].tolist()),
-                "bwd_geo": geomean(s["bwd_gflops_speedup_vs_mkl"].tolist()),
+                "batch": int(batch),
+                "fwd_win": int((g["fwd_gflops_speedup_vs_mkl"] > 1.0).sum()),
+                "fwd_loss": int((g["fwd_gflops_speedup_vs_mkl"] < 1.0).sum()),
+                "bwd_win": int((g["bwd_gflops_speedup_vs_mkl"] > 1.0).sum()),
+                "bwd_loss": int((g["bwd_gflops_speedup_vs_mkl"] < 1.0).sum()),
             }
         )
-    sdf = pd.DataFrame(summary_rows)
-    x = np.arange(len(sdf))
+    wdf = pd.DataFrame(win_rows).sort_values("batch")
+    x = np.arange(len(wdf))
     width = 0.36
-    plt.figure(figsize=(9.5, 5.2))
-    plt.bar(x - width / 2, sdf["fwd_geo"], width=width, label="Forward")
-    plt.bar(x + width / 2, sdf["bwd_geo"], width=width, label="Backward")
-    plt.axhline(1.0, color="black", linestyle="--", linewidth=1.0)
-    plt.xticks(x, sdf["set_id"], rotation=20, ha="right")
-    plt.ylabel("Geomean speedup (x)")
-    plt.title(f"GPU vs MKL Best: Geomean SP GFLOPS speedup\n{timing_note}")
-    plt.grid(True, axis="y", alpha=0.25)
-    plt.legend()
-    plt.tight_layout()
-    out = out_dir / "geomean_speedup_gpu_vs_mkl.png"
-    plt.savefig(out, dpi=160)
-    plt.close()
-    n_plots += 1
+    for win_col, loss_col, title, out_name in (
+        ("fwd_win", "fwd_loss", "Forward win/loss count by batch", "wins_fwd_gflops_speedup.png"),
+        ("bwd_win", "bwd_loss", "Backward win/loss count by batch", "wins_bwd_gflops_speedup.png"),
+    ):
+        plt.figure(figsize=(8.5, 5.0))
+        plt.bar(x - width / 2, wdf[win_col], width=width, label="GPU better", color="#2ca02c")
+        plt.bar(x + width / 2, wdf[loss_col], width=width, label="GPU worse", color="#d62728")
+        plt.xticks(x, [str(v) for v in wdf["batch"]])
+        plt.xlabel("Batch")
+        plt.ylabel("Case count")
+        plt.title(f"{title}\nlatest GPU set={latest_set}")
+        plt.grid(True, axis="y", alpha=0.25)
+        plt.legend()
+        plt.tight_layout()
+        out = out_dir / out_name
+        plt.savefig(out, dpi=160)
+        plt.close()
+        n_plots += 1
 
     return n_plots
 
@@ -742,7 +873,7 @@ def write_readme(
     lines.append("- `individual_runs`: each raw run line + per-set mean overlay, to inspect run drift.")
     lines.append("- `cv_heatmaps`: per-case run-to-run variability (coefficient of variation).")
     lines.append("- `set_pair_deltas`: pairwise latency ratio heatmaps across GPU sets.")
-    lines.append("- `gpu_vs_mkl`: speedup trends and scatter against MKL best-per-case from report.")
+    lines.append("- `gpu_vs_mkl`: explicit MKL-vs-GPU two-line overlays, speedup heatmaps, and win/loss counts.")
 
     path.write_text("\n".join(lines))
 

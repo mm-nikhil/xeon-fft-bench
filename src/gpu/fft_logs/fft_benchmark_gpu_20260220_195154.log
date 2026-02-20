@@ -1,0 +1,263 @@
+============================================================
+  FFT BENCHMARK RUN (GPU, cuFFT, 1D)
+  Date       : Fri Feb 20 19:51:54 IST 2026
+  Hostname   : aorus
+  Log file   : ./fft_logs/fft_benchmark_gpu_20260220_195154.log
+  Report file: ./fft_logs/fft_benchmark_gpu_20260220_195154.report.md
+============================================================
+
+[CHECK] GPU context
+Fri Feb 20 19:51:54 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3080        Off |   00000000:08:00.0 Off |                  N/A |
+|  0%   50C    P2            137W /  320W |     170MiB /  10240MiB |    100%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            2776      G   /usr/lib/xorg/Xorg                       94MiB |
+|    0   N/A  N/A            2947      G   /usr/bin/gnome-shell                     12MiB |
+|    0   N/A  N/A            3561      G   gnome-control-center                      3MiB |
+|    0   N/A  N/A           30872      G   /usr/lib/xorg/Xorg                       14MiB |
++-----------------------------------------------------------------------------------------+
+
+[CHECK] nvcc      : Build cuda_11.5.r11.5/compiler.30672275_0
+[CHECK] host c++  : g++ (Ubuntu 10.5.0-1ubuntu1~22.04.2) 10.5.0
+
+[COMPILE] nvcc -O3 -std=c++14 -ccbin g++ fft_benchmark.cu
+          Binary: fft_benchmark
+
+[CONFIG] timed runs=20, warmup=5, mem_cap_mb=8192
+[CONFIG] run profiles=all
+[CONFIG] timing mode=compute (compute = kernel-only, e2e = H2D+FFT+D2H)
+[CONFIG] throughput lengths=32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304, batches=1,4,16
+[CONFIG] batch scaling set=1,4,16,64,256, scale length=16384
+
+============================================================
+RUN PROFILE: cufft_gpu
+Description : cuFFT throughput sweep on RTX 3080 (1D single precision, timing=compute)
+Workload    : throughput
+============================================================
+PROFILE|cufft_gpu|cuFFT throughput sweep on RTX 3080 (1D single precision, timing=compute)|CUDA_CUFFT|1|throughput|32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304|1,4,16|compute|16384|-|1
+
+############################################################
+# FFT BENCHMARK (cuFFT, 1D, single precision)              #
+############################################################
+profile_id       : cufft_gpu
+profile_desc     : cuFFT throughput sweep on RTX 3080 (1D single precision, timing=compute)
+workload         : throughput
+timing_mode      : compute
+timed runs       : 20
+warmup runs      : 5
+mem cap (MB)     : 8192.0
+threads_field    : 1
+lengths: 32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+batches: 1,4,16
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+gpu_name         : NVIDIA GeForce RTX 3080
+compute_cap      : 8.6
+sm_count         : 68
+warp_size        : 32
+max_threads_sm   : 1536
+max_threads_blk  : 1024
+global_mem_mb    : 9872.4
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread field)
+====================================================================
+threads_field=1
+[run ] n32_b1           | Mode:compute | Len:     32 | Batch:     1 | Thr: 1 | Fwd:    0.0026 ms     0.31 GF/s | Bwd:    0.0025 ms     0.32 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n32_b1|32|1|1|1|1|0.002558|0.312695|0.002506|0.319285|0.00
+[run ] n32_b4           | Mode:compute | Len:     32 | Batch:     4 | Thr: 1 | Fwd:    0.0026 ms     1.25 GF/s | Bwd:    0.0026 ms     1.25 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n32_b4|32|1|1|4|1|0.002560|1.250000|0.002560|1.250000|0.00
+[run ] n32_b16          | Mode:compute | Len:     32 | Batch:    16 | Thr: 1 | Fwd:    0.0027 ms     4.72 GF/s | Bwd:    0.0028 ms     4.55 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n32_b16|32|1|1|16|1|0.002714|4.716981|0.002816|4.545455|0.01
+[run ] n64_b1           | Mode:compute | Len:     64 | Batch:     1 | Thr: 1 | Fwd:    0.0024 ms     0.80 GF/s | Bwd:    0.0024 ms     0.80 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n64_b1|64|1|1|1|1|0.002406|0.797872|0.002405|0.798403|0.00
+[run ] n64_b4           | Mode:compute | Len:     64 | Batch:     4 | Thr: 1 | Fwd:    0.0026 ms     2.94 GF/s | Bwd:    0.0026 ms     3.00 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n64_b4|64|1|1|4|1|0.002611|2.941177|0.002560|3.000000|0.00
+[run ] n64_b16          | Mode:compute | Len:     64 | Batch:    16 | Thr: 1 | Fwd:    0.0025 ms    12.24 GF/s | Bwd:    0.0025 ms    12.53 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n64_b16|64|1|1|16|1|0.002509|12.244898|0.002451|12.532637|0.02
+[run ] n128_b1          | Mode:compute | Len:    128 | Batch:     1 | Thr: 1 | Fwd:    0.0026 ms     1.71 GF/s | Bwd:    0.0026 ms     1.71 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n128_b1|128|1|1|1|1|0.002627|1.705237|0.002619|1.710446|0.00
+[run ] n128_b4          | Mode:compute | Len:    128 | Batch:     4 | Thr: 1 | Fwd:    0.0026 ms     6.83 GF/s | Bwd:    0.0026 ms     6.77 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n128_b4|128|1|1|4|1|0.002626|6.825106|0.002648|6.767371|0.01
+[run ] n128_b16         | Mode:compute | Len:    128 | Batch:    16 | Thr: 1 | Fwd:    0.0027 ms    26.42 GF/s | Bwd:    0.0028 ms    26.05 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n128_b16|128|1|1|16|1|0.002714|26.415094|0.002752|26.046513|0.03
+[run ] n256_b1          | Mode:compute | Len:    256 | Batch:     1 | Thr: 1 | Fwd:    0.0027 ms     3.78 GF/s | Bwd:    0.0028 ms     3.72 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n256_b1|256|1|1|1|1|0.002709|3.780272|0.002752|3.720930|0.00
+[run ] n256_b4          | Mode:compute | Len:    256 | Batch:     4 | Thr: 1 | Fwd:    0.0028 ms    14.81 GF/s | Bwd:    0.0028 ms    14.80 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n256_b4|256|1|1|4|1|0.002765|14.814815|0.002768|14.797688|0.02
+[run ] n256_b16         | Mode:compute | Len:    256 | Batch:    16 | Thr: 1 | Fwd:    0.0028 ms    59.53 GF/s | Bwd:    0.0028 ms    59.26 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n256_b16|256|1|1|16|1|0.002752|59.534886|0.002765|59.259259|0.06
+[run ] n512_b1          | Mode:compute | Len:    512 | Batch:     1 | Thr: 1 | Fwd:    0.0031 ms     7.49 GF/s | Bwd:    0.0031 ms     7.47 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n512_b1|512|1|1|1|1|0.003077|7.488300|0.003086|7.465008|0.01
+[run ] n512_b4          | Mode:compute | Len:    512 | Batch:     4 | Thr: 1 | Fwd:    0.0032 ms    28.70 GF/s | Bwd:    0.0032 ms    29.03 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n512_b4|512|1|1|4|1|0.003211|28.699553|0.003174|29.032258|0.03
+[run ] n512_b16         | Mode:compute | Len:    512 | Batch:    16 | Thr: 1 | Fwd:    0.0032 ms   114.29 GF/s | Bwd:    0.0032 ms   114.40 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n512_b16|512|1|1|16|1|0.003226|114.285715|0.003222|114.399207|0.12
+[run ] n1024_b1         | Mode:compute | Len:   1024 | Batch:     1 | Thr: 1 | Fwd:    0.0034 ms    15.15 GF/s | Bwd:    0.0034 ms    15.15 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n1024_b1|1024|1|1|1|1|0.003379|15.151515|0.003379|15.151515|0.02
+[run ] n1024_b4         | Mode:compute | Len:   1024 | Batch:     4 | Thr: 1 | Fwd:    0.0038 ms    53.33 GF/s | Bwd:    0.0039 ms    52.78 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n1024_b4|1024|1|1|4|1|0.003840|53.333331|0.003880|52.783504|0.06
+[run ] n1024_b16        | Mode:compute | Len:   1024 | Batch:    16 | Thr: 1 | Fwd:    0.0039 ms   210.53 GF/s | Bwd:    0.0039 ms   208.55 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n1024_b16|1024|1|1|16|1|0.003891|210.526325|0.003928|208.553966|0.25
+[run ] n2048_b1         | Mode:compute | Len:   2048 | Batch:     1 | Thr: 1 | Fwd:    0.0044 ms    25.88 GF/s | Bwd:    0.0044 ms    25.88 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n2048_b1|2048|1|1|1|1|0.004352|25.882353|0.004352|25.882353|0.03
+[run ] n2048_b4         | Mode:compute | Len:   2048 | Batch:     4 | Thr: 1 | Fwd:    0.0055 ms    82.24 GF/s | Bwd:    0.0050 ms    89.82 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n2048_b4|2048|1|1|4|1|0.005478|82.242991|0.005016|89.824565|0.12
+[run ] n2048_b16        | Mode:compute | Len:   2048 | Batch:    16 | Thr: 1 | Fwd:    0.0052 ms   348.73 GF/s | Bwd:    0.0052 ms   349.27 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n2048_b16|2048|1|1|16|1|0.005168|348.730659|0.005160|349.271306|0.50
+[run ] n4096_b1         | Mode:compute | Len:   4096 | Batch:     1 | Thr: 1 | Fwd:    0.0048 ms    51.06 GF/s | Bwd:    0.0049 ms    50.53 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n4096_b1|4096|1|1|1|1|0.004813|51.063828|0.004864|50.526314|0.06
+[run ] n4096_b4         | Mode:compute | Len:   4096 | Batch:     4 | Thr: 1 | Fwd:    0.0049 ms   199.87 GF/s | Bwd:    0.0050 ms   198.45 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n4096_b4|4096|1|1|4|1|0.004918|199.869883|0.004954|198.449609|0.25
+[run ] n4096_b16        | Mode:compute | Len:   4096 | Batch:    16 | Thr: 1 | Fwd:    0.0050 ms   783.67 GF/s | Bwd:    0.0050 ms   785.18 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n4096_b16|4096|1|1|16|1|0.005018|783.673495|0.005008|785.175698|1.00
+[run ] n8192_b1         | Mode:compute | Len:   8192 | Batch:     1 | Thr: 1 | Fwd:    0.0083 ms    64.17 GF/s | Bwd:    0.0083 ms    64.20 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n8192_b1|8192|1|1|1|1|0.008298|64.172774|0.008294|64.197532|0.12
+[run ] n8192_b4         | Mode:compute | Len:   8192 | Batch:     4 | Thr: 1 | Fwd:    0.0084 ms   253.66 GF/s | Bwd:    0.0084 ms   253.66 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n8192_b4|8192|1|1|4|1|0.008397|253.658541|0.008397|253.658541|0.50
+[run ] n8192_b16        | Mode:compute | Len:   8192 | Batch:    16 | Thr: 1 | Fwd:    0.0084 ms  1014.63 GF/s | Bwd:    0.0084 ms  1014.63 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n8192_b16|8192|1|1|16|1|0.008397|1014.634163|0.008397|1014.634163|2.00
+[run ] n16384_b1        | Mode:compute | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0103 ms   111.53 GF/s | Bwd:    0.0103 ms   111.44 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n16384_b1|16384|1|1|1|1|0.010283|111.529488|0.010291|111.442785|0.25
+[run ] n16384_b4        | Mode:compute | Len:  16384 | Batch:     4 | Thr: 1 | Fwd:    0.0103 ms   443.56 GF/s | Bwd:    0.0103 ms   445.77 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n16384_b4|16384|1|1|4|1|0.010342|443.564366|0.010291|445.771139|1.00
+[run ] n16384_b16       | Mode:compute | Len:  16384 | Batch:    16 | Thr: 1 | Fwd:    0.0159 ms  1156.13 GF/s | Bwd:    0.0159 ms  1153.22 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n16384_b16|16384|1|1|16|1|0.015872|1156.129021|0.015912|1153.222772|4.00
+[run ] n32768_b1        | Mode:compute | Len:  32768 | Batch:     1 | Thr: 1 | Fwd:    0.0082 ms   300.00 GF/s | Bwd:    0.0081 ms   301.89 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n32768_b1|32768|1|1|1|1|0.008192|300.000008|0.008141|301.886787|0.50
+[run ] n32768_b4        | Mode:compute | Len:  32768 | Batch:     4 | Thr: 1 | Fwd:    0.0087 ms  1130.24 GF/s | Bwd:    0.0087 ms  1136.09 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n32768_b4|32768|1|1|4|1|0.008698|1130.242836|0.008653|1136.094632|2.00
+[run ] n32768_b16       | Mode:compute | Len:  32768 | Batch:    16 | Thr: 1 | Fwd:    0.0245 ms  1607.01 GF/s | Bwd:    0.0242 ms  1623.68 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n32768_b16|32768|1|1|16|1|0.024469|1607.009715|0.024218|1623.678672|8.00
+[run ] n65536_b1        | Mode:compute | Len:  65536 | Batch:     1 | Thr: 1 | Fwd:    0.0076 ms   691.89 GF/s | Bwd:    0.0075 ms   696.60 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n65536_b1|65536|1|1|1|1|0.007578|691.891862|0.007526|696.598645|1.00
+[run ] n65536_b4        | Mode:compute | Len:  65536 | Batch:     4 | Thr: 1 | Fwd:    0.0131 ms  1600.00 GF/s | Bwd:    0.0131 ms  1599.80 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n65536_b4|65536|1|1|4|1|0.013107|1600.000004|0.013109|1599.804668|4.00
+[run ] n65536_b16       | Mode:compute | Len:  65536 | Batch:    16 | Thr: 1 | Fwd:    0.0540 ms  1553.45 GF/s | Bwd:    0.0541 ms  1550.18 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n65536_b16|65536|1|1|16|1|0.054000|1553.445864|0.054114|1550.184721|16.00
+[run ] n131072_b1       | Mode:compute | Len: 131072 | Batch:     1 | Thr: 1 | Fwd:    0.0096 ms  1157.64 GF/s | Bwd:    0.0095 ms  1176.22 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n131072_b1|131072|1|1|1|1|0.009624|1157.639248|0.009472|1176.216234|2.00
+[run ] n131072_b4       | Mode:compute | Len: 131072 | Batch:     4 | Thr: 1 | Fwd:    0.0240 ms  1859.21 GF/s | Bwd:    0.0239 ms  1867.81 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n131072_b4|131072|1|1|4|1|0.023970|1859.208361|0.023859|1867.811168|8.00
+[run ] n131072_b16      | Mode:compute | Len: 131072 | Batch:    16 | Thr: 1 | Fwd:    0.1055 ms  1690.10 GF/s | Bwd:    0.1054 ms  1690.94 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n131072_b16|131072|1|1|16|1|0.105472|1690.097017|0.105419|1690.943670|32.00
+[run ] n262144_b1       | Mode:compute | Len: 262144 | Batch:     1 | Thr: 1 | Fwd:    0.0157 ms  1501.13 GF/s | Bwd:    0.0151 ms  1567.35 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n262144_b1|262144|1|1|1|1|0.015717|1501.129992|0.015053|1567.346951|4.00
+[run ] n262144_b4       | Mode:compute | Len: 262144 | Batch:     4 | Thr: 1 | Fwd:    0.0549 ms  1719.45 GF/s | Bwd:    0.0543 ms  1738.87 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n262144_b4|262144|1|1|4|1|0.054885|1719.453193|0.054272|1738.867861|16.00
+[run ] n262144_b16      | Mode:compute | Len: 262144 | Batch:    16 | Thr: 1 | Fwd:    0.2055 ms  1836.77 GF/s | Bwd:    0.2054 ms  1838.15 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n262144_b16|262144|1|1|16|1|0.205517|1836.771378|0.205363|1838.145082|64.00
+[run ] n524288_b1       | Mode:compute | Len: 524288 | Batch:     1 | Thr: 1 | Fwd:    0.0266 ms  1871.78 GF/s | Bwd:    0.0266 ms  1874.37 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n524288_b1|524288|1|1|1|1|0.026610|1871.781641|0.026573|1874.373818|8.00
+[run ] n524288_b4       | Mode:compute | Len: 524288 | Batch:     4 | Thr: 1 | Fwd:    0.1126 ms  1768.73 GF/s | Bwd:    0.1124 ms  1771.97 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n524288_b4|524288|1|1|4|1|0.112640|1768.727282|0.112434|1771.974207|32.00
+[run ] n524288_b16      | Mode:compute | Len: 524288 | Batch:    16 | Thr: 1 | Fwd:    0.4085 ms  1950.99 GF/s | Bwd:    0.4091 ms  1948.09 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n524288_b16|524288|1|1|16|1|0.408469|1950.987991|0.409077|1948.088445|128.00
+[run ] n1048576_b1      | Mode:compute | Len:1048576 | Batch:     1 | Thr: 1 | Fwd:    0.0616 ms  1702.41 GF/s | Bwd:    0.0618 ms  1696.37 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b1|1048576|1|1|1|1|0.061594|1702.410692|0.061813|1696.373562|16.00
+[run ] n1048576_b4      | Mode:compute | Len:1048576 | Batch:     4 | Thr: 1 | Fwd:    0.2227 ms  1883.65 GF/s | Bwd:    0.2259 ms  1856.79 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b4|1048576|1|1|4|1|0.222669|1883.651492|0.225890|1856.793669|64.00
+[run ] n1048576_b16     | Mode:compute | Len:1048576 | Batch:    16 | Thr: 1 | Fwd:    0.8165 ms  2054.81 GF/s | Bwd:    0.8157 ms  2056.87 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b16|1048576|1|1|16|1|0.816486|2054.806651|0.815667|2056.870373|256.00
+[run ] n2097152_b1      | Mode:compute | Len:2097152 | Batch:     1 | Thr: 1 | Fwd:    0.1233 ms  1786.05 GF/s | Bwd:    0.1231 ms  1788.27 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b1|2097152|1|1|1|1|0.123290|1786.046555|0.123136|1788.274488|32.00
+[run ] n2097152_b4      | Mode:compute | Len:2097152 | Batch:     4 | Thr: 1 | Fwd:    0.4319 ms  2039.26 GF/s | Bwd:    0.4296 ms  2050.44 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b4|2097152|1|1|4|1|0.431923|2039.260319|0.429568|2050.440979|128.00
+[run ] n2097152_b16     | Mode:compute | Len:2097152 | Batch:    16 | Thr: 1 | Fwd:    1.6515 ms  2133.33 GF/s | Bwd:    1.6532 ms  2131.09 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b16|2097152|1|1|16|1|1.651509|2133.331379|1.653248|2131.086993|512.00
+[run ] n4194304_b1      | Mode:compute | Len:4194304 | Batch:     1 | Thr: 1 | Fwd:    0.2500 ms  1845.80 GF/s | Bwd:    0.2488 ms  1854.14 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b1|4194304|1|1|1|1|0.249958|1845.800931|0.248834|1854.144392|64.00
+[run ] n4194304_b4      | Mode:compute | Len:4194304 | Batch:     4 | Thr: 1 | Fwd:    0.9490 ms  1944.58 GF/s | Bwd:    0.9490 ms  1944.68 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b4|4194304|1|1|4|1|0.949043|1944.583557|0.948998|1944.675403|256.00
+[run ] n4194304_b16     | Mode:compute | Len:4194304 | Batch:    16 | Thr: 1 | Fwd:    3.7282 ms  1980.02 GF/s | Bwd:    3.7146 ms  1987.28 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b16|4194304|1|1|16|1|3.728240|1980.016145|3.714611|1987.280750|1024.00
+
+Benchmark workload complete.
+
+
+real	0m1.502s
+user	0m0.771s
+sys	0m0.732s
+[DONE] cufft_gpu
+
+============================================================
+RUN PROFILE: cufft_gpu_batch_scaling
+Description : cuFFT batch scaling sweep on fixed length (timing=compute)
+Workload    : batch_scaling
+============================================================
+PROFILE|cufft_gpu_batch_scaling|cuFFT batch scaling sweep on fixed length (timing=compute)|CUDA_CUFFT|1|batch_scaling|32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304|1,4,16|compute|16384|-|1
+
+############################################################
+# FFT BENCHMARK (cuFFT, 1D, single precision)              #
+############################################################
+profile_id       : cufft_gpu_batch_scaling
+profile_desc     : cuFFT batch scaling sweep on fixed length (timing=compute)
+workload         : batch_scaling
+timing_mode      : compute
+timed runs       : 20
+warmup runs      : 5
+mem cap (MB)     : 8192.0
+threads_field    : 1
+lengths: 32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+batches: 1,4,16
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+gpu_name         : NVIDIA GeForce RTX 3080
+compute_cap      : 8.6
+sm_count         : 68
+warp_size        : 32
+max_threads_sm   : 1536
+max_threads_blk  : 1024
+global_mem_mb    : 9872.4
+
+
+====================================================================
+WORKLOAD: batch_scaling (fixed length, vary batch)
+====================================================================
+length=16384 threads_field=1
+[run ] n16384_b1_t1     | Mode:compute | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0103 ms   111.44 GF/s | Bwd:    0.0103 ms   111.44 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b1_t1|16384|1|1|1|1|0.010291|111.442785|0.010291|111.442785|0.25
+[run ] n16384_b4_t1     | Mode:compute | Len:  16384 | Batch:     4 | Thr: 1 | Fwd:    0.0103 ms   445.77 GF/s | Bwd:    0.0103 ms   445.77 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b4_t1|16384|1|1|4|1|0.010291|445.771139|0.010291|445.771139|1.00
+[run ] n16384_b16_t1    | Mode:compute | Len:  16384 | Batch:    16 | Thr: 1 | Fwd:    0.0162 ms  1133.17 GF/s | Bwd:    0.0158 ms  1159.87 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b16_t1|16384|1|1|16|1|0.016194|1133.168659|0.015821|1159.870567|4.00
+[run ] n16384_b64_t1    | Mode:compute | Len:  16384 | Batch:    64 | Thr: 1 | Fwd:    0.0361 ms  2031.13 GF/s | Bwd:    0.0360 ms  2036.36 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b64_t1|16384|1|1|64|1|0.036138|2031.134401|0.036045|2036.363620|16.00
+[run ] n16384_b256_t1   | Mode:compute | Len:  16384 | Batch:   256 | Thr: 1 | Fwd:    0.1295 ms  2266.56 GF/s | Bwd:    0.1298 ms  2262.09 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu_batch_scaling|batch_scaling|n16384_b256_t1|16384|1|1|256|1|0.129536|2266.561319|0.129792|2262.090750|64.00
+
+Benchmark workload complete.
+
+
+real	0m0.269s
+user	0m0.051s
+sys	0m0.218s
+[DONE] cufft_gpu_batch_scaling
+
+============================================================
+ALL RUNS COMPLETE
+Log    : ./fft_logs/fft_benchmark_gpu_20260220_195154.log
+Report : ./fft_logs/fft_benchmark_gpu_20260220_195154.report.md
+Lines  : 255
+Done at: Fri Feb 20 19:51:56 IST 2026
+============================================================
+
+Quick inspect:
+  grep '^PROFILE|' ./fft_logs/fft_benchmark_gpu_20260220_195154.log
+  grep '^RESULT|' ./fft_logs/fft_benchmark_gpu_20260220_195154.log | head
+  cat ./fft_logs/fft_benchmark_gpu_20260220_195154.report.md

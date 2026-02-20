@@ -195,6 +195,12 @@ def parse_log_file(path: Path) -> List[Dict]:
 
 
 def aggregate_metrics(df: pd.DataFrame) -> pd.DataFrame:
+    # Keep aggregation methodology aligned with shell aggregators:
+    # average latency first, then derive GFLOPS from averaged latency.
+    df = df.copy()
+    df["fwd_flops"] = df["fwd_gflops"] * df["fwd_ms"] * 1.0e6
+    df["bwd_flops"] = df["bwd_gflops"] * df["bwd_ms"] * 1.0e6
+
     group_cols = [
         "dataset_id",
         "family",
@@ -222,12 +228,26 @@ def aggregate_metrics(df: pd.DataFrame) -> pd.DataFrame:
             fwd_ms_std=("fwd_ms", "std"),
             bwd_ms_mean=("bwd_ms", "mean"),
             bwd_ms_std=("bwd_ms", "std"),
-            fwd_gflops_mean=("fwd_gflops", "mean"),
+            fwd_flops_mean=("fwd_flops", "mean"),
+            bwd_flops_mean=("bwd_flops", "mean"),
+            fwd_gflops_mean_direct=("fwd_gflops", "mean"),
             fwd_gflops_std=("fwd_gflops", "std"),
-            bwd_gflops_mean=("bwd_gflops", "mean"),
+            bwd_gflops_mean_direct=("bwd_gflops", "mean"),
             bwd_gflops_std=("bwd_gflops", "std"),
         )
         .reset_index()
+    )
+
+    agg["fwd_gflops_mean"] = agg["fwd_flops_mean"] / (agg["fwd_ms_mean"] * 1.0e6)
+    agg["bwd_gflops_mean"] = agg["bwd_flops_mean"] / (agg["bwd_ms_mean"] * 1.0e6)
+    agg.drop(
+        columns=[
+            "fwd_flops_mean",
+            "bwd_flops_mean",
+            "fwd_gflops_mean_direct",
+            "bwd_gflops_mean_direct",
+        ],
+        inplace=True,
     )
 
     for c in [
@@ -407,19 +427,27 @@ def plot_scaling(df: pd.DataFrame, workload: str, out_dir: Path, precision: str)
         s = sub[sub["scenario_id"] == scen].sort_values(xcol)
         if s.empty:
             continue
-        fig, axes = plt.subplots(1, 2, figsize=(12, 4.8))
+        fig, axes = plt.subplots(2, 2, figsize=(12.8, 8.8))
         for pid in sorted(s["profile_id"].unique(), key=profile_sort_key):
             p = s[s["profile_id"] == pid].sort_values(xcol)
-            axes[0].plot(p[xcol], p["fwd_gflops_mean"], marker="o", label=pid)
-            axes[1].plot(p[xcol], p["fwd_ms_mean"], marker="o", label=pid)
-        axes[0].set_title(f"{workload} {scen} | Forward {_metric_label(precision)}")
-        axes[0].set_xlabel(xlabel)
-        axes[0].grid(True, alpha=0.25)
-        axes[1].set_title(f"{workload} {scen} | Forward ms")
-        axes[1].set_xlabel(xlabel)
-        axes[1].set_yscale("log")
-        axes[1].grid(True, alpha=0.25)
-        axes[0].legend(fontsize=8)
+            axes[0, 0].plot(p[xcol], p["fwd_gflops_mean"], marker="o", label=pid)
+            axes[0, 1].plot(p[xcol], p["bwd_gflops_mean"], marker="o", label=pid)
+            axes[1, 0].plot(p[xcol], p["fwd_ms_mean"], marker="o", label=pid)
+            axes[1, 1].plot(p[xcol], p["bwd_ms_mean"], marker="o", label=pid)
+
+        axes[0, 0].set_title(f"{workload} {scen} | Forward {_metric_label(precision)}")
+        axes[0, 1].set_title(f"{workload} {scen} | Backward {_metric_label(precision)}")
+        axes[1, 0].set_title(f"{workload} {scen} | Forward ms")
+        axes[1, 1].set_title(f"{workload} {scen} | Backward ms")
+
+        for ax in axes.flatten():
+            ax.set_xlabel(xlabel)
+            ax.set_xscale("log", base=2)
+            ax.grid(True, alpha=0.25)
+
+        axes[1, 0].set_yscale("log")
+        axes[1, 1].set_yscale("log")
+        axes[0, 0].legend(fontsize=8)
         plt.tight_layout()
         out = out_dir / f"{safe_name(workload)}_{safe_name(scen)}.png"
         out.parent.mkdir(parents=True, exist_ok=True)

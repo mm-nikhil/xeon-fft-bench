@@ -4,12 +4,8 @@ This folder contains plots generated from raw `RESULT|...` benchmark logs.
 
 ## Included Inputs
 
-- Logs parsed: 5
-- `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/fft_benchmark_20260219_160150.log`
-- `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/fft_benchmark_20260219_160531.log`
-- `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/fft_benchmark_20260219_160917.log`
-- `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/fft_benchmark_20260219_161258.log`
-- `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/fft_benchmark_20260219_161640.log`
+- Logs parsed: 1
+- `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/fft_benchmark_20260220_184713.log`
 
 ## Datasets
 

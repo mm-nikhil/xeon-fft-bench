@@ -201,6 +201,10 @@ def build_gpu_data(manifests: List[Path], gpu_root: Path) -> Tuple[pd.DataFrame,
 
     raw = pd.DataFrame(all_rows)
     raw.sort_values(by=["set_id", "run_index", "profile_id", "workload", "n", "batch"], inplace=True)
+    # Align aggregation methodology with shell aggregators:
+    # average latency first, then derive GFLOPS from averaged latency.
+    raw["fwd_flops"] = raw["fwd_gflops"] * raw["fwd_ms"] * 1.0e6
+    raw["bwd_flops"] = raw["bwd_gflops"] * raw["bwd_ms"] * 1.0e6
 
     group_cols = [
         "set_id",
@@ -221,13 +225,26 @@ def build_gpu_data(manifests: List[Path], gpu_root: Path) -> Tuple[pd.DataFrame,
             fwd_ms_std=("fwd_ms", "std"),
             bwd_ms_mean=("bwd_ms", "mean"),
             bwd_ms_std=("bwd_ms", "std"),
-            fwd_gflops_mean=("fwd_gflops", "mean"),
+            fwd_flops_mean=("fwd_flops", "mean"),
+            bwd_flops_mean=("bwd_flops", "mean"),
+            fwd_gflops_mean_direct=("fwd_gflops", "mean"),
             fwd_gflops_std=("fwd_gflops", "std"),
-            bwd_gflops_mean=("bwd_gflops", "mean"),
+            bwd_gflops_mean_direct=("bwd_gflops", "mean"),
             bwd_gflops_std=("bwd_gflops", "std"),
             mem_mb_mean=("mem_mb", "mean"),
         )
         .reset_index()
+    )
+    agg["fwd_gflops_mean"] = agg["fwd_flops_mean"] / (agg["fwd_ms_mean"] * 1.0e6)
+    agg["bwd_gflops_mean"] = agg["bwd_flops_mean"] / (agg["bwd_ms_mean"] * 1.0e6)
+    agg.drop(
+        columns=[
+            "fwd_flops_mean",
+            "bwd_flops_mean",
+            "fwd_gflops_mean_direct",
+            "bwd_gflops_mean_direct",
+        ],
+        inplace=True,
     )
     for c in ["fwd_ms_std", "bwd_ms_std", "fwd_gflops_std", "bwd_gflops_std"]:
         agg[c] = agg[c].fillna(0.0)
@@ -244,18 +261,29 @@ def parse_mkl_report_best(report: Path) -> pd.DataFrame:
         cols = [c.strip() for c in line.strip().strip("|").split("|")]
         if len(cols) < 11:
             continue
+        try:
+            n = int(cols[2])
+            batch = int(cols[3])
+            threads = int(cols[4])
+            fwd_ms = float(cols[7])
+            fwd_gflops = float(cols[8])
+            bwd_ms = float(cols[9])
+            bwd_gflops = float(cols[10])
+        except ValueError:
+            # Skip incomplete/failed rows (for example "-" metrics from SKIP cases).
+            continue
         rows.append(
             {
                 "case_id": cols[1],
-                "n": int(cols[2]),
-                "batch": int(cols[3]),
-                "threads": int(cols[4]),
+                "n": n,
+                "batch": batch,
+                "threads": threads,
                 "profile_id": cols[5],
                 "isa": cols[6],
-                "fwd_ms": float(cols[7]),
-                "fwd_gflops": float(cols[8]),
-                "bwd_ms": float(cols[9]),
-                "bwd_gflops": float(cols[10]),
+                "fwd_ms": fwd_ms,
+                "fwd_gflops": fwd_gflops,
+                "bwd_ms": bwd_ms,
+                "bwd_gflops": bwd_gflops,
             }
         )
     if not rows:
@@ -448,6 +476,9 @@ def plot_gpu_vs_mkl(df_cmp: pd.DataFrame, out_dir: Path) -> int:
     set_ids = sorted(df_cmp["set_id"].unique())
     batches = sorted(df_cmp["batch"].unique())
     palette = dict(zip(set_ids, sns.color_palette("tab10", n_colors=len(set_ids))))
+    timing_modes = sorted(df_cmp["timing_mode"].dropna().unique().tolist())
+    timing_mode_str = ",".join(timing_modes) if timing_modes else "unknown"
+    timing_note = f"GPU timing={timing_mode_str}; MKL timing=compute-only"
 
     # Speedup trends by batch.
     for batch in batches:
@@ -470,7 +501,7 @@ def plot_gpu_vs_mkl(df_cmp: pd.DataFrame, out_dir: Path) -> int:
             plt.grid(True, alpha=0.25)
             plt.xlabel("Length (N)")
             plt.ylabel("Speedup (x)")
-            plt.title(f"{title} | batch={batch}")
+            plt.title(f"{title} | batch={batch}\n{timing_note}")
             plt.legend(fontsize=8)
             plt.tight_layout()
             out = out_dir / f"{safe_name(speed_col)}_batch_{batch}.png"
@@ -507,7 +538,7 @@ def plot_gpu_vs_mkl(df_cmp: pd.DataFrame, out_dir: Path) -> int:
         plt.grid(True, alpha=0.25)
         plt.xlabel("MKL best SP GFLOPS")
         plt.ylabel("GPU SP GFLOPS")
-        plt.title(title)
+        plt.title(f"{title}\n{timing_note}")
         plt.legend(fontsize=8)
         plt.tight_layout()
         out = out_dir / f"scatter_{safe_name(metric_gpu)}_vs_{safe_name(metric_mkl)}.png"
@@ -535,7 +566,7 @@ def plot_gpu_vs_mkl(df_cmp: pd.DataFrame, out_dir: Path) -> int:
     plt.axhline(1.0, color="black", linestyle="--", linewidth=1.0)
     plt.xticks(x, sdf["set_id"], rotation=20, ha="right")
     plt.ylabel("Geomean speedup (x)")
-    plt.title("GPU vs MKL Best: Geomean SP GFLOPS speedup")
+    plt.title(f"GPU vs MKL Best: Geomean SP GFLOPS speedup\n{timing_note}")
     plt.grid(True, axis="y", alpha=0.25)
     plt.legend()
     plt.tight_layout()

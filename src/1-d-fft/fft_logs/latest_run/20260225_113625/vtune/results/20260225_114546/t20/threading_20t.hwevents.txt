@@ -1,0 +1,18 @@
+Function                                      Module                    Function (Full)                             Source File      Start Address
+--------------------------------------------  ------------------------  ------------------------------------------  ---------------  -------------
+OS_BARESYSCALL_DoCallAsmIntel64Linux          libc-dynamic.so           OS_BARESYSCALL_DoCallAsmIntel64Linux        [Unknown]        0x80954      
+[MKL FFT]@avx512_mg_colbatch_plain_fwd_16_s   libmkl_avx512.so.2        mkl_dft_avx512_mg_colbatch_plain_fwd_16_s   [Unknown]        0x219a6f0    
+[MKL FFT]@avx512_mg_colbatch_twidl_fwd_16_s   libmkl_avx512.so.2        mkl_dft_avx512_mg_colbatch_twidl_fwd_16_s   [Unknown]        0x219cb20    
+[MKL FFT]@avx512_mg_rowbatch_twidl_bwd_032_s  libmkl_avx512.so.2        mkl_dft_avx512_mg_rowbatch_twidl_bwd_032_s  [Unknown]        0x2145280    
+[MKL SERVICE]@domain_get_max_threads          libmkl_intel_thread.so.2  mkl_serv_domain_get_max_threads             [Unknown]        0x29ce00     
+[ld-linux-x86-64.so.2]                        ld-linux-x86-64.so.2      [ld-linux-x86-64.so.2]                      [Unknown]        0            
+__kmp_fork_barrier                            libiomp5.so               __kmp_fork_barrier(int, int)                kmp_barrier.cpp  0x82a40      
+_dwarf_get_abbrev_for_code                    libdwarf.so               _dwarf_get_abbrev_for_code                  [Unknown]        0x4f230      
+_dwarf_load_elf_symtab_symbols                libdwarf.so               _dwarf_load_elf_symtab_symbols              [Unknown]        0x17570      
+_dwarf_siblingof_internal                     libdwarf.so               _dwarf_siblingof_internal                   [Unknown]        0x104e0      
+dlopen                                        libdl.so.2                dlopen                                      [Unknown]        0xfe0        
+memcmp                                        libc-dynamic.so           memcmp                                      [Unknown]        0x69ce0      
+memmove                                       libc-dynamic.so           memmove                                     [Unknown]        0x69e90      
+memset                                        libc-dynamic.so           memset                                      [Unknown]        0x6a3b0      
+mm_get_tinfo                                  libmkl_core.so.2          mm_get_tinfo                                [Unknown]        0x211b50     
+rand                                          libc.so.6                 rand                                        [Unknown]        0x51e90      

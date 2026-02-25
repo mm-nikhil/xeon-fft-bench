@@ -1,0 +1,1355 @@
+[SETUP] Sourcing Intel oneAPI environment if available...
+
+============================================================
+  FFT BENCHMARK RUN (1D)
+  Date       : Wed Feb 25 12:30:49 IST 2026
+  Hostname   : amdtoolsserver.morphingmachines
+  Log file   : /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/1024_batches/20260225_123049/runs/run01/fft_benchmark_20260225_123049.log
+  Report file: /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/1024_batches/20260225_123049/runs/run01/fft_benchmark_20260225_123049.report.md
+============================================================
+
+[CHECK] MKL environment
+        MKLROOT     = /home/nikhil/.local
+        Include dir = /home/nikhil/.local/include
+        Lib dir     = /home/nikhil/.local/lib
+        Runtime lib = -l:libmkl_rt.so.2
+
+[CHECK] Compiler: gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-22)
+
+[COMPILE] gcc -O3 -march=native -std=c99 fft_benchmark.c
+          Binary: fft_benchmark
+
+[CONFIG] timed runs=20, warmup=5, mem_cap_mb=3072
+[CONFIG] run profiles=baseline_sse42_1t,avx512_phys,avx512_logical
+[CONFIG] throughput lengths=32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304, batches=1,2,4,8,16,32,64,128,256,512,1024
+[CONFIG] thread scaling set=1,2,4,8,10,20, scale length=16384, scale batch=64
+[CONFIG] batch scaling set=1,4,16,64,256, scale length=16384
+[WARN] throughput lengths include values < 1024.
+       For 1D multithread runs, tiny lengths are overhead-dominated and can look falsely slow.
+
+============================================================
+RUN PROFILE: baseline_sse42_1t
+Description : MKL SSE4.2 baseline, single thread (CPU path, no AVX2/AVX512 kernels)
+ISA         : SSE4_2
+Threads     : 1
+Workload    : throughput
+============================================================
+PROFILE|baseline_sse42_1t|MKL SSE4.2 baseline, single thread (CPU path, no AVX2/AVX512 kernels)|SSE4_2|1|throughput|32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304|1,2,4,8,16,32,64,128,256,512,1024|1,2,4,8,10,20|16384|64|10
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : baseline_sse42_1t
+profile_desc     : MKL SSE4.2 baseline, single thread (CPU path, no AVX2/AVX512 kernels)
+workload         : throughput
+threads(cli)     : 1
+mkl max threads  : 1
+timed runs       : 20
+warmup runs      : 5
+mem cap (MB)     : 3072.0
+lengths: 32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+batches: 1,2,4,8,16,32,64,128,256,512,1024
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,2,4,8,16,32,64,128,256,512,1024
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=1
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr: 1 | Fwd:    0.0001 ms     9.49 GF/s | Bwd:    0.0001 ms     7.28 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n32_b1|32|1|1|1|1|0.000084|9.489376|0.000110|7.284940|0.00
+[run ] n32_b2           | Len:     32 | Batch:     2 | Thr: 1 | Fwd:    0.0001 ms    12.01 GF/s | Bwd:    0.0001 ms    11.80 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n32_b2|32|1|1|2|1|0.000133|12.009460|0.000136|11.802473|0.00
+[run ] n32_b4           | Len:     32 | Batch:     4 | Thr: 1 | Fwd:    0.0002 ms    14.86 GF/s | Bwd:    0.0002 ms    14.58 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n32_b4|32|1|1|4|1|0.000215|14.863536|0.000219|14.579375|0.00
+[run ] n32_b8           | Len:     32 | Batch:     8 | Thr: 1 | Fwd:    0.0004 ms    16.90 GF/s | Bwd:    0.0004 ms    15.77 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n32_b8|32|1|1|8|1|0.000379|16.903996|0.000406|15.766208|0.00
+[run ] n32_b16          | Len:     32 | Batch:    16 | Thr: 1 | Fwd:    0.0008 ms    15.10 GF/s | Bwd:    0.0009 ms    14.30 GF/s | Mem:   0.01 MB
+RESULT|baseline_sse42_1t|throughput|n32_b16|32|1|1|16|1|0.000847|15.104403|0.000895|14.302827|0.01
+[run ] n32_b32          | Len:     32 | Batch:    32 | Thr: 1 | Fwd:    0.0017 ms    15.45 GF/s | Bwd:    0.0017 ms    14.91 GF/s | Mem:   0.02 MB
+RESULT|baseline_sse42_1t|throughput|n32_b32|32|1|1|32|1|0.001657|15.453970|0.001717|14.912252|0.02
+[run ] n32_b64          | Len:     32 | Batch:    64 | Thr: 1 | Fwd:    0.0032 ms    15.83 GF/s | Bwd:    0.0034 ms    14.84 GF/s | Mem:   0.03 MB
+RESULT|baseline_sse42_1t|throughput|n32_b64|32|1|1|64|1|0.003234|15.832697|0.003450|14.841143|0.03
+[run ] n32_b128         | Len:     32 | Batch:   128 | Thr: 1 | Fwd:    0.0064 ms    15.89 GF/s | Bwd:    0.0069 ms    14.82 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n32_b128|32|1|1|128|1|0.006443|15.892806|0.006909|14.820351|0.06
+[run ] n32_b256         | Len:     32 | Batch:   256 | Thr: 1 | Fwd:    0.0128 ms    15.98 GF/s | Bwd:    0.0130 ms    15.74 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n32_b256|32|1|1|256|1|0.012818|15.977885|0.013014|15.737266|0.12
+[run ] n32_b512         | Len:     32 | Batch:   512 | Thr: 1 | Fwd:    0.0254 ms    16.13 GF/s | Bwd:    0.0266 ms    15.42 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n32_b512|32|1|1|512|1|0.025393|16.130545|0.026570|15.416029|0.25
+[run ] n32_b1024        | Len:     32 | Batch:  1024 | Thr: 1 | Fwd:    0.0494 ms    16.60 GF/s | Bwd:    0.0547 ms    14.98 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n32_b1024|32|1|1|1024|1|0.049357|16.597608|0.054695|14.977659|0.50
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr: 1 | Fwd:    0.0002 ms     9.16 GF/s | Bwd:    0.0002 ms    12.04 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n64_b1|64|1|1|1|1|0.000210|9.161620|0.000159|12.041064|0.00
+[run ] n64_b2           | Len:     64 | Batch:     2 | Thr: 1 | Fwd:    0.0003 ms    11.74 GF/s | Bwd:    0.0003 ms    12.49 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n64_b2|64|1|1|2|1|0.000327|11.742583|0.000307|12.489243|0.00
+[run ] n64_b4           | Len:     64 | Batch:     4 | Thr: 1 | Fwd:    0.0007 ms    11.58 GF/s | Bwd:    0.0007 ms    11.59 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n64_b4|64|1|1|4|1|0.000663|11.580477|0.000663|11.590477|0.00
+[run ] n64_b8           | Len:     64 | Batch:     8 | Thr: 1 | Fwd:    0.0013 ms    12.09 GF/s | Bwd:    0.0012 ms    13.03 GF/s | Mem:   0.01 MB
+RESULT|baseline_sse42_1t|throughput|n64_b8|64|1|1|8|1|0.001270|12.092595|0.001179|13.025051|0.01
+[run ] n64_b16          | Len:     64 | Batch:    16 | Thr: 1 | Fwd:    0.0025 ms    12.08 GF/s | Bwd:    0.0026 ms    11.91 GF/s | Mem:   0.02 MB
+RESULT|baseline_sse42_1t|throughput|n64_b16|64|1|1|16|1|0.002542|12.083749|0.002580|11.908632|0.02
+[run ] n64_b32          | Len:     64 | Batch:    32 | Thr: 1 | Fwd:    0.0046 ms    13.28 GF/s | Bwd:    0.0050 ms    12.29 GF/s | Mem:   0.03 MB
+RESULT|baseline_sse42_1t|throughput|n64_b32|64|1|1|32|1|0.004627|13.279708|0.004999|12.289242|0.03
+[run ] n64_b64          | Len:     64 | Batch:    64 | Thr: 1 | Fwd:    0.0091 ms    13.46 GF/s | Bwd:    0.0094 ms    13.11 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n64_b64|64|1|1|64|1|0.009131|13.457449|0.009375|13.106533|0.06
+[run ] n64_b128         | Len:     64 | Batch:   128 | Thr: 1 | Fwd:    0.0187 ms    13.13 GF/s | Bwd:    0.0182 ms    13.51 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n64_b128|64|1|1|128|1|0.018723|13.126060|0.018197|13.505479|0.12
+[run ] n64_b256         | Len:     64 | Batch:   256 | Thr: 1 | Fwd:    0.0359 ms    13.69 GF/s | Bwd:    0.0373 ms    13.18 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n64_b256|64|1|1|256|1|0.035901|13.691030|0.037280|13.184621|0.25
+[run ] n64_b512         | Len:     64 | Batch:   512 | Thr: 1 | Fwd:    0.0746 ms    13.18 GF/s | Bwd:    0.0729 ms    13.49 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n64_b512|64|1|1|512|1|0.074601|13.177315|0.072886|13.487357|0.50
+[run ] n64_b1024        | Len:     64 | Batch:  1024 | Thr: 1 | Fwd:    0.1431 ms    13.74 GF/s | Bwd:    0.1509 ms    13.03 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n64_b1024|64|1|1|1024|1|0.143069|13.742136|0.150885|13.030316|1.00
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr: 1 | Fwd:    0.0003 ms    13.65 GF/s | Bwd:    0.0003 ms    13.67 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n128_b1|128|1|1|1|1|0.000328|13.651905|0.000328|13.665805|0.00
+[run ] n128_b2          | Len:    128 | Batch:     2 | Thr: 1 | Fwd:    0.0006 ms    15.74 GF/s | Bwd:    0.0005 ms    16.71 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n128_b2|128|1|1|2|1|0.000569|15.737422|0.000536|16.708591|0.00
+[run ] n128_b4          | Len:    128 | Batch:     4 | Thr: 1 | Fwd:    0.0012 ms    15.23 GF/s | Bwd:    0.0012 ms    15.03 GF/s | Mem:   0.01 MB
+RESULT|baseline_sse42_1t|throughput|n128_b4|128|1|1|4|1|0.001176|15.232850|0.001192|15.032987|0.01
+[run ] n128_b8          | Len:    128 | Batch:     8 | Thr: 1 | Fwd:    0.0024 ms    15.18 GF/s | Bwd:    0.0023 ms    15.75 GF/s | Mem:   0.02 MB
+RESULT|baseline_sse42_1t|throughput|n128_b8|128|1|1|8|1|0.002361|15.177482|0.002276|15.746984|0.02
+[run ] n128_b16         | Len:    128 | Batch:    16 | Thr: 1 | Fwd:    0.0047 ms    15.18 GF/s | Bwd:    0.0045 ms    15.83 GF/s | Mem:   0.03 MB
+RESULT|baseline_sse42_1t|throughput|n128_b16|128|1|1|16|1|0.004724|15.175184|0.004529|15.825563|0.03
+[run ] n128_b32         | Len:    128 | Batch:    32 | Thr: 1 | Fwd:    0.0090 ms    15.90 GF/s | Bwd:    0.0092 ms    15.60 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n128_b32|128|1|1|32|1|0.009015|15.901902|0.009188|15.603716|0.06
+[run ] n128_b64         | Len:    128 | Batch:    64 | Thr: 1 | Fwd:    0.0188 ms    15.22 GF/s | Bwd:    0.0193 ms    14.83 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n128_b64|128|1|1|64|1|0.018839|15.219702|0.019340|14.825569|0.12
+[run ] n128_b128        | Len:    128 | Batch:   128 | Thr: 1 | Fwd:    0.0364 ms    15.75 GF/s | Bwd:    0.0369 ms    15.54 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n128_b128|128|1|1|128|1|0.036408|15.750593|0.036903|15.539096|0.25
+[run ] n128_b256        | Len:    128 | Batch:   256 | Thr: 1 | Fwd:    0.0727 ms    15.78 GF/s | Bwd:    0.0721 ms    15.91 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n128_b256|128|1|1|256|1|0.072698|15.775862|0.072103|15.906213|0.50
+[run ] n128_b512        | Len:    128 | Batch:   512 | Thr: 1 | Fwd:    0.1439 ms    15.94 GF/s | Bwd:    0.1505 ms    15.24 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n128_b512|128|1|1|512|1|0.143875|15.942757|0.150497|15.241195|1.00
+[run ] n128_b1024       | Len:    128 | Batch:  1024 | Thr: 1 | Fwd:    0.2601 ms    17.64 GF/s | Bwd:    0.1694 ms    27.08 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n128_b1024|128|1|1|1024|1|0.260071|17.639511|0.169421|27.077657|2.00
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr: 1 | Fwd:    0.0003 ms    29.58 GF/s | Bwd:    0.0003 ms    29.72 GF/s | Mem:   0.00 MB
+RESULT|baseline_sse42_1t|throughput|n256_b1|256|1|1|1|1|0.000346|29.575591|0.000345|29.718844|0.00
+[run ] n256_b2          | Len:    256 | Batch:     2 | Thr: 1 | Fwd:    0.0007 ms    30.44 GF/s | Bwd:    0.0007 ms    30.36 GF/s | Mem:   0.01 MB
+RESULT|baseline_sse42_1t|throughput|n256_b2|256|1|1|2|1|0.000673|30.443488|0.000674|30.363855|0.01
+[run ] n256_b4          | Len:    256 | Batch:     4 | Thr: 1 | Fwd:    0.0013 ms    30.84 GF/s | Bwd:    0.0013 ms    30.71 GF/s | Mem:   0.02 MB
+RESULT|baseline_sse42_1t|throughput|n256_b4|256|1|1|4|1|0.001328|30.839142|0.001334|30.714537|0.02
+[run ] n256_b8          | Len:    256 | Batch:     8 | Thr: 1 | Fwd:    0.0026 ms    30.92 GF/s | Bwd:    0.0028 ms    29.22 GF/s | Mem:   0.03 MB
+RESULT|baseline_sse42_1t|throughput|n256_b8|256|1|1|8|1|0.002650|30.915170|0.002803|29.224920|0.03
+[run ] n256_b16         | Len:    256 | Batch:    16 | Thr: 1 | Fwd:    0.0053 ms    30.87 GF/s | Bwd:    0.0054 ms    30.25 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n256_b16|256|1|1|16|1|0.005308|30.867123|0.005416|30.250509|0.06
+[run ] n256_b32         | Len:    256 | Batch:    32 | Thr: 1 | Fwd:    0.0101 ms    32.45 GF/s | Bwd:    0.0104 ms    31.62 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n256_b32|256|1|1|32|1|0.010098|32.448521|0.010362|31.623077|0.12
+[run ] n256_b64         | Len:    256 | Batch:    64 | Thr: 1 | Fwd:    0.0202 ms    32.46 GF/s | Bwd:    0.0220 ms    29.75 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n256_b64|256|1|1|64|1|0.020192|32.456490|0.022032|29.745987|0.25
+[run ] n256_b128        | Len:    256 | Batch:   128 | Thr: 1 | Fwd:    0.0416 ms    31.48 GF/s | Bwd:    0.0406 ms    32.26 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n256_b128|256|1|1|128|1|0.041637|31.479880|0.040630|32.259825|0.50
+[run ] n256_b256        | Len:    256 | Batch:   256 | Thr: 1 | Fwd:    0.0860 ms    30.48 GF/s | Bwd:    0.0897 ms    29.23 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n256_b256|256|1|1|256|1|0.086019|30.475249|0.089671|29.234042|1.00
+[run ] n256_b512        | Len:    256 | Batch:   512 | Thr: 1 | Fwd:    0.1954 ms    26.83 GF/s | Bwd:    0.1943 ms    26.99 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n256_b512|256|1|1|512|1|0.195432|26.827191|0.194256|26.989530|2.00
+[run ] n256_b1024       | Len:    256 | Batch:  1024 | Thr: 1 | Fwd:    0.4034 ms    25.99 GF/s | Bwd:    0.4065 ms    25.80 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n256_b1024|256|1|1|1024|1|0.403416|25.992418|0.406481|25.796416|4.00
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr: 1 | Fwd:    0.0007 ms    32.90 GF/s | Bwd:    0.0007 ms    32.98 GF/s | Mem:   0.01 MB
+RESULT|baseline_sse42_1t|throughput|n512_b1|512|1|1|1|1|0.000700|32.896502|0.000699|32.981831|0.01
+[run ] n512_b2          | Len:    512 | Batch:     2 | Thr: 1 | Fwd:    0.0014 ms    33.13 GF/s | Bwd:    0.0014 ms    33.26 GF/s | Mem:   0.02 MB
+RESULT|baseline_sse42_1t|throughput|n512_b2|512|1|1|2|1|0.001391|33.133362|0.001386|33.256509|0.02
+[run ] n512_b4          | Len:    512 | Batch:     4 | Thr: 1 | Fwd:    0.0028 ms    33.30 GF/s | Bwd:    0.0028 ms    33.34 GF/s | Mem:   0.03 MB
+RESULT|baseline_sse42_1t|throughput|n512_b4|512|1|1|4|1|0.002767|33.301204|0.002764|33.341993|0.03
+[run ] n512_b8          | Len:    512 | Batch:     8 | Thr: 1 | Fwd:    0.0056 ms    33.19 GF/s | Bwd:    0.0056 ms    32.98 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n512_b8|512|1|1|8|1|0.005554|33.189406|0.005589|32.981268|0.06
+[run ] n512_b16         | Len:    512 | Batch:    16 | Thr: 1 | Fwd:    0.0111 ms    33.33 GF/s | Bwd:    0.0111 ms    33.16 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n512_b16|512|1|1|16|1|0.011060|33.330493|0.011118|33.155956|0.12
+[run ] n512_b32         | Len:    512 | Batch:    32 | Thr: 1 | Fwd:    0.0222 ms    33.20 GF/s | Bwd:    0.0222 ms    33.28 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n512_b32|512|1|1|32|1|0.022204|33.204944|0.022153|33.280704|0.25
+[run ] n512_b64         | Len:    512 | Batch:    64 | Thr: 1 | Fwd:    0.0443 ms    33.28 GF/s | Bwd:    0.0442 ms    33.33 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n512_b64|512|1|1|64|1|0.044310|33.277910|0.044238|33.332720|0.50
+[run ] n512_b128        | Len:    512 | Batch:   128 | Thr: 1 | Fwd:    0.0960 ms    30.72 GF/s | Bwd:    0.0948 ms    31.11 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n512_b128|512|1|1|128|1|0.096008|30.717329|0.094808|31.106296|1.00
+[run ] n512_b256        | Len:    512 | Batch:   256 | Thr: 1 | Fwd:    0.2193 ms    26.89 GF/s | Bwd:    0.2142 ms    27.54 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n512_b256|512|1|1|256|1|0.219348|26.889932|0.214202|27.535923|2.00
+[run ] n512_b512        | Len:    512 | Batch:   512 | Thr: 1 | Fwd:    0.4376 ms    26.96 GF/s | Bwd:    0.4305 ms    27.40 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n512_b512|512|1|1|512|1|0.437611|26.956531|0.430512|27.401078|4.00
+[run ] n512_b1024       | Len:    512 | Batch:  1024 | Thr: 1 | Fwd:    0.9514 ms    24.80 GF/s | Bwd:    0.9830 ms    24.00 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n512_b1024|512|1|1|1024|1|0.951357|24.799260|0.983008|24.000771|8.00
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 1 | Fwd:    0.0015 ms    35.19 GF/s | Bwd:    0.0015 ms    34.97 GF/s | Mem:   0.02 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b1|1024|1|1|1|1|0.001455|35.185039|0.001464|34.973025|0.02
+[run ] n1024_b2         | Len:   1024 | Batch:     2 | Thr: 1 | Fwd:    0.0030 ms    33.78 GF/s | Bwd:    0.0030 ms    33.85 GF/s | Mem:   0.03 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b2|1024|1|1|2|1|0.003031|33.782995|0.003025|33.854894|0.03
+[run ] n1024_b4         | Len:   1024 | Batch:     4 | Thr: 1 | Fwd:    0.0060 ms    34.12 GF/s | Bwd:    0.0060 ms    34.09 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b4|1024|1|1|4|1|0.006002|34.124416|0.006008|34.086772|0.06
+[run ] n1024_b8         | Len:   1024 | Batch:     8 | Thr: 1 | Fwd:    0.0121 ms    33.85 GF/s | Bwd:    0.0120 ms    34.21 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b8|1024|1|1|8|1|0.012099|33.854360|0.011975|34.205948|0.12
+[run ] n1024_b16        | Len:   1024 | Batch:    16 | Thr: 1 | Fwd:    0.0240 ms    34.11 GF/s | Bwd:    0.0239 ms    34.21 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b16|1024|1|1|16|1|0.024016|34.109985|0.023949|34.206493|0.25
+[run ] n1024_b32        | Len:   1024 | Batch:    32 | Thr: 1 | Fwd:    0.0479 ms    34.22 GF/s | Bwd:    0.0501 ms    32.72 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b32|1024|1|1|32|1|0.047878|34.220188|0.050070|32.722376|0.50
+[run ] n1024_b64        | Len:   1024 | Batch:    64 | Thr: 1 | Fwd:    0.1031 ms    31.79 GF/s | Bwd:    0.1047 ms    31.30 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b64|1024|1|1|64|1|0.103069|31.792421|0.104687|31.300847|1.00
+[run ] n1024_b128       | Len:   1024 | Batch:   128 | Thr: 1 | Fwd:    0.2354 ms    27.84 GF/s | Bwd:    0.2340 ms    28.01 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b128|1024|1|1|128|1|0.235402|27.840090|0.234015|28.005061|2.00
+[run ] n1024_b256       | Len:   1024 | Batch:   256 | Thr: 1 | Fwd:    0.4734 ms    27.69 GF/s | Bwd:    0.4752 ms    27.58 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b256|1024|1|1|256|1|0.473422|27.686101|0.475228|27.580840|4.00
+[run ] n1024_b512       | Len:   1024 | Batch:   512 | Thr: 1 | Fwd:    1.0596 ms    24.74 GF/s | Bwd:    1.0588 ms    24.76 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b512|1024|1|1|512|1|1.059609|24.739687|1.058831|24.757879|8.00
+[run ] n1024_b1024      | Len:   1024 | Batch:  1024 | Thr: 1 | Fwd:    2.8261 ms    18.55 GF/s | Bwd:    2.7299 ms    19.21 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b1024|1024|1|1|1024|1|2.826110|18.551580|2.729905|19.205356|16.00
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 1 | Fwd:    0.0034 ms    33.54 GF/s | Bwd:    0.0034 ms    33.57 GF/s | Mem:   0.03 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b1|2048|1|1|1|1|0.003358|33.540616|0.003356|33.566829|0.03
+[run ] n2048_b2         | Len:   2048 | Batch:     2 | Thr: 1 | Fwd:    0.0067 ms    33.55 GF/s | Bwd:    0.0067 ms    33.59 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b2|2048|1|1|2|1|0.006716|33.545379|0.006706|33.593322|0.06
+[run ] n2048_b4         | Len:   2048 | Batch:     4 | Thr: 1 | Fwd:    0.0133 ms    33.77 GF/s | Bwd:    0.0140 ms    32.24 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b4|2048|1|1|4|1|0.013340|33.774277|0.013974|32.243509|0.12
+[run ] n2048_b8         | Len:   2048 | Batch:     8 | Thr: 1 | Fwd:    0.0282 ms    31.97 GF/s | Bwd:    0.0267 ms    33.74 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b8|2048|1|1|8|1|0.028184|31.973309|0.026707|33.740990|0.25
+[run ] n2048_b16        | Len:   2048 | Batch:    16 | Thr: 1 | Fwd:    0.0536 ms    33.65 GF/s | Bwd:    0.0557 ms    32.37 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b16|2048|1|1|16|1|0.053562|33.647662|0.055683|32.366215|0.50
+[run ] n2048_b32        | Len:   2048 | Batch:    32 | Thr: 1 | Fwd:    0.1226 ms    29.41 GF/s | Bwd:    0.1226 ms    29.39 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b32|2048|1|1|32|1|0.122564|29.409012|0.122647|29.389014|1.00
+[run ] n2048_b64        | Len:   2048 | Batch:    64 | Thr: 1 | Fwd:    0.2693 ms    26.77 GF/s | Bwd:    0.2685 ms    26.85 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b64|2048|1|1|64|1|0.269324|26.766852|0.268470|26.852042|2.00
+[run ] n2048_b128       | Len:   2048 | Batch:   128 | Thr: 1 | Fwd:    0.5417 ms    26.62 GF/s | Bwd:    0.5363 ms    26.88 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b128|2048|1|1|128|1|0.541696|26.616263|0.536326|26.882741|4.00
+[run ] n2048_b256       | Len:   2048 | Batch:   256 | Thr: 1 | Fwd:    1.2068 ms    23.89 GF/s | Bwd:    1.1827 ms    24.38 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b256|2048|1|1|256|1|1.206776|23.894947|1.182716|24.381026|8.00
+[run ] n2048_b512       | Len:   2048 | Batch:   512 | Thr: 1 | Fwd:    3.0274 ms    19.05 GF/s | Bwd:    2.9269 ms    19.70 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b512|2048|1|1|512|1|3.027396|19.049932|2.926862|19.704269|16.00
+[run ] n2048_b1024      | Len:   2048 | Batch:  1024 | Thr: 1 | Fwd:    6.0337 ms    19.12 GF/s | Bwd:    6.0506 ms    19.06 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b1024|2048|1|1|1024|1|6.033724|19.116446|6.050635|19.063018|32.00
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr: 1 | Fwd:    0.0078 ms    31.64 GF/s | Bwd:    0.0079 ms    30.99 GF/s | Mem:   0.06 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b1|4096|1|1|1|1|0.007767|31.641715|0.007931|30.988220|0.06
+[run ] n4096_b2         | Len:   4096 | Batch:     2 | Thr: 1 | Fwd:    0.0155 ms    31.74 GF/s | Bwd:    0.0156 ms    31.61 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b2|4096|1|1|2|1|0.015488|31.736505|0.015551|31.606109|0.12
+[run ] n4096_b4         | Len:   4096 | Batch:     4 | Thr: 1 | Fwd:    0.0315 ms    31.18 GF/s | Bwd:    0.0314 ms    31.28 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b4|4096|1|1|4|1|0.031530|31.177786|0.031424|31.282860|0.25
+[run ] n4096_b8         | Len:   4096 | Batch:     8 | Thr: 1 | Fwd:    0.0619 ms    31.79 GF/s | Bwd:    0.0617 ms    31.87 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b8|4096|1|1|8|1|0.061855|31.785142|0.061696|31.867291|0.50
+[run ] n4096_b16        | Len:   4096 | Batch:    16 | Thr: 1 | Fwd:    0.1379 ms    28.51 GF/s | Bwd:    0.1403 ms    28.03 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b16|4096|1|1|16|1|0.137930|28.508312|0.140292|28.028422|1.00
+[run ] n4096_b32        | Len:   4096 | Batch:    32 | Thr: 1 | Fwd:    0.2992 ms    26.28 GF/s | Bwd:    0.2945 ms    26.70 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b32|4096|1|1|32|1|0.299208|26.283796|0.294527|26.701516|2.00
+[run ] n4096_b64        | Len:   4096 | Batch:    64 | Thr: 1 | Fwd:    0.6147 ms    25.59 GF/s | Bwd:    0.6065 ms    25.94 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b64|4096|1|1|64|1|0.614666|25.588938|0.606453|25.935477|4.00
+[run ] n4096_b128       | Len:   4096 | Batch:   128 | Thr: 1 | Fwd:    1.3577 ms    23.17 GF/s | Bwd:    1.3242 ms    23.76 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b128|4096|1|1|128|1|1.357673|23.169996|1.324194|23.755788|8.00
+[run ] n4096_b256       | Len:   4096 | Batch:   256 | Thr: 1 | Fwd:    3.2333 ms    19.46 GF/s | Bwd:    3.1848 ms    19.75 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b256|4096|1|1|256|1|3.233348|19.458023|3.184802|19.754623|16.00
+[run ] n4096_b512       | Len:   4096 | Batch:   512 | Thr: 1 | Fwd:    6.6327 ms    18.97 GF/s | Bwd:    6.4165 ms    19.61 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b512|4096|1|1|512|1|6.632714|18.970984|6.416495|19.610257|32.00
+[run ] n4096_b1024      | Len:   4096 | Batch:  1024 | Thr: 1 | Fwd:   13.2389 ms    19.01 GF/s | Bwd:   13.1078 ms    19.20 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b1024|4096|1|1|1024|1|13.238882|19.009025|13.107805|19.199114|64.00
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 1 | Fwd:    0.0165 ms    32.30 GF/s | Bwd:    0.0162 ms    32.81 GF/s | Mem:   0.12 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b1|8192|1|1|1|1|0.016488|32.295229|0.016228|32.811635|0.12
+[run ] n8192_b2         | Len:   8192 | Batch:     2 | Thr: 1 | Fwd:    0.0334 ms    31.91 GF/s | Bwd:    0.0333 ms    32.03 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b2|8192|1|1|2|1|0.033369|31.914271|0.033254|32.025338|0.25
+[run ] n8192_b4         | Len:   8192 | Batch:     4 | Thr: 1 | Fwd:    0.0669 ms    31.82 GF/s | Bwd:    0.0664 ms    32.06 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b4|8192|1|1|4|1|0.066933|31.821485|0.066433|32.061197|0.50
+[run ] n8192_b8         | Len:   8192 | Batch:     8 | Thr: 1 | Fwd:    0.1437 ms    29.65 GF/s | Bwd:    0.1439 ms    29.60 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b8|8192|1|1|8|1|0.143687|29.646720|0.143897|29.603346|1.00
+[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr: 1 | Fwd:    0.3152 ms    27.03 GF/s | Bwd:    0.3160 ms    26.96 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b16|8192|1|1|16|1|0.315231|27.026756|0.316045|26.957158|2.00
+[run ] n8192_b32        | Len:   8192 | Batch:    32 | Thr: 1 | Fwd:    0.6340 ms    26.88 GF/s | Bwd:    0.6317 ms    26.98 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b32|8192|1|1|32|1|0.633968|26.877322|0.631653|26.975827|4.00
+[run ] n8192_b64        | Len:   8192 | Batch:    64 | Thr: 1 | Fwd:    1.4464 ms    23.56 GF/s | Bwd:    1.4453 ms    23.58 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b64|8192|1|1|64|1|1.446403|23.561015|1.445281|23.579309|8.00
+[run ] n8192_b128       | Len:   8192 | Batch:   128 | Thr: 1 | Fwd:    3.3633 ms    20.27 GF/s | Bwd:    3.3341 ms    20.44 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b128|8192|1|1|128|1|3.363253|20.265333|3.334051|20.442830|16.00
+[run ] n8192_b256       | Len:   8192 | Batch:   256 | Thr: 1 | Fwd:    6.8892 ms    19.79 GF/s | Bwd:    6.9245 ms    19.69 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b256|8192|1|1|256|1|6.889169|19.786838|6.924461|19.685990|32.00
+[run ] n8192_b512       | Len:   8192 | Batch:   512 | Thr: 1 | Fwd:   13.9213 ms    19.58 GF/s | Bwd:   13.9027 ms    19.61 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b512|8192|1|1|512|1|13.921296|19.583648|13.902651|19.609912|64.00
+[run ] n8192_b1024      | Len:   8192 | Batch:  1024 | Thr: 1 | Fwd:   27.8707 ms    19.56 GF/s | Bwd:   27.7422 ms    19.65 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b1024|8192|1|1|1024|1|27.870685|19.563908|27.742151|19.654551|128.00
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0360 ms    31.88 GF/s | Bwd:    0.0363 ms    31.59 GF/s | Mem:   0.25 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b1|16384|1|1|1|1|0.035971|31.883612|0.036309|31.586614|0.25
+[run ] n16384_b2        | Len:  16384 | Batch:     2 | Thr: 1 | Fwd:    0.0727 ms    31.53 GF/s | Bwd:    0.0727 ms    31.54 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b2|16384|1|1|2|1|0.072747|31.530465|0.072729|31.538465|0.50
+[run ] n16384_b4        | Len:  16384 | Batch:     4 | Thr: 1 | Fwd:    0.1572 ms    29.18 GF/s | Bwd:    0.1585 ms    28.94 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b4|16384|1|1|4|1|0.157241|29.175024|0.158536|28.936771|1.00
+[run ] n16384_b8        | Len:  16384 | Batch:     8 | Thr: 1 | Fwd:    0.3447 ms    26.62 GF/s | Bwd:    0.3444 ms    26.64 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b8|16384|1|1|8|1|0.344674|26.619471|0.344448|26.636942|2.00
+[run ] n16384_b16       | Len:  16384 | Batch:    16 | Thr: 1 | Fwd:    0.7110 ms    25.81 GF/s | Bwd:    0.6963 ms    26.35 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b16|16384|1|1|16|1|0.710967|25.810039|0.696319|26.352997|4.00
+[run ] n16384_b32       | Len:  16384 | Batch:    32 | Thr: 1 | Fwd:    1.8053 ms    20.33 GF/s | Bwd:    1.8494 ms    19.84 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b32|16384|1|1|32|1|1.805343|20.328637|1.849354|19.844849|8.00
+[run ] n16384_b64       | Len:  16384 | Batch:    64 | Thr: 1 | Fwd:    4.2147 ms    17.42 GF/s | Bwd:    4.1249 ms    17.79 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b64|16384|1|1|64|1|4.214733|17.415175|4.124888|17.794502|16.00
+[run ] n16384_b128      | Len:  16384 | Batch:   128 | Thr: 1 | Fwd:    8.5769 ms    17.12 GF/s | Bwd:    8.5117 ms    17.25 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b128|16384|1|1|128|1|8.576948|17.115719|8.511676|17.246971|32.00
+[run ] n16384_b256      | Len:  16384 | Batch:   256 | Thr: 1 | Fwd:   16.6002 ms    17.69 GF/s | Bwd:   16.4331 ms    17.87 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b256|16384|1|1|256|1|16.600192|17.686619|16.433080|17.866479|64.00
+[run ] n16384_b512      | Len:  16384 | Batch:   512 | Thr: 1 | Fwd:   33.0358 ms    17.77 GF/s | Bwd:   32.8971 ms    17.85 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b512|16384|1|1|512|1|33.035777|17.774746|32.897056|17.849699|128.00
+[run ] n16384_b1024     | Len:  16384 | Batch:  1024 | Thr: 1 | Fwd:   67.1667 ms    17.48 GF/s | Bwd:   67.1562 ms    17.49 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b1024|16384|1|1|1024|1|67.166699|17.484931|67.156237|17.487655|256.00
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr: 1 | Fwd:    0.0790 ms    31.12 GF/s | Bwd:    0.0800 ms    30.70 GF/s | Mem:   0.50 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b1|32768|1|1|1|1|0.078983|31.115605|0.080042|30.704071|0.50
+[run ] n32768_b2        | Len:  32768 | Batch:     2 | Thr: 1 | Fwd:    0.1864 ms    26.37 GF/s | Bwd:    0.1757 ms    27.97 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b2|32768|1|1|2|1|0.186412|26.367455|0.175731|27.970039|1.00
+[run ] n32768_b4        | Len:  32768 | Batch:     4 | Thr: 1 | Fwd:    0.3778 ms    26.02 GF/s | Bwd:    0.3737 ms    26.31 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b4|32768|1|1|4|1|0.377843|26.017182|0.373687|26.306519|2.00
+[run ] n32768_b8        | Len:  32768 | Batch:     8 | Thr: 1 | Fwd:    0.7754 ms    25.36 GF/s | Bwd:    0.7709 ms    25.50 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b8|32768|1|1|8|1|0.775356|25.357124|0.770918|25.503107|4.00
+[run ] n32768_b16       | Len:  32768 | Batch:    16 | Thr: 1 | Fwd:    2.0896 ms    18.82 GF/s | Bwd:    2.0585 ms    19.10 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b16|32768|1|1|16|1|2.089623|18.817553|2.058545|19.101645|8.00
+[run ] n32768_b32       | Len:  32768 | Batch:    32 | Thr: 1 | Fwd:    5.0779 ms    15.49 GF/s | Bwd:    5.1625 ms    15.23 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b32|32768|1|1|32|1|5.077865|15.487452|5.162453|15.233690|16.00
+[run ] n32768_b64       | Len:  32768 | Batch:    64 | Thr: 1 | Fwd:   10.3838 ms    15.15 GF/s | Bwd:   10.6155 ms    14.82 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b64|32768|1|1|64|1|10.383839|15.147231|10.615519|14.816647|32.00
+[run ] n32768_b128      | Len:  32768 | Batch:   128 | Thr: 1 | Fwd:   21.0712 ms    14.93 GF/s | Bwd:   20.6749 ms    15.22 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b128|32768|1|1|128|1|21.071196|14.929044|20.674855|15.215236|64.00
+[run ] n32768_b256      | Len:  32768 | Batch:   256 | Thr: 1 | Fwd:   41.9991 ms    14.98 GF/s | Bwd:   41.4266 ms    15.19 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b256|32768|1|1|256|1|41.999094|14.979980|41.426559|15.187011|128.00
+[run ] n32768_b512      | Len:  32768 | Batch:   512 | Thr: 1 | Fwd:   84.1135 ms    14.96 GF/s | Bwd:   81.6242 ms    15.42 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b512|32768|1|1|512|1|84.113517|14.959441|81.624180|15.415667|256.00
+[run ] n32768_b1024     | Len:  32768 | Batch:  1024 | Thr: 1 | Fwd:  164.8800 ms    15.26 GF/s | Bwd:  158.9170 ms    15.84 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b1024|32768|1|1|1024|1|164.880019|15.263113|158.916964|15.835832|512.00
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr: 1 | Fwd:    0.2018 ms    25.98 GF/s | Bwd:    0.2023 ms    25.91 GF/s | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b1|65536|1|1|1|1|0.201801|25.980401|0.202348|25.910190|1.00
+[run ] n65536_b2        | Len:  65536 | Batch:     2 | Thr: 1 | Fwd:    0.4242 ms    24.72 GF/s | Bwd:    0.4193 ms    25.00 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b2|65536|1|1|2|1|0.424203|24.718739|0.419350|25.004801|2.00
+[run ] n65536_b4        | Len:  65536 | Batch:     4 | Thr: 1 | Fwd:    1.1171 ms    18.77 GF/s | Bwd:    0.8806 ms    23.82 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b4|65536|1|1|4|1|1.117105|18.773094|0.880585|23.815443|4.00
+[run ] n65536_b8        | Len:  65536 | Batch:     8 | Thr: 1 | Fwd:    2.4803 ms    16.91 GF/s | Bwd:    2.9159 ms    14.38 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b8|65536|1|1|8|1|2.480284|16.910582|2.915912|14.384193|8.00
+[run ] n65536_b16       | Len:  65536 | Batch:    16 | Thr: 1 | Fwd:    5.7666 ms    14.55 GF/s | Bwd:    6.2614 ms    13.40 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b16|65536|1|1|16|1|5.766628|14.546816|6.261385|13.397368|16.00
+[run ] n65536_b32       | Len:  65536 | Batch:    32 | Thr: 1 | Fwd:   11.8905 ms    14.11 GF/s | Bwd:   12.9144 ms    12.99 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b32|65536|1|1|32|1|11.890490|14.109777|12.914369|12.991124|32.00
+[run ] n65536_b64       | Len:  65536 | Batch:    64 | Thr: 1 | Fwd:   25.3224 ms    13.25 GF/s | Bwd:   24.9789 ms    13.43 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b64|65536|1|1|64|1|25.322360|13.250910|24.978855|13.433135|64.00
+[run ] n65536_b128      | Len:  65536 | Batch:   128 | Thr: 1 | Fwd:   49.1752 ms    13.65 GF/s | Bwd:   49.2723 ms    13.62 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b128|65536|1|1|128|1|49.175209|13.646890|49.272311|13.619995|128.00
+[run ] n65536_b256      | Len:  65536 | Batch:   256 | Thr: 1 | Fwd:   99.4021 ms    13.50 GF/s | Bwd:   96.2693 ms    13.94 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b256|65536|1|1|256|1|99.402150|13.502498|96.269322|13.941900|256.00
+[run ] n65536_b512      | Len:  65536 | Batch:   512 | Thr: 1 | Fwd:  202.2515 ms    13.27 GF/s | Bwd:  177.2542 ms    15.14 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b512|65536|1|1|512|1|202.251477|13.272361|177.254181|15.144097|512.00
+[run ] n65536_b1024     | Len:  65536 | Batch:  1024 | Thr: 1 | Fwd:  406.9920 ms    13.19 GF/s | Bwd:  353.6404 ms    15.18 GF/s | Mem:1024.00 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b1024|65536|1|1|1024|1|406.992007|13.191191|353.640362|15.181268|1024.00
+[run ] n131072_b1       | Len: 131072 | Batch:     1 | Thr: 1 | Fwd:    0.4810 ms    23.16 GF/s | Bwd:    0.4824 ms    23.09 GF/s | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b1|131072|1|1|1|1|0.481003|23.162276|0.482417|23.094399|2.00
+[run ] n131072_b2       | Len: 131072 | Batch:     2 | Thr: 1 | Fwd:    0.9749 ms    22.86 GF/s | Bwd:    0.9653 ms    23.08 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b2|131072|1|1|2|1|0.974896|22.856023|0.965323|23.082678|4.00
+[run ] n131072_b4       | Len: 131072 | Batch:     4 | Thr: 1 | Fwd:    2.0863 ms    21.36 GF/s | Bwd:    2.1177 ms    21.04 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b4|131072|1|1|4|1|2.086325|21.360275|2.117732|21.043490|8.00
+[run ] n131072_b8       | Len: 131072 | Batch:     8 | Thr: 1 | Fwd:    6.4442 ms    13.83 GF/s | Bwd:    7.1219 ms    12.51 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b8|131072|1|1|8|1|6.444245|13.830785|7.121913|12.514750|16.00
+[run ] n131072_b16      | Len: 131072 | Batch:    16 | Thr: 1 | Fwd:   15.6866 ms    11.36 GF/s | Bwd:   17.2959 ms    10.31 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b16|131072|1|1|16|1|15.686552|11.363742|17.295860|10.306393|32.00
+[run ] n131072_b32      | Len: 131072 | Batch:    32 | Thr: 1 | Fwd:   34.6014 ms    10.30 GF/s | Bwd:   34.9469 ms    10.20 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b32|131072|1|1|32|1|34.601392|10.303511|34.946908|10.201642|64.00
+[run ] n131072_b64      | Len: 131072 | Batch:    64 | Thr: 1 | Fwd:   69.5416 ms    10.25 GF/s | Bwd:   70.8396 ms    10.07 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b64|131072|1|1|64|1|69.541598|10.253312|70.839581|10.065442|128.00
+[run ] n131072_b128     | Len: 131072 | Batch:   128 | Thr: 1 | Fwd:  139.8321 ms    10.20 GF/s | Bwd:  142.0473 ms    10.04 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b128|131072|1|1|128|1|139.832130|10.198395|142.047287|10.039357|256.00
+[run ] n131072_b256     | Len: 131072 | Batch:   256 | Thr: 1 | Fwd:  279.1396 ms    10.22 GF/s | Bwd:  283.6062 ms    10.06 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b256|131072|1|1|256|1|279.139620|10.217563|283.606191|10.056645|512.00
+[run ] n131072_b512     | Len: 131072 | Batch:   512 | Thr: 1 | Fwd:  561.1374 ms    10.17 GF/s | Bwd:  424.7170 ms    13.43 GF/s | Mem:1024.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b512|131072|1|1|512|1|561.137440|10.165519|424.717008|13.430716|1024.00
+[run ] n131072_b1024    | Len: 131072 | Batch:  1024 | Thr: 1 | Fwd:  997.3633 ms    11.44 GF/s | Bwd:  856.5074 ms    13.32 GF/s | Mem:2048.00 MB
+RESULT|baseline_sse42_1t|throughput|n131072_b1024|131072|1|1|1024|1|997.363306|11.438667|856.507363|13.319800|2048.00
+[run ] n262144_b1       | Len: 262144 | Batch:     1 | Thr: 1 | Fwd:    1.1458 ms    20.59 GF/s | Bwd:    1.1330 ms    20.82 GF/s | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b1|262144|1|1|1|1|1.145844|20.590029|1.132970|20.823992|4.00
+[run ] n262144_b2       | Len: 262144 | Batch:     2 | Thr: 1 | Fwd:    2.8502 ms    16.56 GF/s | Bwd:    2.8431 ms    16.60 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b2|262144|1|1|2|1|2.850160|16.555536|2.843129|16.596475|8.00
+[run ] n262144_b4       | Len: 262144 | Batch:     4 | Thr: 1 | Fwd:    7.4410 ms    12.68 GF/s | Bwd:    7.7604 ms    12.16 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b4|262144|1|1|4|1|7.440979|12.682718|7.760449|12.160616|16.00
+[run ] n262144_b8       | Len: 262144 | Batch:     8 | Thr: 1 | Fwd:   15.4953 ms    12.18 GF/s | Bwd:   16.1592 ms    11.68 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b8|262144|1|1|8|1|15.495267|12.180731|16.159183|11.680274|32.00
+[run ] n262144_b16      | Len: 262144 | Batch:    16 | Thr: 1 | Fwd:   32.8148 ms    11.50 GF/s | Bwd:   32.7903 ms    11.51 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b16|262144|1|1|16|1|32.814775|11.503579|32.790281|11.512172|64.00
+[run ] n262144_b32      | Len: 262144 | Batch:    32 | Thr: 1 | Fwd:   66.3902 ms    11.37 GF/s | Bwd:   66.3089 ms    11.39 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b32|262144|1|1|32|1|66.390190|11.371781|66.308905|11.385721|128.00
+[run ] n262144_b64      | Len: 262144 | Batch:    64 | Thr: 1 | Fwd:  133.4483 ms    11.31 GF/s | Bwd:  132.0858 ms    11.43 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b64|262144|1|1|64|1|133.448254|11.314868|132.085805|11.431580|256.00
+[run ] n262144_b128     | Len: 262144 | Batch:   128 | Thr: 1 | Fwd:  268.8789 ms    11.23 GF/s | Bwd:  266.8033 ms    11.32 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b128|262144|1|1|128|1|268.878864|11.231448|266.803334|11.318820|512.00
+[run ] n262144_b256     | Len: 262144 | Batch:   256 | Thr: 1 | Fwd:  519.2523 ms    11.63 GF/s | Bwd:  464.6530 ms    13.00 GF/s | Mem:1024.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b256|262144|1|1|256|1|519.252330|11.631720|464.652984|12.998513|1024.00
+[run ] n262144_b512     | Len: 262144 | Batch:   512 | Thr: 1 | Fwd:  995.9097 ms    12.13 GF/s | Bwd:  959.4182 ms    12.59 GF/s | Mem:2048.00 MB
+RESULT|baseline_sse42_1t|throughput|n262144_b512|262144|1|1|512|1|995.909673|12.129208|959.418198|12.590542|2048.00
+[skip] n262144_b1024    | Len: 262144 | Batch:  1024 | Thr: 1 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n262144_b1024|262144|1|1|1024|1|4096.00|memory_limit
+[run ] n524288_b1       | Len: 524288 | Batch:     1 | Thr: 1 | Fwd:    3.0354 ms    16.41 GF/s | Bwd:    3.0205 ms    16.49 GF/s | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b1|524288|1|1|1|1|3.035358|16.409058|3.020512|16.489707|8.00
+[run ] n524288_b2       | Len: 524288 | Batch:     2 | Thr: 1 | Fwd:    6.9057 ms    14.43 GF/s | Bwd:    6.8883 ms    14.46 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b2|524288|1|1|2|1|6.905670|14.425062|6.888269|14.461503|16.00
+[run ] n524288_b4       | Len: 524288 | Batch:     4 | Thr: 1 | Fwd:   14.0217 ms    14.21 GF/s | Bwd:   13.9932 ms    14.24 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b4|524288|1|1|4|1|14.021663|14.208688|13.993217|14.237572|32.00
+[run ] n524288_b8       | Len: 524288 | Batch:     8 | Thr: 1 | Fwd:   28.3089 ms    14.08 GF/s | Bwd:   28.6225 ms    13.92 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b8|524288|1|1|8|1|28.308915|14.075385|28.622508|13.921173|64.00
+[run ] n524288_b16      | Len: 524288 | Batch:    16 | Thr: 1 | Fwd:   57.8694 ms    13.77 GF/s | Bwd:   57.6925 ms    13.81 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b16|524288|1|1|16|1|57.869417|13.770966|57.692507|13.813193|128.00
+[run ] n524288_b32      | Len: 524288 | Batch:    32 | Thr: 1 | Fwd:  115.8846 ms    13.75 GF/s | Bwd:  114.7988 ms    13.88 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b32|524288|1|1|32|1|115.884603|13.753644|114.798824|13.883727|256.00
+[run ] n524288_b64      | Len: 524288 | Batch:    64 | Thr: 1 | Fwd:  221.2841 ms    14.41 GF/s | Bwd:  229.9470 ms    13.86 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b64|524288|1|1|64|1|221.284107|14.405332|229.946977|13.862635|512.00
+[run ] n524288_b128     | Len: 524288 | Batch:   128 | Thr: 1 | Fwd:  443.9290 ms    14.36 GF/s | Bwd:  445.8519 ms    14.30 GF/s | Mem:1024.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b128|524288|1|1|128|1|443.929042|14.361174|445.851861|14.299238|1024.00
+[run ] n524288_b256     | Len: 524288 | Batch:   256 | Thr: 1 | Fwd:  884.4828 ms    14.42 GF/s | Bwd:  885.7328 ms    14.40 GF/s | Mem:2048.00 MB
+RESULT|baseline_sse42_1t|throughput|n524288_b256|524288|1|1|256|1|884.482794|14.415978|885.732847|14.395632|2048.00
+[skip] n524288_b512     | Len: 524288 | Batch:   512 | Thr: 1 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n524288_b512|524288|1|1|512|1|4096.00|memory_limit
+[skip] n524288_b1024    | Len: 524288 | Batch:  1024 | Thr: 1 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n524288_b1024|524288|1|1|1024|1|8192.00|memory_limit
+[run ] n1048576_b1      | Len:1048576 | Batch:     1 | Thr: 1 | Fwd:    7.1291 ms    14.71 GF/s | Bwd:    7.1589 ms    14.65 GF/s | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b1|1048576|1|1|1|1|7.129067|14.708461|7.158867|14.647235|16.00
+[run ] n1048576_b2      | Len:1048576 | Batch:     2 | Thr: 1 | Fwd:   16.1764 ms    12.96 GF/s | Bwd:   16.3249 ms    12.85 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b2|1048576|1|1|2|1|16.176444|12.964234|16.324936|12.846310|32.00
+[run ] n1048576_b4      | Len:1048576 | Batch:     4 | Thr: 1 | Fwd:   33.5551 ms    12.50 GF/s | Bwd:   33.0648 ms    12.69 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b4|1048576|1|1|4|1|33.555085|12.499757|33.064812|12.685099|64.00
+[run ] n1048576_b8      | Len:1048576 | Batch:     8 | Thr: 1 | Fwd:   67.4006 ms    12.45 GF/s | Bwd:   66.5368 ms    12.61 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b8|1048576|1|1|8|1|67.400567|12.445901|66.536843|12.607463|128.00
+[run ] n1048576_b16     | Len:1048576 | Batch:    16 | Thr: 1 | Fwd:  132.9848 ms    12.62 GF/s | Bwd:  135.4817 ms    12.38 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b16|1048576|1|1|16|1|132.984799|12.615890|135.481714|12.383380|256.00
+[run ] n1048576_b32     | Len:1048576 | Batch:    32 | Thr: 1 | Fwd:  260.6481 ms    12.87 GF/s | Bwd:  268.0176 ms    12.52 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b32|1048576|1|1|32|1|260.648078|12.873462|268.017582|12.519489|512.00
+[run ] n1048576_b64     | Len:1048576 | Batch:    64 | Thr: 1 | Fwd:  516.0376 ms    13.00 GF/s | Bwd:  542.3613 ms    12.37 GF/s | Mem:1024.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b64|1048576|1|1|64|1|516.037646|13.004645|542.361328|12.373460|1024.00
+[run ] n1048576_b128    | Len:1048576 | Batch:   128 | Thr: 1 | Fwd: 1058.1281 ms    12.68 GF/s | Bwd: 1073.5508 ms    12.50 GF/s | Mem:2048.00 MB
+RESULT|baseline_sse42_1t|throughput|n1048576_b128|1048576|1|1|128|1|1058.128054|12.684450|1073.550802|12.502224|2048.00
+[skip] n1048576_b256    | Len:1048576 | Batch:   256 | Thr: 1 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n1048576_b256|1048576|1|1|256|1|4096.00|memory_limit
+[skip] n1048576_b512    | Len:1048576 | Batch:   512 | Thr: 1 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n1048576_b512|1048576|1|1|512|1|8192.00|memory_limit
+[skip] n1048576_b1024   | Len:1048576 | Batch:  1024 | Thr: 1 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n1048576_b1024|1048576|1|1|1024|1|16384.00|memory_limit
+[run ] n2097152_b1      | Len:2097152 | Batch:     1 | Thr: 1 | Fwd:   17.2362 ms    12.78 GF/s | Bwd:   17.4700 ms    12.60 GF/s | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n2097152_b1|2097152|1|1|1|1|17.236212|12.775484|17.469971|12.604541|32.00
+[run ] n2097152_b2      | Len:2097152 | Batch:     2 | Thr: 1 | Fwd:   36.0822 ms    12.21 GF/s | Bwd:   35.6207 ms    12.36 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n2097152_b2|2097152|1|1|2|1|36.082236|12.205505|35.620684|12.363657|64.00
+[run ] n2097152_b4      | Len:2097152 | Batch:     4 | Thr: 1 | Fwd:   72.3387 ms    12.18 GF/s | Bwd:   71.1270 ms    12.38 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n2097152_b4|2097152|1|1|4|1|72.338729|12.176103|71.126972|12.383542|128.00
+[run ] n2097152_b8      | Len:2097152 | Batch:     8 | Thr: 1 | Fwd:  144.2538 ms    12.21 GF/s | Bwd:  141.9037 ms    12.41 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n2097152_b8|2097152|1|1|8|1|144.253840|12.211860|141.903718|12.414105|256.00
+[run ] n2097152_b16     | Len:2097152 | Batch:    16 | Thr: 1 | Fwd:  279.4483 ms    12.61 GF/s | Bwd:  288.6989 ms    12.20 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n2097152_b16|2097152|1|1|16|1|279.448317|12.607753|288.698881|12.203772|512.00
+[run ] n2097152_b32     | Len:2097152 | Batch:    32 | Thr: 1 | Fwd:  555.1777 ms    12.69 GF/s | Bwd:  585.7100 ms    12.03 GF/s | Mem:1024.00 MB
+RESULT|baseline_sse42_1t|throughput|n2097152_b32|2097152|1|1|32|1|555.177711|12.692208|585.709979|12.030580|1024.00
+[run ] n2097152_b64     | Len:2097152 | Batch:    64 | Thr: 1 | Fwd: 1097.7885 ms    12.84 GF/s | Bwd: 1136.6381 ms    12.40 GF/s | Mem:2048.00 MB
+RESULT|baseline_sse42_1t|throughput|n2097152_b64|2097152|1|1|64|1|1097.788466|12.837502|1136.638052|12.398724|2048.00
+[skip] n2097152_b128    | Len:2097152 | Batch:   128 | Thr: 1 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n2097152_b128|2097152|1|1|128|1|4096.00|memory_limit
+[skip] n2097152_b256    | Len:2097152 | Batch:   256 | Thr: 1 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n2097152_b256|2097152|1|1|256|1|8192.00|memory_limit
+[skip] n2097152_b512    | Len:2097152 | Batch:   512 | Thr: 1 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n2097152_b512|2097152|1|1|512|1|16384.00|memory_limit
+[skip] n2097152_b1024   | Len:2097152 | Batch:  1024 | Thr: 1 | Mem:32768.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n2097152_b1024|2097152|1|1|1024|1|32768.00|memory_limit
+[run ] n4194304_b1      | Len:4194304 | Batch:     1 | Thr: 1 | Fwd:   37.5701 ms    12.28 GF/s | Bwd:   37.8869 ms    12.18 GF/s | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n4194304_b1|4194304|1|1|1|1|37.570050|12.280352|37.886922|12.177644|64.00
+[run ] n4194304_b2      | Len:4194304 | Batch:     2 | Thr: 1 | Fwd:   78.3244 ms    11.78 GF/s | Bwd:   72.8434 ms    12.67 GF/s | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n4194304_b2|4194304|1|1|2|1|78.324398|11.781091|72.843383|12.667546|128.00
+[run ] n4194304_b4      | Len:4194304 | Batch:     4 | Thr: 1 | Fwd:  152.7557 ms    12.08 GF/s | Bwd:  150.6709 ms    12.25 GF/s | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n4194304_b4|4194304|1|1|4|1|152.755688|12.081342|150.670857|12.248512|256.00
+[run ] n4194304_b8      | Len:4194304 | Batch:     8 | Thr: 1 | Fwd:  283.9604 ms    13.00 GF/s | Bwd:  339.4047 ms    10.87 GF/s | Mem: 512.00 MB
+RESULT|baseline_sse42_1t|throughput|n4194304_b8|4194304|1|1|8|1|283.960439|12.998246|339.404683|10.874887|512.00
+[run ] n4194304_b16     | Len:4194304 | Batch:    16 | Thr: 1 | Fwd:  583.5851 ms    12.65 GF/s | Bwd:  599.7162 ms    12.31 GF/s | Mem:1024.00 MB
+RESULT|baseline_sse42_1t|throughput|n4194304_b16|4194304|1|1|16|1|583.585144|12.649354|599.716165|12.309115|1024.00
+[run ] n4194304_b32     | Len:4194304 | Batch:    32 | Thr: 1 | Fwd: 1134.6509 ms    13.01 GF/s | Bwd: 1172.4714 ms    12.59 GF/s | Mem:2048.00 MB
+RESULT|baseline_sse42_1t|throughput|n4194304_b32|4194304|1|1|32|1|1134.650861|13.011888|1172.471383|12.592162|2048.00
+[skip] n4194304_b64     | Len:4194304 | Batch:    64 | Thr: 1 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n4194304_b64|4194304|1|1|64|1|4096.00|memory_limit
+[skip] n4194304_b128    | Len:4194304 | Batch:   128 | Thr: 1 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n4194304_b128|4194304|1|1|128|1|8192.00|memory_limit
+[skip] n4194304_b256    | Len:4194304 | Batch:   256 | Thr: 1 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n4194304_b256|4194304|1|1|256|1|16384.00|memory_limit
+[skip] n4194304_b512    | Len:4194304 | Batch:   512 | Thr: 1 | Mem:32768.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n4194304_b512|4194304|1|1|512|1|32768.00|memory_limit
+[skip] n4194304_b1024   | Len:4194304 | Batch:  1024 | Thr: 1 | Mem:65536.0 MB > limit 3072.0 MB
+SKIP|baseline_sse42_1t|throughput|n4194304_b1024|4194304|1|1|1024|1|65536.00|memory_limit
+
+Benchmark workload complete.
+
+
+real	12m2.379s
+user	11m55.018s
+sys	0m5.796s
+[DONE] baseline_sse42_1t
+
+============================================================
+RUN PROFILE: avx512_phys
+Description : MKL AVX-512, physical-core thread count
+ISA         : AVX512
+Threads     : 10
+Workload    : throughput
+============================================================
+PROFILE|avx512_phys|MKL AVX-512, physical-core thread count|AVX512|10|throughput|32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304|1,2,4,8,16,32,64,128,256,512,1024|1,2,4,8,10,20|16384|64|10
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_phys
+profile_desc     : MKL AVX-512, physical-core thread count
+workload         : throughput
+threads(cli)     : 10
+mkl max threads  : 10
+timed runs       : 20
+warmup runs      : 5
+mem cap (MB)     : 3072.0
+lengths: 32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+batches: 1,2,4,8,16,32,64,128,256,512,1024
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,2,4,8,16,32,64,128,256,512,1024
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=10
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr:10 | Fwd:    0.0000 ms    20.19 GF/s | Bwd:    0.0000 ms    21.45 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n32_b1|32|1|1|1|10|0.000040|20.189189|0.000037|21.454240|0.00
+[run ] n32_b2           | Len:     32 | Batch:     2 | Thr:10 | Fwd:    0.0001 ms    29.69 GF/s | Bwd:    0.0001 ms    31.27 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n32_b2|32|1|1|2|10|0.000054|29.694188|0.000051|31.271605|0.00
+[run ] n32_b4           | Len:     32 | Batch:     4 | Thr:10 | Fwd:    0.0001 ms    37.28 GF/s | Bwd:    0.0007 ms     4.44 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n32_b4|32|1|1|4|10|0.000086|37.282702|0.000721|4.438710|0.00
+[run ] n32_b8           | Len:     32 | Batch:     8 | Thr:10 | Fwd:    0.0001 ms    52.97 GF/s | Bwd:    0.0001 ms    52.86 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n32_b8|32|1|1|8|10|0.000121|52.966743|0.000121|52.862437|0.00
+[run ] n32_b16          | Len:     32 | Batch:    16 | Thr:10 | Fwd:    0.0019 ms     6.86 GF/s | Bwd:    0.0008 ms    16.21 GF/s | Mem:   0.01 MB
+RESULT|avx512_phys|throughput|n32_b16|32|1|1|16|10|0.001867|6.855713|0.000790|16.208892|0.01
+[run ] n32_b32          | Len:     32 | Batch:    32 | Thr:10 | Fwd:    0.0015 ms    16.94 GF/s | Bwd:    0.0014 ms    17.83 GF/s | Mem:   0.02 MB
+RESULT|avx512_phys|throughput|n32_b32|32|1|1|32|10|0.001511|16.937059|0.001436|17.827951|0.02
+[run ] n32_b64          | Len:     32 | Batch:    64 | Thr:10 | Fwd:    0.0026 ms    19.41 GF/s | Bwd:    0.0017 ms    30.23 GF/s | Mem:   0.03 MB
+RESULT|avx512_phys|throughput|n32_b64|32|1|1|64|10|0.002638|19.409650|0.001694|30.229218|0.03
+[run ] n32_b128         | Len:     32 | Batch:   128 | Thr:10 | Fwd:    0.0029 ms    35.07 GF/s | Bwd:    0.0014 ms    73.78 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n32_b128|32|1|1|128|10|0.002920|35.068401|0.001388|73.784011|0.06
+[run ] n32_b256         | Len:     32 | Batch:   256 | Thr:10 | Fwd:    0.0016 ms   124.59 GF/s | Bwd:    0.0016 ms   128.70 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n32_b256|32|1|1|256|10|0.001644|124.589310|0.001591|128.703584|0.12
+[run ] n32_b512         | Len:     32 | Batch:   512 | Thr:10 | Fwd:    0.0038 ms   109.08 GF/s | Bwd:    0.0021 ms   194.28 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n32_b512|32|1|1|512|10|0.003755|109.077149|0.002108|194.276481|0.25
+[run ] n32_b1024        | Len:     32 | Batch:  1024 | Thr:10 | Fwd:    0.0041 ms   201.91 GF/s | Bwd:    0.0033 ms   248.15 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n32_b1024|32|1|1|1024|10|0.004057|201.911821|0.003301|248.149254|0.50
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr:10 | Fwd:    0.0000 ms    40.59 GF/s | Bwd:    0.0000 ms    40.96 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n64_b1|64|1|1|1|10|0.000047|40.590039|0.000047|40.961667|0.00
+[run ] n64_b2           | Len:     64 | Batch:     2 | Thr:10 | Fwd:    0.0001 ms    57.44 GF/s | Bwd:    0.0001 ms    57.81 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n64_b2|64|1|1|2|10|0.000067|57.439827|0.000066|57.810938|0.00
+[run ] n64_b4           | Len:     64 | Batch:     4 | Thr:10 | Fwd:    0.0001 ms    67.79 GF/s | Bwd:    0.0001 ms    67.56 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n64_b4|64|1|1|4|10|0.000113|67.786731|0.000114|67.559259|0.00
+[run ] n64_b8           | Len:     64 | Batch:     8 | Thr:10 | Fwd:    0.0008 ms    19.69 GF/s | Bwd:    0.0008 ms    19.71 GF/s | Mem:   0.01 MB
+RESULT|avx512_phys|throughput|n64_b8|64|1|1|8|10|0.000780|19.694458|0.000779|19.706506|0.01
+[run ] n64_b16          | Len:     64 | Batch:    16 | Thr:10 | Fwd:    0.0009 ms    32.55 GF/s | Bwd:    0.0010 ms    32.26 GF/s | Mem:   0.02 MB
+RESULT|avx512_phys|throughput|n64_b16|64|1|1|16|10|0.000944|32.552428|0.000952|32.257415|0.02
+[run ] n64_b32          | Len:     64 | Batch:    32 | Thr:10 | Fwd:    0.0014 ms    44.54 GF/s | Bwd:    0.0014 ms    45.35 GF/s | Mem:   0.03 MB
+RESULT|avx512_phys|throughput|n64_b32|64|1|1|32|10|0.001379|44.542821|0.001355|45.345423|0.03
+[run ] n64_b64          | Len:     64 | Batch:    64 | Thr:10 | Fwd:    0.0014 ms    86.62 GF/s | Bwd:    0.0014 ms    88.60 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n64_b64|64|1|1|64|10|0.001419|86.621189|0.001387|88.595606|0.06
+[run ] n64_b128         | Len:     64 | Batch:   128 | Thr:10 | Fwd:    0.0016 ms   152.69 GF/s | Bwd:    0.0016 ms   153.88 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n64_b128|64|1|1|128|10|0.001610|152.691851|0.001597|153.877135|0.12
+[run ] n64_b256         | Len:     64 | Batch:   256 | Thr:10 | Fwd:    0.0034 ms   146.17 GF/s | Bwd:    0.0023 ms   216.48 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n64_b256|64|1|1|256|10|0.003363|146.174332|0.002270|216.484753|0.25
+[run ] n64_b512         | Len:     64 | Batch:   512 | Thr:10 | Fwd:    0.0038 ms   260.14 GF/s | Bwd:    0.0028 ms   349.95 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n64_b512|64|1|1|512|10|0.003779|260.136820|0.002809|349.948957|0.50
+[run ] n64_b1024        | Len:     64 | Batch:  1024 | Thr:10 | Fwd:    0.0051 ms   384.53 GF/s | Bwd:    0.0046 ms   422.92 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n64_b1024|64|1|1|1024|10|0.005113|384.534260|0.004649|422.923789|1.00
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr:10 | Fwd:    0.0001 ms    66.73 GF/s | Bwd:    0.0001 ms    64.00 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n128_b1|128|1|1|1|10|0.000067|66.727564|0.000070|64.000279|0.00
+[run ] n128_b2          | Len:    128 | Batch:     2 | Thr:10 | Fwd:    0.0001 ms    80.65 GF/s | Bwd:    0.0001 ms    82.38 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n128_b2|128|1|1|2|10|0.000111|80.645845|0.000109|82.378264|0.00
+[run ] n128_b4          | Len:    128 | Batch:     4 | Thr:10 | Fwd:    0.0008 ms    22.26 GF/s | Bwd:    0.0008 ms    21.46 GF/s | Mem:   0.01 MB
+RESULT|avx512_phys|throughput|n128_b4|128|1|1|4|10|0.000805|22.262285|0.000835|21.463798|0.01
+[run ] n128_b8          | Len:    128 | Batch:     8 | Thr:10 | Fwd:    0.0009 ms    38.18 GF/s | Bwd:    0.0010 ms    36.68 GF/s | Mem:   0.02 MB
+RESULT|avx512_phys|throughput|n128_b8|128|1|1|8|10|0.000939|38.180396|0.000977|36.684039|0.02
+[run ] n128_b16         | Len:    128 | Batch:    16 | Thr:10 | Fwd:    0.0012 ms    57.47 GF/s | Bwd:    0.0013 ms    56.51 GF/s | Mem:   0.03 MB
+RESULT|avx512_phys|throughput|n128_b16|128|1|1|16|10|0.001247|57.474233|0.001268|56.508479|0.03
+[run ] n128_b32         | Len:    128 | Batch:    32 | Thr:10 | Fwd:    0.0014 ms   105.32 GF/s | Bwd:    0.0018 ms    81.14 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n128_b32|128|1|1|32|10|0.001361|105.320434|0.001767|81.139911|0.06
+[run ] n128_b64         | Len:    128 | Batch:    64 | Thr:10 | Fwd:    0.0016 ms   173.97 GF/s | Bwd:    0.0016 ms   176.45 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n128_b64|128|1|1|64|10|0.001648|173.965809|0.001625|176.451983|0.12
+[run ] n128_b128        | Len:    128 | Batch:   128 | Thr:10 | Fwd:    0.0039 ms   147.90 GF/s | Bwd:    0.0020 ms   292.27 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n128_b128|128|1|1|128|10|0.003877|147.900142|0.001962|292.266956|0.25
+[run ] n128_b256        | Len:    128 | Batch:   256 | Thr:10 | Fwd:    0.0038 ms   300.91 GF/s | Bwd:    0.0028 ms   409.00 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n128_b256|128|1|1|256|10|0.003811|300.914773|0.002804|409.002769|0.50
+[run ] n128_b512        | Len:    128 | Batch:   512 | Thr:10 | Fwd:    0.0045 ms   506.99 GF/s | Bwd:    0.0045 ms   514.42 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n128_b512|128|1|1|512|10|0.004524|506.989110|0.004459|514.416846|1.00
+[run ] n128_b1024       | Len:    128 | Batch:  1024 | Thr:10 | Fwd:    0.0082 ms   561.65 GF/s | Bwd:    0.0083 ms   549.82 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n128_b1024|128|1|1|1024|10|0.008168|561.649955|0.008344|549.818650|2.00
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr:10 | Fwd:    0.0002 ms    61.90 GF/s | Bwd:    0.0002 ms    62.65 GF/s | Mem:   0.00 MB
+RESULT|avx512_phys|throughput|n256_b1|256|1|1|1|10|0.000165|61.904977|0.000163|62.645381|0.00
+[run ] n256_b2          | Len:    256 | Batch:     2 | Thr:10 | Fwd:    0.0009 ms    23.59 GF/s | Bwd:    0.0009 ms    23.31 GF/s | Mem:   0.01 MB
+RESULT|avx512_phys|throughput|n256_b2|256|1|1|2|10|0.000868|23.589648|0.000879|23.310542|0.01
+[run ] n256_b4          | Len:    256 | Batch:     4 | Thr:10 | Fwd:    0.0010 ms    41.18 GF/s | Bwd:    0.0010 ms    42.28 GF/s | Mem:   0.02 MB
+RESULT|avx512_phys|throughput|n256_b4|256|1|1|4|10|0.000995|41.184900|0.000969|42.275381|0.02
+[run ] n256_b8          | Len:    256 | Batch:     8 | Thr:10 | Fwd:    0.0014 ms    60.46 GF/s | Bwd:    0.0014 ms    59.64 GF/s | Mem:   0.03 MB
+RESULT|avx512_phys|throughput|n256_b8|256|1|1|8|10|0.001355|60.456308|0.001374|59.637828|0.03
+[run ] n256_b16         | Len:    256 | Batch:    16 | Thr:10 | Fwd:    0.0029 ms    57.42 GF/s | Bwd:    0.0016 ms    99.78 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n256_b16|256|1|1|16|10|0.002854|57.416470|0.001642|99.784336|0.06
+[run ] n256_b32         | Len:    256 | Batch:    32 | Thr:10 | Fwd:    0.0019 ms   176.85 GF/s | Bwd:    0.0020 ms   163.50 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n256_b32|256|1|1|32|10|0.001853|176.847693|0.002004|163.504906|0.12
+[run ] n256_b64         | Len:    256 | Batch:    64 | Thr:10 | Fwd:    0.0041 ms   159.47 GF/s | Bwd:    0.0031 ms   214.82 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n256_b64|256|1|1|64|10|0.004110|159.467841|0.003051|214.822210|0.25
+[run ] n256_b128        | Len:    256 | Batch:   128 | Thr:10 | Fwd:    0.0049 ms   267.79 GF/s | Bwd:    0.0041 ms   319.55 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n256_b128|256|1|1|128|10|0.004895|267.786910|0.004102|319.554874|0.50
+[run ] n256_b256        | Len:    256 | Batch:   256 | Thr:10 | Fwd:    0.0065 ms   402.52 GF/s | Bwd:    0.0070 ms   376.92 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n256_b256|256|1|1|256|10|0.006512|402.524447|0.006955|376.924584|1.00
+[run ] n256_b512        | Len:    256 | Batch:   512 | Thr:10 | Fwd:    0.0113 ms   464.97 GF/s | Bwd:    0.0115 ms   455.74 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n256_b512|256|1|1|512|10|0.011276|464.968760|0.011504|455.735335|2.00
+[run ] n256_b1024       | Len:    256 | Batch:  1024 | Thr:10 | Fwd:    0.0223 ms   469.18 GF/s | Bwd:    0.0239 ms   439.58 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n256_b1024|256|1|1|1024|10|0.022349|469.178010|0.023854|439.579586|4.00
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr:10 | Fwd:    0.0003 ms    80.76 GF/s | Bwd:    0.0003 ms    80.75 GF/s | Mem:   0.01 MB
+RESULT|avx512_phys|throughput|n512_b1|512|1|1|1|10|0.000285|80.759455|0.000285|80.745959|0.01
+[run ] n512_b2          | Len:    512 | Batch:     2 | Thr:10 | Fwd:    0.0010 ms    45.95 GF/s | Bwd:    0.0010 ms    47.27 GF/s | Mem:   0.02 MB
+RESULT|avx512_phys|throughput|n512_b2|512|1|1|2|10|0.001003|45.954046|0.000975|47.269010|0.02
+[run ] n512_b4          | Len:    512 | Batch:     4 | Thr:10 | Fwd:    0.0011 ms    81.81 GF/s | Bwd:    0.0011 ms    80.68 GF/s | Mem:   0.03 MB
+RESULT|avx512_phys|throughput|n512_b4|512|1|1|4|10|0.001127|81.805438|0.001142|80.678547|0.03
+[run ] n512_b8          | Len:    512 | Batch:     8 | Thr:10 | Fwd:    0.0038 ms    48.30 GF/s | Bwd:    0.0015 ms   120.71 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n512_b8|512|1|1|8|10|0.003816|48.303287|0.001527|120.712965|0.06
+[run ] n512_b16         | Len:    512 | Batch:    16 | Thr:10 | Fwd:    0.0027 ms   135.31 GF/s | Bwd:    0.0022 ms   164.36 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n512_b16|512|1|1|16|10|0.002724|135.310075|0.002243|164.358720|0.12
+[run ] n512_b32         | Len:    512 | Batch:    32 | Thr:10 | Fwd:    0.0038 ms   194.85 GF/s | Bwd:    0.0036 ms   203.36 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n512_b32|512|1|1|32|10|0.003784|194.851828|0.003625|203.360194|0.25
+[run ] n512_b64         | Len:    512 | Batch:    64 | Thr:10 | Fwd:    0.0052 ms   283.16 GF/s | Bwd:    0.0044 ms   332.81 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n512_b64|512|1|1|64|10|0.005208|283.156134|0.004431|332.807040|0.50
+[run ] n512_b128        | Len:    512 | Batch:   128 | Thr:10 | Fwd:    0.0080 ms   368.12 GF/s | Bwd:    0.0067 ms   438.09 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n512_b128|512|1|1|128|10|0.008011|368.115951|0.006732|438.085021|1.00
+[run ] n512_b256        | Len:    512 | Batch:   256 | Thr:10 | Fwd:    0.0121 ms   489.18 GF/s | Bwd:    0.0137 ms   430.58 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n512_b256|512|1|1|256|10|0.012057|489.183968|0.013698|430.582155|2.00
+[run ] n512_b512        | Len:    512 | Batch:   512 | Thr:10 | Fwd:    0.0263 ms   449.34 GF/s | Bwd:    0.0256 ms   461.70 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n512_b512|512|1|1|512|10|0.026253|449.336170|0.025550|461.696019|4.00
+[run ] n512_b1024       | Len:    512 | Batch:  1024 | Thr:10 | Fwd:    0.0597 ms   395.17 GF/s | Bwd:    0.0621 ms   379.91 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n512_b1024|512|1|1|1024|10|0.059703|395.174519|0.062102|379.909037|8.00
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:10 | Fwd:    0.0006 ms    86.24 GF/s | Bwd:    0.0006 ms    81.12 GF/s | Mem:   0.02 MB
+RESULT|avx512_phys|throughput|n1024_b1|1024|1|1|1|10|0.000594|86.237397|0.000631|81.116705|0.02
+[run ] n1024_b2         | Len:   1024 | Batch:     2 | Thr:10 | Fwd:    0.0017 ms    62.04 GF/s | Bwd:    0.0017 ms    59.65 GF/s | Mem:   0.03 MB
+RESULT|avx512_phys|throughput|n1024_b2|1024|1|1|2|10|0.001650|62.044483|0.001717|59.645696|0.03
+[run ] n1024_b4         | Len:   1024 | Batch:     4 | Thr:10 | Fwd:    0.0022 ms    92.67 GF/s | Bwd:    0.0018 ms   110.87 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n1024_b4|1024|1|1|4|10|0.002210|92.673801|0.001847|110.869338|0.06
+[run ] n1024_b8         | Len:   1024 | Batch:     8 | Thr:10 | Fwd:    0.0027 ms   149.81 GF/s | Bwd:    0.0028 ms   147.26 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n1024_b8|1024|1|1|8|10|0.002734|149.807021|0.002781|147.259388|0.12
+[run ] n1024_b16        | Len:   1024 | Batch:    16 | Thr:10 | Fwd:    0.0038 ms   215.86 GF/s | Bwd:    0.0030 ms   273.43 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n1024_b16|1024|1|1|16|10|0.003795|215.860044|0.002996|273.425471|0.25
+[run ] n1024_b32        | Len:   1024 | Batch:    32 | Thr:10 | Fwd:    0.0047 ms   350.31 GF/s | Bwd:    0.0043 ms   382.43 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n1024_b32|1024|1|1|32|10|0.004677|350.305739|0.004284|382.433506|0.50
+[run ] n1024_b64        | Len:   1024 | Batch:    64 | Thr:10 | Fwd:    0.0076 ms   432.19 GF/s | Bwd:    0.0077 ms   427.91 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n1024_b64|1024|1|1|64|10|0.007582|432.192531|0.007658|427.908121|1.00
+[run ] n1024_b128       | Len:   1024 | Batch:   128 | Thr:10 | Fwd:    0.0149 ms   440.54 GF/s | Bwd:    0.0140 ms   468.09 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n1024_b128|1024|1|1|128|10|0.014876|440.541942|0.014001|468.087629|2.00
+[run ] n1024_b256       | Len:   1024 | Batch:   256 | Thr:10 | Fwd:    0.0262 ms   500.29 GF/s | Bwd:    0.0274 ms   478.84 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n1024_b256|1024|1|1|256|10|0.026199|500.288307|0.027373|478.839660|4.00
+[run ] n1024_b512       | Len:   1024 | Batch:   512 | Thr:10 | Fwd:    0.0655 ms   400.10 GF/s | Bwd:    0.0687 ms   381.79 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n1024_b512|1024|1|1|512|10|0.065519|400.102627|0.068662|381.786536|8.00
+[run ] n1024_b1024      | Len:   1024 | Batch:  1024 | Thr:10 | Fwd:    0.1849 ms   283.58 GF/s | Bwd:    0.1890 ms   277.36 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n1024_b1024|1024|1|1|1024|10|0.184882|283.579106|0.189026|277.362660|16.00
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:10 | Fwd:    0.0016 ms    71.95 GF/s | Bwd:    0.0016 ms    71.44 GF/s | Mem:   0.03 MB
+RESULT|avx512_phys|throughput|n2048_b1|2048|1|1|1|10|0.001566|71.946883|0.001577|71.439908|0.03
+[run ] n2048_b2         | Len:   2048 | Batch:     2 | Thr:10 | Fwd:    0.0026 ms    87.48 GF/s | Bwd:    0.0027 ms    84.61 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n2048_b2|2048|1|1|2|10|0.002575|87.478735|0.002663|84.607164|0.06
+[run ] n2048_b4         | Len:   2048 | Batch:     4 | Thr:10 | Fwd:    0.0033 ms   135.46 GF/s | Bwd:    0.0031 ms   145.52 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n2048_b4|2048|1|1|4|10|0.003326|135.458792|0.003096|145.515878|0.12
+[run ] n2048_b8         | Len:   2048 | Batch:     8 | Thr:10 | Fwd:    0.0041 ms   220.55 GF/s | Bwd:    0.0035 ms   259.22 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n2048_b8|2048|1|1|8|10|0.004086|220.547769|0.003476|259.215627|0.25
+[run ] n2048_b16        | Len:   2048 | Batch:    16 | Thr:10 | Fwd:    0.0048 ms   376.63 GF/s | Bwd:    0.0049 ms   366.08 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n2048_b16|2048|1|1|16|10|0.004785|376.627627|0.004923|366.084986|0.50
+[run ] n2048_b32        | Len:   2048 | Batch:    32 | Thr:10 | Fwd:    0.0083 ms   435.29 GF/s | Bwd:    0.0087 ms   413.81 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n2048_b32|2048|1|1|32|10|0.008281|435.291548|0.008711|413.807319|1.00
+[run ] n2048_b64        | Len:   2048 | Batch:    64 | Thr:10 | Fwd:    0.0145 ms   495.89 GF/s | Bwd:    0.0143 ms   505.01 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n2048_b64|2048|1|1|64|10|0.014537|495.892836|0.014275|505.011771|2.00
+[run ] n2048_b128       | Len:   2048 | Batch:   128 | Thr:10 | Fwd:    0.0311 ms   463.74 GF/s | Bwd:    0.0308 ms   468.38 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n2048_b128|2048|1|1|128|10|0.031091|463.738267|0.030782|468.383178|4.00
+[run ] n2048_b256       | Len:   2048 | Batch:   256 | Thr:10 | Fwd:    0.0738 ms   390.89 GF/s | Bwd:    0.0718 ms   401.72 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n2048_b256|2048|1|1|256|10|0.073770|390.889203|0.071782|401.715853|8.00
+[run ] n2048_b512       | Len:   2048 | Batch:   512 | Thr:10 | Fwd:    0.1932 ms   298.52 GF/s | Bwd:    0.1884 ms   306.06 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n2048_b512|2048|1|1|512|10|0.193193|298.517803|0.188433|306.058678|16.00
+[run ] n2048_b1024      | Len:   2048 | Batch:  1024 | Thr:10 | Fwd:    0.6206 ms   185.87 GF/s | Bwd:    0.6192 ms   186.27 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n2048_b1024|2048|1|1|1024|10|0.620574|185.865560|0.619228|186.269676|32.00
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr:10 | Fwd:    0.0037 ms    66.39 GF/s | Bwd:    0.0038 ms    65.53 GF/s | Mem:   0.06 MB
+RESULT|avx512_phys|throughput|n4096_b1|4096|1|1|1|10|0.003702|66.385367|0.003750|65.533667|0.06
+[run ] n4096_b2         | Len:   4096 | Batch:     2 | Thr:10 | Fwd:    0.0044 ms   112.42 GF/s | Bwd:    0.0045 ms   109.62 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n4096_b2|4096|1|1|2|10|0.004372|112.418984|0.004484|109.615593|0.12
+[run ] n4096_b4         | Len:   4096 | Batch:     4 | Thr:10 | Fwd:    0.0048 ms   206.96 GF/s | Bwd:    0.0050 ms   195.09 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n4096_b4|4096|1|1|4|10|0.004750|206.955208|0.005039|195.087230|0.25
+[run ] n4096_b8         | Len:   4096 | Batch:     8 | Thr:10 | Fwd:    0.0058 ms   336.14 GF/s | Bwd:    0.0067 ms   294.80 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n4096_b8|4096|1|1|8|10|0.005849|336.137923|0.006669|294.796311|0.50
+[run ] n4096_b16        | Len:   4096 | Batch:    16 | Thr:10 | Fwd:    0.0087 ms   453.37 GF/s | Bwd:    0.0091 ms   430.73 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n4096_b16|4096|1|1|16|10|0.008673|453.366973|0.009129|430.726094|1.00
+[run ] n4096_b32        | Len:   4096 | Batch:    32 | Thr:10 | Fwd:    0.0158 ms   497.22 GF/s | Bwd:    0.0175 ms   450.40 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n4096_b32|4096|1|1|32|10|0.015817|497.221091|0.017461|450.400472|2.00
+[run ] n4096_b64        | Len:   4096 | Batch:    64 | Thr:10 | Fwd:    0.0356 ms   441.93 GF/s | Bwd:    0.0367 ms   428.48 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n4096_b64|4096|1|1|64|10|0.035590|441.934185|0.036708|428.484101|4.00
+[run ] n4096_b128       | Len:   4096 | Batch:   128 | Thr:10 | Fwd:    0.0807 ms   389.72 GF/s | Bwd:    0.0817 ms   385.07 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n4096_b128|4096|1|1|128|10|0.080718|389.719004|0.081693|385.065982|8.00
+[run ] n4096_b256       | Len:   4096 | Batch:   256 | Thr:10 | Fwd:    0.1880 ms   334.69 GF/s | Bwd:    0.1944 ms   323.66 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n4096_b256|4096|1|1|256|10|0.187980|334.687293|0.194384|323.661202|16.00
+[run ] n4096_b512       | Len:   4096 | Batch:   512 | Thr:10 | Fwd:    0.6513 ms   193.20 GF/s | Bwd:    0.6864 ms   183.30 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n4096_b512|4096|1|1|512|10|0.651279|193.202992|0.686449|183.304383|32.00
+[run ] n4096_b1024      | Len:   4096 | Batch:  1024 | Thr:10 | Fwd:    1.6452 ms   152.97 GF/s | Bwd:    1.6372 ms   153.72 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n4096_b1024|4096|1|1|1024|10|1.645159|152.968947|1.637172|153.715208|64.00
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:10 | Fwd:    0.0095 ms    55.89 GF/s | Bwd:    0.0091 ms    58.61 GF/s | Mem:   0.12 MB
+RESULT|avx512_phys|throughput|n8192_b1|8192|1|1|1|10|0.009528|55.886270|0.009085|58.613130|0.12
+[run ] n8192_b2         | Len:   8192 | Batch:     2 | Thr:10 | Fwd:    0.0187 ms    57.06 GF/s | Bwd:    0.0182 ms    58.37 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n8192_b2|8192|1|1|2|10|0.018665|57.057605|0.018245|58.370633|0.25
+[run ] n8192_b4         | Len:   8192 | Batch:     4 | Thr:10 | Fwd:    0.0385 ms    55.36 GF/s | Bwd:    0.0390 ms    54.61 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n8192_b4|8192|1|1|4|10|0.038476|55.356571|0.039002|54.610882|0.50
+[run ] n8192_b8         | Len:   8192 | Batch:     8 | Thr:10 | Fwd:    0.0123 ms   346.96 GF/s | Bwd:    0.0127 ms   336.00 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n8192_b8|8192|1|1|8|10|0.012278|346.958881|0.012678|335.999909|1.00
+[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr:10 | Fwd:    0.0205 ms   416.53 GF/s | Bwd:    0.0204 ms   417.79 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n8192_b16|8192|1|1|16|10|0.020454|416.526340|0.020392|417.786652|2.00
+[run ] n8192_b32        | Len:   8192 | Batch:    32 | Thr:10 | Fwd:    0.0413 ms   412.74 GF/s | Bwd:    0.0446 ms   382.25 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n8192_b32|8192|1|1|32|10|0.041284|412.740078|0.044576|382.251869|4.00
+[run ] n8192_b64        | Len:   8192 | Batch:    64 | Thr:10 | Fwd:    0.0829 ms   410.91 GF/s | Bwd:    0.0864 ms   394.41 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n8192_b64|8192|1|1|64|10|0.082935|410.911149|0.086404|394.409240|8.00
+[run ] n8192_b128       | Len:   8192 | Batch:   128 | Thr:10 | Fwd:    0.2104 ms   323.95 GF/s | Bwd:    0.2136 ms   319.16 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n8192_b128|8192|1|1|128|10|0.210393|323.953571|0.213550|319.163642|16.00
+[run ] n8192_b256       | Len:   8192 | Batch:   256 | Thr:10 | Fwd:    0.6858 ms   198.77 GF/s | Bwd:    0.7030 ms   193.91 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n8192_b256|8192|1|1|256|10|0.685794|198.769365|0.702965|193.914185|32.00
+[run ] n8192_b512       | Len:   8192 | Batch:   512 | Thr:10 | Fwd:    1.7004 ms   160.33 GF/s | Bwd:    1.7092 ms   159.51 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n8192_b512|8192|1|1|512|10|1.700409|160.331857|1.709172|159.509839|64.00
+[run ] n8192_b1024      | Len:   8192 | Batch:  1024 | Thr:10 | Fwd:    3.6555 ms   149.16 GF/s | Bwd:    3.6923 ms   147.67 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n8192_b1024|8192|1|1|1024|10|3.655488|149.161891|3.692339|147.673192|128.00
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr:10 | Fwd:    0.0138 ms    83.01 GF/s | Bwd:    0.0140 ms    82.00 GF/s | Mem:   0.25 MB
+RESULT|avx512_phys|throughput|n16384_b1|16384|1|1|1|10|0.013815|83.014016|0.013987|81.996321|0.25
+[run ] n16384_b2        | Len:  16384 | Batch:     2 | Thr:10 | Fwd:    0.0460 ms    49.86 GF/s | Bwd:    0.0449 ms    51.14 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n16384_b2|16384|1|1|2|10|0.046008|49.855300|0.044856|51.135944|0.50
+[run ] n16384_b4        | Len:  16384 | Batch:     4 | Thr:10 | Fwd:    0.0968 ms    47.39 GF/s | Bwd:    0.0951 ms    48.24 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n16384_b4|16384|1|1|4|10|0.096809|47.387304|0.095105|48.236525|1.00
+[run ] n16384_b8        | Len:  16384 | Batch:     8 | Thr:10 | Fwd:    0.0247 ms   372.03 GF/s | Bwd:    0.0249 ms   368.26 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n16384_b8|16384|1|1|8|10|0.024662|372.029758|0.024915|368.260302|2.00
+[run ] n16384_b16       | Len:  16384 | Batch:    16 | Thr:10 | Fwd:    0.0427 ms   430.14 GF/s | Bwd:    0.0409 ms   448.12 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n16384_b16|16384|1|1|16|10|0.042660|430.142423|0.040949|448.116573|4.00
+[run ] n16384_b32       | Len:  16384 | Batch:    32 | Thr:10 | Fwd:    0.0895 ms   409.92 GF/s | Bwd:    0.0910 ms   403.38 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n16384_b32|16384|1|1|32|10|0.089531|409.917671|0.090981|403.382232|8.00
+[run ] n16384_b64       | Len:  16384 | Batch:    64 | Thr:10 | Fwd:    0.2406 ms   305.05 GF/s | Bwd:    0.2361 ms   310.95 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n16384_b64|16384|1|1|64|10|0.240618|305.049600|0.236051|310.951062|16.00
+[run ] n16384_b128      | Len:  16384 | Batch:   128 | Thr:10 | Fwd:    0.8297 ms   176.93 GF/s | Bwd:    0.8266 ms   177.59 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n16384_b128|16384|1|1|128|10|0.829713|176.929377|0.826644|177.586219|32.00
+[run ] n16384_b256      | Len:  16384 | Batch:   256 | Thr:10 | Fwd:    1.9233 ms   152.65 GF/s | Bwd:    1.9303 ms   152.10 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n16384_b256|16384|1|1|256|10|1.923346|152.651322|1.930325|152.099431|64.00
+[run ] n16384_b512      | Len:  16384 | Batch:   512 | Thr:10 | Fwd:    4.1303 ms   142.17 GF/s | Bwd:    4.2028 ms   139.72 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n16384_b512|16384|1|1|512|10|4.130306|142.169273|4.202797|139.717083|128.00
+[run ] n16384_b1024     | Len:  16384 | Batch:  1024 | Thr:10 | Fwd:    8.4264 ms   139.37 GF/s | Bwd:    8.4243 ms   139.41 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n16384_b1024|16384|1|1|1024|10|8.426382|139.372398|8.424300|139.406842|256.00
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr:10 | Fwd:    0.0225 ms   109.29 GF/s | Bwd:    0.0225 ms   109.45 GF/s | Mem:   0.50 MB
+RESULT|avx512_phys|throughput|n32768_b1|32768|1|1|1|10|0.022487|109.291335|0.022453|109.452875|0.50
+[run ] n32768_b2        | Len:  32768 | Batch:     2 | Thr:10 | Fwd:    0.1126 ms    43.66 GF/s | Bwd:    0.1289 ms    38.12 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n32768_b2|32768|1|1|2|10|0.112592|43.655140|0.128931|38.122760|1.00
+[run ] n32768_b4        | Len:  32768 | Batch:     4 | Thr:10 | Fwd:    0.2485 ms    39.56 GF/s | Bwd:    0.2482 ms    39.61 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n32768_b4|32768|1|1|4|10|0.248500|39.559012|0.248175|39.610781|2.00
+[run ] n32768_b8        | Len:  32768 | Batch:     8 | Thr:10 | Fwd:    0.0701 ms   280.47 GF/s | Bwd:    0.0755 ms   260.48 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n32768_b8|32768|1|1|8|10|0.070101|280.465719|0.075479|260.479306|4.00
+[run ] n32768_b16       | Len:  32768 | Batch:    16 | Thr:10 | Fwd:    0.1201 ms   327.30 GF/s | Bwd:    0.1288 ms   305.32 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n32768_b16|32768|1|1|16|10|0.120139|327.301324|0.128789|305.319028|8.00
+[run ] n32768_b32       | Len:  32768 | Batch:    32 | Thr:10 | Fwd:    0.3078 ms   255.51 GF/s | Bwd:    0.3187 ms   246.76 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n32768_b32|32768|1|1|32|10|0.307784|255.513952|0.318697|246.764888|16.00
+[run ] n32768_b64       | Len:  32768 | Batch:    64 | Thr:10 | Fwd:    0.9810 ms   160.33 GF/s | Bwd:    1.0203 ms   154.16 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n32768_b64|32768|1|1|64|10|0.981008|160.331382|1.020275|154.160744|32.00
+[run ] n32768_b128      | Len:  32768 | Batch:   128 | Thr:10 | Fwd:    2.2946 ms   137.09 GF/s | Bwd:    2.4239 ms   129.78 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n32768_b128|32768|1|1|128|10|2.294636|137.090498|2.423903|129.779472|64.00
+[run ] n32768_b256      | Len:  32768 | Batch:   256 | Thr:10 | Fwd:    4.6756 ms   134.56 GF/s | Bwd:    4.6662 ms   134.83 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n32768_b256|32768|1|1|256|10|4.675627|134.558562|4.666171|134.831226|128.00
+[run ] n32768_b512      | Len:  32768 | Batch:   512 | Thr:10 | Fwd:    9.4104 ms   133.71 GF/s | Bwd:    9.4726 ms   132.84 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n32768_b512|32768|1|1|512|10|9.410400|133.712826|9.472572|132.835224|256.00
+[run ] n32768_b1024     | Len:  32768 | Batch:  1024 | Thr:10 | Fwd:   18.5763 ms   135.47 GF/s | Bwd:   18.7648 ms   134.11 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n32768_b1024|32768|1|1|1024|10|18.576288|135.472838|18.764826|134.111686|512.00
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr:10 | Fwd:    0.0480 ms   109.23 GF/s | Bwd:    0.0463 ms   113.18 GF/s | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n65536_b1|65536|1|1|1|10|0.047999|109.228073|0.046323|113.180776|1.00
+[run ] n65536_b2        | Len:  65536 | Batch:     2 | Thr:10 | Fwd:    0.2838 ms    36.95 GF/s | Bwd:    0.2841 ms    36.91 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n65536_b2|65536|1|1|2|10|0.283797|36.948159|0.284078|36.911605|2.00
+[run ] n65536_b4        | Len:  65536 | Batch:     4 | Thr:10 | Fwd:    0.5861 ms    35.78 GF/s | Bwd:    0.5903 ms    35.52 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n65536_b4|65536|1|1|4|10|0.586078|35.782801|0.590337|35.524684|4.00
+[run ] n65536_b8        | Len:  65536 | Batch:     8 | Thr:10 | Fwd:    0.2062 ms   203.45 GF/s | Bwd:    0.2106 ms   199.12 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n65536_b8|65536|1|1|8|10|0.206157|203.451727|0.210647|199.115557|8.00
+[run ] n65536_b16       | Len:  65536 | Batch:    16 | Thr:10 | Fwd:    0.4490 ms   186.82 GF/s | Bwd:    0.6737 ms   124.52 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n65536_b16|65536|1|1|16|10|0.449011|186.824073|0.673687|124.517958|16.00
+[run ] n65536_b32       | Len:  65536 | Batch:    32 | Thr:10 | Fwd:    1.1952 ms   140.37 GF/s | Bwd:    1.1892 ms   141.09 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n65536_b32|65536|1|1|32|10|1.195230|140.368090|1.189150|141.085756|32.00
+[run ] n65536_b64       | Len:  65536 | Batch:    64 | Thr:10 | Fwd:    2.5083 ms   133.78 GF/s | Bwd:    2.5280 ms   132.73 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n65536_b64|65536|1|1|64|10|2.508260|133.775715|2.527985|132.731947|64.00
+[run ] n65536_b128      | Len:  65536 | Batch:   128 | Thr:10 | Fwd:    5.3175 ms   126.20 GF/s | Bwd:    5.2552 ms   127.70 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n65536_b128|65536|1|1|128|10|5.317547|126.202662|5.255188|127.700206|128.00
+[run ] n65536_b256      | Len:  65536 | Batch:   256 | Thr:10 | Fwd:   11.7913 ms   113.83 GF/s | Bwd:   10.0790 ms   133.17 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n65536_b256|65536|1|1|256|10|11.791343|113.827349|10.078964|133.166190|256.00
+[run ] n65536_b512      | Len:  65536 | Batch:   512 | Thr:10 | Fwd:   20.5963 ms   130.33 GF/s | Bwd:   20.2549 ms   132.53 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n65536_b512|65536|1|1|512|10|20.596324|130.331730|20.254918|132.528530|512.00
+[run ] n65536_b1024     | Len:  65536 | Batch:  1024 | Thr:10 | Fwd:   41.0814 ms   130.68 GF/s | Bwd:   39.2465 ms   136.79 GF/s | Mem:1024.00 MB
+RESULT|avx512_phys|throughput|n65536_b1024|65536|1|1|1024|10|41.081444|130.684527|39.246519|136.794532|1024.00
+[run ] n131072_b1       | Len: 131072 | Batch:     1 | Thr:10 | Fwd:    0.0902 ms   123.56 GF/s | Bwd:    0.0898 ms   124.13 GF/s | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n131072_b1|131072|1|1|1|10|0.090167|123.560886|0.089751|124.134179|2.00
+[run ] n131072_b2       | Len: 131072 | Batch:     2 | Thr:10 | Fwd:    0.7057 ms    31.57 GF/s | Bwd:    0.6678 ms    33.37 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n131072_b2|131072|1|1|2|10|0.705742|31.572788|0.667796|33.366854|4.00
+[run ] n131072_b4       | Len: 131072 | Batch:     4 | Thr:10 | Fwd:    0.3682 ms   121.02 GF/s | Bwd:    0.3645 ms   122.28 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n131072_b4|131072|1|1|4|10|0.368244|121.018739|0.364458|122.275945|8.00
+[run ] n131072_b8       | Len: 131072 | Batch:     8 | Thr:10 | Fwd:    0.8088 ms   110.20 GF/s | Bwd:    0.7878 ms   113.13 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n131072_b8|131072|1|1|8|10|0.808773|110.202645|0.787836|113.131338|16.00
+[run ] n131072_b16      | Len: 131072 | Batch:    16 | Thr:10 | Fwd:    1.9191 ms    92.89 GF/s | Bwd:    1.8294 ms    97.44 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n131072_b16|131072|1|1|16|10|1.919109|92.885764|1.829436|97.438729|32.00
+[run ] n131072_b32      | Len: 131072 | Batch:    32 | Thr:10 | Fwd:    3.9211 ms    90.92 GF/s | Bwd:    3.9569 ms    90.10 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n131072_b32|131072|1|1|32|10|3.921139|90.921495|3.956935|90.098983|64.00
+[run ] n131072_b64      | Len: 131072 | Batch:    64 | Thr:10 | Fwd:    7.8637 ms    90.67 GF/s | Bwd:    7.8987 ms    90.27 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n131072_b64|131072|1|1|64|10|7.863694|90.673882|7.898739|90.271587|128.00
+[run ] n131072_b128     | Len: 131072 | Batch:   128 | Thr:10 | Fwd:   19.4362 ms    73.37 GF/s | Bwd:   20.9064 ms    68.21 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n131072_b128|131072|1|1|128|10|19.436165|73.371644|20.906409|68.211780|256.00
+[run ] n131072_b256     | Len: 131072 | Batch:   256 | Thr:10 | Fwd:   30.6323 ms    93.11 GF/s | Bwd:   32.6084 ms    87.47 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n131072_b256|131072|1|1|256|10|30.632319|93.108417|32.608369|87.466094|512.00
+[run ] n131072_b512     | Len: 131072 | Batch:   512 | Thr:10 | Fwd:   63.0066 ms    90.53 GF/s | Bwd:   67.8158 ms    84.11 GF/s | Mem:1024.00 MB
+RESULT|avx512_phys|throughput|n131072_b512|131072|1|1|512|10|63.006588|90.534239|67.815770|84.113967|1024.00
+[run ] n131072_b1024    | Len: 131072 | Batch:  1024 | Thr:10 | Fwd:  128.1233 ms    89.04 GF/s | Bwd:  132.0609 ms    86.39 GF/s | Mem:2048.00 MB
+RESULT|avx512_phys|throughput|n131072_b1024|131072|1|1|1024|10|128.123317|89.043175|132.060880|86.388239|2048.00
+[run ] n262144_b1       | Len: 262144 | Batch:     1 | Thr:10 | Fwd:    0.1787 ms   132.02 GF/s | Bwd:    0.1798 ms   131.23 GF/s | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n262144_b1|262144|1|1|1|10|0.178701|132.024941|0.179778|131.234200|4.00
+[run ] n262144_b2       | Len: 262144 | Batch:     2 | Thr:10 | Fwd:    2.1656 ms    21.79 GF/s | Bwd:    2.4477 ms    19.28 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n262144_b2|262144|1|1|2|10|2.165580|21.789044|2.447724|19.277467|8.00
+[run ] n262144_b4       | Len: 262144 | Batch:     4 | Thr:10 | Fwd:    0.8075 ms   116.87 GF/s | Bwd:    0.7959 ms   118.57 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n262144_b4|262144|1|1|4|10|0.807496|116.869748|0.795926|118.568675|16.00
+[run ] n262144_b8       | Len: 262144 | Batch:     8 | Thr:10 | Fwd:    1.9331 ms    97.64 GF/s | Bwd:    1.8809 ms   100.35 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n262144_b8|262144|1|1|8|10|1.933095|97.638086|1.880895|100.347805|32.00
+[run ] n262144_b16      | Len: 262144 | Batch:    16 | Thr:10 | Fwd:    4.0800 ms    92.52 GF/s | Bwd:    4.0514 ms    93.17 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n262144_b16|262144|1|1|16|10|4.080029|92.520743|4.051416|93.174188|64.00
+[run ] n262144_b32      | Len: 262144 | Batch:    32 | Thr:10 | Fwd:    8.2302 ms    91.73 GF/s | Bwd:    8.1888 ms    92.20 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n262144_b32|262144|1|1|32|10|8.230158|91.732713|8.188805|92.195953|128.00
+[run ] n262144_b64      | Len: 262144 | Batch:    64 | Thr:10 | Fwd:   16.0347 ms    94.17 GF/s | Bwd:   17.3873 ms    86.84 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n262144_b64|262144|1|1|64|10|16.034664|94.167826|17.387279|86.842193|256.00
+[run ] n262144_b128     | Len: 262144 | Batch:   128 | Thr:10 | Fwd:   33.1514 ms    91.09 GF/s | Bwd:   32.9428 ms    91.67 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n262144_b128|262144|1|1|128|10|33.151414|91.094120|32.942841|91.670871|512.00
+[run ] n262144_b256     | Len: 262144 | Batch:   256 | Thr:10 | Fwd:   64.8609 ms    93.12 GF/s | Bwd:   69.6423 ms    86.73 GF/s | Mem:1024.00 MB
+RESULT|avx512_phys|throughput|n262144_b256|262144|1|1|256|10|64.860896|93.119247|69.642251|86.726056|1024.00
+[run ] n262144_b512     | Len: 262144 | Batch:   512 | Thr:10 | Fwd:  130.8007 ms    92.35 GF/s | Bwd:  133.1677 ms    90.71 GF/s | Mem:2048.00 MB
+RESULT|avx512_phys|throughput|n262144_b512|262144|1|1|512|10|130.800664|92.351179|133.167670|90.709671|2048.00
+[skip] n262144_b1024    | Len: 262144 | Batch:  1024 | Thr:10 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n262144_b1024|262144|1|1|1024|10|4096.00|memory_limit
+[run ] n524288_b1       | Len: 524288 | Batch:     1 | Thr:10 | Fwd:    0.3502 ms   142.21 GF/s | Bwd:    0.3439 ms   144.83 GF/s | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n524288_b1|524288|1|1|1|10|0.350226|142.214982|0.343902|144.829910|8.00
+[run ] n524288_b2       | Len: 524288 | Batch:     2 | Thr:10 | Fwd:    7.1414 ms    13.95 GF/s | Bwd:    6.9292 ms    14.38 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n524288_b2|524288|1|1|2|10|7.141399|13.948908|6.929158|14.376164|16.00
+[run ] n524288_b4       | Len: 524288 | Batch:     4 | Thr:10 | Fwd:    1.8660 ms   106.77 GF/s | Bwd:    1.8375 ms   108.43 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n524288_b4|524288|1|1|4|10|1.865964|106.770277|1.837453|108.426940|32.00
+[run ] n524288_b8       | Len: 524288 | Batch:     8 | Thr:10 | Fwd:    3.9740 ms   100.27 GF/s | Bwd:    4.0267 ms    98.95 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n524288_b8|524288|1|1|8|10|3.973976|100.267048|4.026729|98.953482|64.00
+[run ] n524288_b16      | Len: 524288 | Batch:    16 | Thr:10 | Fwd:    7.7889 ms   102.31 GF/s | Bwd:    7.7389 ms   102.98 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n524288_b16|524288|1|1|16|10|7.788924|102.314224|7.738888|102.975743|128.00
+[run ] n524288_b32      | Len: 524288 | Batch:    32 | Thr:10 | Fwd:   15.6848 ms   101.62 GF/s | Bwd:   17.0074 ms    93.71 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n524288_b32|524288|1|1|32|10|15.684796|101.616594|17.007390|93.714290|256.00
+[run ] n524288_b64      | Len: 524288 | Batch:    64 | Thr:10 | Fwd:   31.0295 ms   102.73 GF/s | Bwd:   33.6915 ms    94.61 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n524288_b64|524288|1|1|64|10|31.029482|102.730399|33.691544|94.613387|512.00
+[run ] n524288_b128     | Len: 524288 | Batch:   128 | Thr:10 | Fwd:   66.8373 ms    95.39 GF/s | Bwd:   72.3899 ms    88.07 GF/s | Mem:1024.00 MB
+RESULT|avx512_phys|throughput|n524288_b128|524288|1|1|128|10|66.837307|95.385980|72.389863|88.069542|1024.00
+[run ] n524288_b256     | Len: 524288 | Batch:   256 | Thr:10 | Fwd:  129.8848 ms    98.17 GF/s | Bwd:  135.7518 ms    93.93 GF/s | Mem:2048.00 MB
+RESULT|avx512_phys|throughput|n524288_b256|524288|1|1|256|10|129.884793|98.169184|135.751777|93.926462|2048.00
+[skip] n524288_b512     | Len: 524288 | Batch:   512 | Thr:10 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n524288_b512|524288|1|1|512|10|4096.00|memory_limit
+[skip] n524288_b1024    | Len: 524288 | Batch:  1024 | Thr:10 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n524288_b1024|524288|1|1|1024|10|8192.00|memory_limit
+[run ] n1048576_b1      | Len:1048576 | Batch:     1 | Thr:10 | Fwd:    0.7456 ms   140.64 GF/s | Bwd:    0.7344 ms   142.78 GF/s | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n1048576_b1|1048576|1|1|1|10|0.745556|140.643489|0.734401|142.779857|16.00
+[run ] n1048576_b2      | Len:1048576 | Batch:     2 | Thr:10 | Fwd:   12.6307 ms    16.60 GF/s | Bwd:   12.4999 ms    16.78 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n1048576_b2|1048576|1|1|2|10|12.630700|16.603609|12.499893|16.777359|32.00
+[run ] n1048576_b4      | Len:1048576 | Batch:     4 | Thr:10 | Fwd:    4.2708 ms    98.21 GF/s | Bwd:    4.2347 ms    99.05 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n1048576_b4|1048576|1|1|4|10|4.270788|98.209142|4.234652|99.047186|64.00
+[run ] n1048576_b8      | Len:1048576 | Batch:     8 | Thr:10 | Fwd:    8.8446 ms    94.84 GF/s | Bwd:    8.6122 ms    97.40 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n1048576_b8|1048576|1|1|8|10|8.844552|94.844914|8.612157|97.404257|128.00
+[run ] n1048576_b16     | Len:1048576 | Batch:    16 | Thr:10 | Fwd:   16.1520 ms   103.87 GF/s | Bwd:   16.0343 ms   104.63 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n1048576_b16|1048576|1|1|16|10|16.152043|103.870548|16.034330|104.633097|256.00
+[run ] n1048576_b32     | Len:1048576 | Batch:    32 | Thr:10 | Fwd:   32.2373 ms   104.09 GF/s | Bwd:   32.3101 ms   103.85 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n1048576_b32|1048576|1|1|32|10|32.237349|104.085583|32.310138|103.851093|512.00
+[run ] n1048576_b64     | Len:1048576 | Batch:    64 | Thr:10 | Fwd:   68.1187 ms    98.52 GF/s | Bwd:   66.7184 ms   100.59 GF/s | Mem:1024.00 MB
+RESULT|avx512_phys|throughput|n1048576_b64|1048576|1|1|64|10|68.118677|98.517569|66.718449|100.585169|1024.00
+[run ] n1048576_b128    | Len:1048576 | Batch:   128 | Thr:10 | Fwd:  134.8239 ms    99.55 GF/s | Bwd:  136.8690 ms    98.06 GF/s | Mem:2048.00 MB
+RESULT|avx512_phys|throughput|n1048576_b128|1048576|1|1|128|10|134.823861|99.550426|136.868999|98.062913|2048.00
+[skip] n1048576_b256    | Len:1048576 | Batch:   256 | Thr:10 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n1048576_b256|1048576|1|1|256|10|4096.00|memory_limit
+[skip] n1048576_b512    | Len:1048576 | Batch:   512 | Thr:10 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n1048576_b512|1048576|1|1|512|10|8192.00|memory_limit
+[skip] n1048576_b1024   | Len:1048576 | Batch:  1024 | Thr:10 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n1048576_b1024|1048576|1|1|1024|10|16384.00|memory_limit
+[run ] n2097152_b1      | Len:2097152 | Batch:     1 | Thr:10 | Fwd:    1.9181 ms   114.80 GF/s | Bwd:    1.8383 ms   119.78 GF/s | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n2097152_b1|2097152|1|1|1|10|1.918148|114.798759|1.838312|119.784305|32.00
+[run ] n2097152_b2      | Len:2097152 | Batch:     2 | Thr:10 | Fwd:   27.3458 ms    16.10 GF/s | Bwd:   27.1889 ms    16.20 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n2097152_b2|2097152|1|1|2|10|27.345769|16.104938|27.188919|16.197846|64.00
+[run ] n2097152_b4      | Len:2097152 | Batch:     4 | Thr:10 | Fwd:    9.0991 ms    96.80 GF/s | Bwd:    9.1540 ms    96.22 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n2097152_b4|2097152|1|1|4|10|9.099075|96.801469|9.154003|96.220625|128.00
+[run ] n2097152_b8      | Len:2097152 | Batch:     8 | Thr:10 | Fwd:   17.6649 ms    99.72 GF/s | Bwd:   17.7845 ms    99.05 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n2097152_b8|2097152|1|1|8|10|17.664885|99.723701|17.784530|99.052813|256.00
+[run ] n2097152_b16     | Len:2097152 | Batch:    16 | Thr:10 | Fwd:   35.2852 ms    99.85 GF/s | Bwd:   40.1730 ms    87.70 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n2097152_b16|2097152|1|1|16|10|35.285190|99.849692|40.172994|87.701089|512.00
+[run ] n2097152_b32     | Len:2097152 | Batch:    32 | Thr:10 | Fwd:   81.4758 ms    86.48 GF/s | Bwd:   79.5286 ms    88.60 GF/s | Mem:1024.00 MB
+RESULT|avx512_phys|throughput|n2097152_b32|2097152|1|1|32|10|81.475761|86.484994|79.528641|88.602428|1024.00
+[run ] n2097152_b64     | Len:2097152 | Batch:    64 | Thr:10 | Fwd:  160.4136 ms    87.85 GF/s | Bwd:  177.3933 ms    79.44 GF/s | Mem:2048.00 MB
+RESULT|avx512_phys|throughput|n2097152_b64|2097152|1|1|64|10|160.413588|87.853290|177.393322|79.444149|2048.00
+[skip] n2097152_b128    | Len:2097152 | Batch:   128 | Thr:10 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n2097152_b128|2097152|1|1|128|10|4096.00|memory_limit
+[skip] n2097152_b256    | Len:2097152 | Batch:   256 | Thr:10 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n2097152_b256|2097152|1|1|256|10|8192.00|memory_limit
+[skip] n2097152_b512    | Len:2097152 | Batch:   512 | Thr:10 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n2097152_b512|2097152|1|1|512|10|16384.00|memory_limit
+[skip] n2097152_b1024   | Len:2097152 | Batch:  1024 | Thr:10 | Mem:32768.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n2097152_b1024|2097152|1|1|1024|10|32768.00|memory_limit
+[run ] n4194304_b1      | Len:4194304 | Batch:     1 | Thr:10 | Fwd:    4.4391 ms   103.93 GF/s | Bwd:    4.6343 ms    99.56 GF/s | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n4194304_b1|4194304|1|1|1|10|4.439060|103.934933|4.634324|99.555707|64.00
+[run ] n4194304_b2      | Len:4194304 | Batch:     2 | Thr:10 | Fwd:   58.7363 ms    15.71 GF/s | Bwd:   59.1382 ms    15.60 GF/s | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n4194304_b2|4194304|1|1|2|10|58.736275|15.710000|59.138175|15.603236|128.00
+[run ] n4194304_b4      | Len:4194304 | Batch:     4 | Thr:10 | Fwd:   19.1396 ms    96.42 GF/s | Bwd:   19.7867 ms    93.27 GF/s | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n4194304_b4|4194304|1|1|4|10|19.139647|96.422558|19.786689|93.269459|256.00
+[run ] n4194304_b8      | Len:4194304 | Batch:     8 | Thr:10 | Fwd:   42.6298 ms    86.58 GF/s | Bwd:   45.1005 ms    81.84 GF/s | Mem: 512.00 MB
+RESULT|avx512_phys|throughput|n4194304_b8|4194304|1|1|8|10|42.629796|86.582340|45.100484|81.839200|512.00
+[run ] n4194304_b16     | Len:4194304 | Batch:    16 | Thr:10 | Fwd:  102.5014 ms    72.02 GF/s | Bwd:  107.4452 ms    68.70 GF/s | Mem:1024.00 MB
+RESULT|avx512_phys|throughput|n4194304_b16|4194304|1|1|16|10|102.501409|72.018279|107.445222|68.704545|1024.00
+[run ] n4194304_b32     | Len:4194304 | Batch:    32 | Thr:10 | Fwd:  214.6203 ms    68.79 GF/s | Bwd:  222.7427 ms    66.28 GF/s | Mem:2048.00 MB
+RESULT|avx512_phys|throughput|n4194304_b32|4194304|1|1|32|10|214.620276|68.791031|222.742668|66.282541|2048.00
+[skip] n4194304_b64     | Len:4194304 | Batch:    64 | Thr:10 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n4194304_b64|4194304|1|1|64|10|4096.00|memory_limit
+[skip] n4194304_b128    | Len:4194304 | Batch:   128 | Thr:10 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n4194304_b128|4194304|1|1|128|10|8192.00|memory_limit
+[skip] n4194304_b256    | Len:4194304 | Batch:   256 | Thr:10 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n4194304_b256|4194304|1|1|256|10|16384.00|memory_limit
+[skip] n4194304_b512    | Len:4194304 | Batch:   512 | Thr:10 | Mem:32768.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n4194304_b512|4194304|1|1|512|10|32768.00|memory_limit
+[skip] n4194304_b1024   | Len:4194304 | Batch:  1024 | Thr:10 | Mem:65536.0 MB > limit 3072.0 MB
+SKIP|avx512_phys|throughput|n4194304_b1024|4194304|1|1|1024|10|65536.00|memory_limit
+
+Benchmark workload complete.
+
+
+real	2m44.734s
+user	19m22.368s
+sys	0m11.906s
+[DONE] avx512_phys
+
+============================================================
+RUN PROFILE: avx512_logical
+Description : MKL AVX-512, logical-core thread count (hyperthreading on)
+ISA         : AVX512
+Threads     : 20
+Workload    : throughput
+============================================================
+PROFILE|avx512_logical|MKL AVX-512, logical-core thread count (hyperthreading on)|AVX512|20|throughput|32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304|1,2,4,8,16,32,64,128,256,512,1024|1,2,4,8,10,20|16384|64|10
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_logical
+profile_desc     : MKL AVX-512, logical-core thread count (hyperthreading on)
+workload         : throughput
+threads(cli)     : 20
+mkl max threads  : 20
+timed runs       : 20
+warmup runs      : 5
+mem cap (MB)     : 3072.0
+lengths: 32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+batches: 1,2,4,8,16,32,64,128,256,512,1024
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,2,4,8,16,32,64,128,256,512,1024
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=20
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr:20 | Fwd:    0.0005 ms     1.49 GF/s | Bwd:    0.0000 ms    21.68 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n32_b1|32|1|1|1|20|0.000536|1.492768|0.000037|21.675990|0.00
+[run ] n32_b2           | Len:     32 | Batch:     2 | Thr:20 | Fwd:    0.0001 ms    31.33 GF/s | Bwd:    0.0000 ms    32.45 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n32_b2|32|1|1|2|20|0.000051|31.330002|0.000049|32.451095|0.00
+[run ] n32_b4           | Len:     32 | Batch:     4 | Thr:20 | Fwd:    0.0001 ms    37.49 GF/s | Bwd:    0.0001 ms    43.24 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n32_b4|32|1|1|4|20|0.000085|37.490985|0.000074|43.240247|0.00
+[run ] n32_b8           | Len:     32 | Batch:     8 | Thr:20 | Fwd:    0.0001 ms    52.92 GF/s | Bwd:    0.0001 ms    52.57 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n32_b8|32|1|1|8|20|0.000121|52.924972|0.000122|52.572553|0.00
+[run ] n32_b16          | Len:     32 | Batch:    16 | Thr:20 | Fwd:    0.0015 ms     8.43 GF/s | Bwd:    0.0008 ms    15.81 GF/s | Mem:   0.01 MB
+RESULT|avx512_logical|throughput|n32_b16|32|1|1|16|20|0.001518|8.431291|0.000810|15.809851|0.01
+[run ] n32_b32          | Len:     32 | Batch:    32 | Thr:20 | Fwd:    0.0024 ms    10.83 GF/s | Bwd:    0.0014 ms    18.86 GF/s | Mem:   0.02 MB
+RESULT|avx512_logical|throughput|n32_b32|32|1|1|32|20|0.002363|10.834058|0.001358|18.856101|0.02
+[run ] n32_b64          | Len:     32 | Batch:    64 | Thr:20 | Fwd:    0.0028 ms    18.01 GF/s | Bwd:    0.0013 ms    38.94 GF/s | Mem:   0.03 MB
+RESULT|avx512_logical|throughput|n32_b64|32|1|1|64|20|0.002842|18.012478|0.001315|38.937548|0.03
+[run ] n32_b128         | Len:     32 | Batch:   128 | Thr:20 | Fwd:    0.0037 ms    27.60 GF/s | Bwd:    0.0017 ms    58.53 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n32_b128|32|1|1|128|20|0.003710|27.601908|0.001750|58.527299|0.06
+[run ] n32_b256         | Len:     32 | Batch:   256 | Thr:20 | Fwd:    0.0035 ms    59.20 GF/s | Bwd:    0.0020 ms   101.88 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n32_b256|32|1|1|256|20|0.003459|59.200101|0.002010|101.877871|0.12
+[run ] n32_b512         | Len:     32 | Batch:   512 | Thr:20 | Fwd:    0.0040 ms   102.80 GF/s | Bwd:    0.0024 ms   173.90 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n32_b512|32|1|1|512|20|0.003985|102.797140|0.002355|173.895876|0.25
+[run ] n32_b1024        | Len:     32 | Batch:  1024 | Thr:20 | Fwd:    0.5056 ms     1.62 GF/s | Bwd:    0.0032 ms   258.11 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n32_b1024|32|1|1|1024|20|0.505604|1.620242|0.003174|258.107138|0.50
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr:20 | Fwd:    0.0001 ms    31.14 GF/s | Bwd:    0.0001 ms    30.97 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n64_b1|64|1|1|1|20|0.000062|31.141004|0.000062|30.973322|0.00
+[run ] n64_b2           | Len:     64 | Batch:     2 | Thr:20 | Fwd:    0.0001 ms    46.77 GF/s | Bwd:    0.0001 ms    45.65 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n64_b2|64|1|1|2|20|0.000082|46.765759|0.000084|45.652288|0.00
+[run ] n64_b4           | Len:     64 | Batch:     4 | Thr:20 | Fwd:    0.0001 ms    59.94 GF/s | Bwd:    0.0001 ms    57.98 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n64_b4|64|1|1|4|20|0.000128|59.940928|0.000132|57.977420|0.00
+[run ] n64_b8           | Len:     64 | Batch:     8 | Thr:20 | Fwd:    0.0010 ms    14.98 GF/s | Bwd:    0.0010 ms    15.57 GF/s | Mem:   0.01 MB
+RESULT|avx512_logical|throughput|n64_b8|64|1|1|8|20|0.001025|14.980354|0.000986|15.572008|0.01
+[run ] n64_b16          | Len:     64 | Batch:    16 | Thr:20 | Fwd:    0.0011 ms    26.91 GF/s | Bwd:    0.0012 ms    26.65 GF/s | Mem:   0.02 MB
+RESULT|avx512_logical|throughput|n64_b16|64|1|1|16|20|0.001142|26.909699|0.001153|26.652536|0.02
+[run ] n64_b32          | Len:     64 | Batch:    32 | Thr:20 | Fwd:    0.0015 ms    41.45 GF/s | Bwd:    0.0015 ms    41.16 GF/s | Mem:   0.03 MB
+RESULT|avx512_logical|throughput|n64_b32|64|1|1|32|20|0.001482|41.447878|0.001493|41.163190|0.03
+[run ] n64_b64          | Len:     64 | Batch:    64 | Thr:20 | Fwd:    0.0027 ms    45.05 GF/s | Bwd:    0.0020 ms    62.68 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n64_b64|64|1|1|64|20|0.002728|45.052105|0.001961|62.677378|0.06
+[run ] n64_b128         | Len:     64 | Batch:   128 | Thr:20 | Fwd:    0.0031 ms    80.38 GF/s | Bwd:    0.0019 ms   130.52 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n64_b128|64|1|1|128|20|0.003057|80.381178|0.001883|130.519671|0.12
+[run ] n64_b256         | Len:     64 | Batch:   256 | Thr:20 | Fwd:    0.0039 ms   124.66 GF/s | Bwd:    0.0024 ms   201.26 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n64_b256|64|1|1|256|20|0.003943|124.663444|0.002442|201.259767|0.25
+[run ] n64_b512         | Len:     64 | Batch:   512 | Thr:20 | Fwd:    0.0045 ms   216.46 GF/s | Bwd:    0.0030 ms   332.50 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n64_b512|64|1|1|512|20|0.004541|216.462022|0.002956|332.502871|0.50
+[run ] n64_b1024        | Len:     64 | Batch:  1024 | Thr:20 | Fwd:    0.9889 ms     1.99 GF/s | Bwd:    0.0040 ms   486.46 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n64_b1024|64|1|1|1024|20|0.988896|1.988156|0.004042|486.463650|1.00
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr:20 | Fwd:    0.0001 ms    48.78 GF/s | Bwd:    0.0001 ms    53.05 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n128_b1|128|1|1|1|20|0.000092|48.781106|0.000084|53.050485|0.00
+[run ] n128_b2          | Len:    128 | Batch:     2 | Thr:20 | Fwd:    0.0001 ms    70.04 GF/s | Bwd:    0.0001 ms    68.96 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n128_b2|128|1|1|2|20|0.000128|70.035341|0.000130|68.955897|0.00
+[run ] n128_b4          | Len:    128 | Batch:     4 | Thr:20 | Fwd:    0.0010 ms    17.36 GF/s | Bwd:    0.0010 ms    18.37 GF/s | Mem:   0.01 MB
+RESULT|avx512_logical|throughput|n128_b4|128|1|1|4|20|0.001032|17.363225|0.000976|18.368915|0.01
+[run ] n128_b8          | Len:    128 | Batch:     8 | Thr:20 | Fwd:    0.0012 ms    31.11 GF/s | Bwd:    0.0012 ms    30.75 GF/s | Mem:   0.02 MB
+RESULT|avx512_logical|throughput|n128_b8|128|1|1|8|20|0.001152|31.111357|0.001165|30.753653|0.02
+[run ] n128_b16         | Len:    128 | Batch:    16 | Thr:20 | Fwd:    0.0016 ms    45.86 GF/s | Bwd:    0.0015 ms    46.83 GF/s | Mem:   0.03 MB
+RESULT|avx512_logical|throughput|n128_b16|128|1|1|16|20|0.001563|45.862603|0.001531|46.831320|0.03
+[run ] n128_b32         | Len:    128 | Batch:    32 | Thr:20 | Fwd:    0.0033 ms    43.60 GF/s | Bwd:    0.0017 ms    82.21 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n128_b32|128|1|1|32|20|0.003288|43.598038|0.001744|82.211570|0.06
+[run ] n128_b64         | Len:    128 | Batch:    64 | Thr:20 | Fwd:    0.0041 ms    70.43 GF/s | Bwd:    0.0020 ms   141.36 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n128_b64|128|1|1|64|20|0.004071|70.428268|0.002028|141.364858|0.12
+[run ] n128_b128        | Len:    128 | Batch:   128 | Thr:20 | Fwd:    0.0048 ms   118.84 GF/s | Bwd:    0.0025 ms   229.53 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n128_b128|128|1|1|128|20|0.004825|118.843656|0.002498|229.528351|0.25
+[run ] n128_b256        | Len:    128 | Batch:   256 | Thr:20 | Fwd:    0.0044 ms   261.99 GF/s | Bwd:    0.0033 ms   349.86 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n128_b256|128|1|1|256|20|0.004378|261.988093|0.003278|349.859875|0.50
+[run ] n128_b512        | Len:    128 | Batch:   512 | Thr:20 | Fwd:    0.0054 ms   427.23 GF/s | Bwd:    0.0043 ms   539.42 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n128_b512|128|1|1|512|20|0.005369|427.230880|0.004252|539.423541|1.00
+[run ] n128_b1024       | Len:    128 | Batch:  1024 | Thr:20 | Fwd:    0.0071 ms   650.64 GF/s | Bwd:    0.0066 ms   695.74 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n128_b1024|128|1|1|1024|20|0.007051|650.642596|0.006594|695.737429|2.00
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr:20 | Fwd:    0.0002 ms    52.85 GF/s | Bwd:    0.0002 ms    49.09 GF/s | Mem:   0.00 MB
+RESULT|avx512_logical|throughput|n256_b1|256|1|1|1|20|0.000194|52.854631|0.000209|49.085341|0.00
+[run ] n256_b2          | Len:    256 | Batch:     2 | Thr:20 | Fwd:    0.0011 ms    18.64 GF/s | Bwd:    0.0010 ms    19.90 GF/s | Mem:   0.01 MB
+RESULT|avx512_logical|throughput|n256_b2|256|1|1|2|20|0.001099|18.640542|0.001029|19.903458|0.01
+[run ] n256_b4          | Len:    256 | Batch:     4 | Thr:20 | Fwd:    0.0013 ms    32.45 GF/s | Bwd:    0.0012 ms    33.97 GF/s | Mem:   0.02 MB
+RESULT|avx512_logical|throughput|n256_b4|256|1|1|4|20|0.001262|32.445456|0.001206|33.973796|0.02
+[run ] n256_b8          | Len:    256 | Batch:     8 | Thr:20 | Fwd:    0.0022 ms    36.98 GF/s | Bwd:    0.0018 ms    44.61 GF/s | Mem:   0.03 MB
+RESULT|avx512_logical|throughput|n256_b8|256|1|1|8|20|0.002215|36.981744|0.001836|44.609133|0.03
+[run ] n256_b16         | Len:    256 | Batch:    16 | Thr:20 | Fwd:    0.0034 ms    48.50 GF/s | Bwd:    0.0021 ms    77.94 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n256_b16|256|1|1|16|20|0.003378|48.499878|0.002102|77.937981|0.06
+[run ] n256_b32         | Len:    256 | Batch:    32 | Thr:20 | Fwd:    0.0031 ms   106.12 GF/s | Bwd:    0.0022 ms   151.75 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n256_b32|256|1|1|32|20|0.003088|106.122271|0.002159|151.745521|0.12
+[run ] n256_b64         | Len:    256 | Batch:    64 | Thr:20 | Fwd:    0.0043 ms   151.10 GF/s | Bwd:    0.0028 ms   233.68 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n256_b64|256|1|1|64|20|0.004337|151.099895|0.002805|233.680105|0.25
+[run ] n256_b128        | Len:    256 | Batch:   128 | Thr:20 | Fwd:    0.0045 ms   290.63 GF/s | Bwd:    0.0037 ms   354.03 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n256_b128|256|1|1|128|20|0.004510|290.633129|0.003702|354.032491|0.50
+[run ] n256_b256        | Len:    256 | Batch:   256 | Thr:20 | Fwd:    0.0058 ms   452.73 GF/s | Bwd:    0.0052 ms   503.45 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n256_b256|256|1|1|256|20|0.005790|452.731027|0.005207|503.448611|1.00
+[run ] n256_b512        | Len:    256 | Batch:   512 | Thr:20 | Fwd:    0.0089 ms   588.52 GF/s | Bwd:    0.0083 ms   628.08 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n256_b512|256|1|1|512|20|0.008909|588.518591|0.008347|628.080606|2.00
+[run ] n256_b1024       | Len:    256 | Batch:  1024 | Thr:20 | Fwd:    0.5178 ms    20.25 GF/s | Bwd:    0.0144 ms   725.99 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n256_b1024|256|1|1|1024|20|0.517801|20.250558|0.014443|725.989850|4.00
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr:20 | Fwd:    0.0004 ms    63.42 GF/s | Bwd:    0.0004 ms    65.56 GF/s | Mem:   0.01 MB
+RESULT|avx512_logical|throughput|n512_b1|512|1|1|1|20|0.000363|63.418273|0.000351|65.560898|0.01
+[run ] n512_b2          | Len:    512 | Batch:     2 | Thr:20 | Fwd:    0.0012 ms    37.26 GF/s | Bwd:    0.0012 ms    37.03 GF/s | Mem:   0.02 MB
+RESULT|avx512_logical|throughput|n512_b2|512|1|1|2|20|0.001237|37.264013|0.001244|37.032675|0.02
+[run ] n512_b4          | Len:    512 | Batch:     4 | Thr:20 | Fwd:    0.0025 ms    36.46 GF/s | Bwd:    0.0017 ms    55.81 GF/s | Mem:   0.03 MB
+RESULT|avx512_logical|throughput|n512_b4|512|1|1|4|20|0.002528|36.457073|0.001651|55.814234|0.03
+[run ] n512_b8          | Len:    512 | Batch:     8 | Thr:20 | Fwd:    0.0029 ms    62.77 GF/s | Bwd:    0.0020 ms    92.29 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n512_b8|512|1|1|8|20|0.002937|62.768468|0.001997|92.292113|0.06
+[run ] n512_b16         | Len:    512 | Batch:    16 | Thr:20 | Fwd:    0.0045 ms    81.89 GF/s | Bwd:    0.0026 ms   139.52 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n512_b16|512|1|1|16|20|0.004502|81.887756|0.002642|139.522489|0.12
+[run ] n512_b32         | Len:    512 | Batch:    32 | Thr:20 | Fwd:    0.0046 ms   159.47 GF/s | Bwd:    0.0031 ms   234.47 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n512_b32|512|1|1|32|20|0.004623|159.469897|0.003145|234.466332|0.25
+[run ] n512_b64         | Len:    512 | Batch:    64 | Thr:20 | Fwd:    0.0049 ms   301.65 GF/s | Bwd:    0.0039 ms   380.32 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n512_b64|512|1|1|64|20|0.004888|301.654062|0.003877|380.319328|0.50
+[run ] n512_b128        | Len:    512 | Batch:   128 | Thr:20 | Fwd:    0.0059 ms   503.29 GF/s | Bwd:    0.0056 ms   530.00 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n512_b128|512|1|1|128|20|0.005860|503.291905|0.005564|530.002049|1.00
+[run ] n512_b256        | Len:    512 | Batch:   256 | Thr:20 | Fwd:    0.0085 ms   692.58 GF/s | Bwd:    0.0086 ms   681.95 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n512_b256|512|1|1|256|20|0.008516|692.581512|0.008649|681.951319|2.00
+[run ] n512_b512        | Len:    512 | Batch:   512 | Thr:20 | Fwd:    0.0175 ms   673.03 GF/s | Bwd:    0.0152 ms   776.37 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n512_b512|512|1|1|512|20|0.017527|673.029369|0.015194|776.371858|4.00
+[run ] n512_b1024       | Len:    512 | Batch:  1024 | Thr:20 | Fwd:    0.0291 ms   811.46 GF/s | Bwd:    0.0305 ms   773.33 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n512_b1024|512|1|1|1024|20|0.029075|811.459673|0.030508|773.326111|8.00
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:20 | Fwd:    0.0007 ms    69.50 GF/s | Bwd:    0.0008 ms    66.69 GF/s | Mem:   0.02 MB
+RESULT|avx512_logical|throughput|n1024_b1|1024|1|1|1|20|0.000737|69.497853|0.000768|66.687897|0.02
+[run ] n1024_b2         | Len:   1024 | Batch:     2 | Thr:20 | Fwd:    0.0026 ms    40.04 GF/s | Bwd:    0.0021 ms    48.51 GF/s | Mem:   0.03 MB
+RESULT|avx512_logical|throughput|n1024_b2|1024|1|1|2|20|0.002558|40.035116|0.002111|48.506588|0.03
+[run ] n1024_b4         | Len:   1024 | Batch:     4 | Thr:20 | Fwd:    0.0027 ms    76.90 GF/s | Bwd:    0.0025 ms    81.75 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n1024_b4|1024|1|1|4|20|0.002663|76.900455|0.002505|81.745062|0.06
+[run ] n1024_b8         | Len:   1024 | Batch:     8 | Thr:20 | Fwd:    0.0045 ms    91.90 GF/s | Bwd:    0.0030 ms   138.06 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n1024_b8|1024|1|1|8|20|0.004457|91.899462|0.002967|138.061889|0.12
+[run ] n1024_b16        | Len:   1024 | Batch:    16 | Thr:20 | Fwd:    0.0043 ms   192.38 GF/s | Bwd:    0.0034 ms   238.52 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n1024_b16|1024|1|1|16|20|0.004258|192.375136|0.003435|238.519849|0.25
+[run ] n1024_b32        | Len:   1024 | Batch:    32 | Thr:20 | Fwd:    0.0054 ms   301.15 GF/s | Bwd:    0.0046 ms   357.91 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n1024_b32|1024|1|1|32|20|0.005440|301.150255|0.004578|357.910213|0.50
+[run ] n1024_b64        | Len:   1024 | Batch:    64 | Thr:20 | Fwd:    0.0066 ms   500.25 GF/s | Bwd:    0.0068 ms   480.58 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n1024_b64|1024|1|1|64|20|0.006550|500.254619|0.006818|480.582667|1.00
+[run ] n1024_b128       | Len:   1024 | Batch:   128 | Thr:20 | Fwd:    0.0110 ms   597.63 GF/s | Bwd:    0.0107 ms   610.87 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n1024_b128|1024|1|1|128|20|0.010966|597.633423|0.010728|610.872373|2.00
+[run ] n1024_b256       | Len:   1024 | Batch:   256 | Thr:20 | Fwd:    0.0184 ms   713.85 GF/s | Bwd:    0.0203 ms   644.53 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n1024_b256|1024|1|1|256|20|0.018361|713.849924|0.020336|644.531609|4.00
+[run ] n1024_b512       | Len:   1024 | Batch:   512 | Thr:20 | Fwd:    0.0370 ms   708.58 GF/s | Bwd:    0.0378 ms   692.78 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n1024_b512|1024|1|1|512|20|0.036996|708.577876|0.037840|692.775071|8.00
+[run ] n1024_b1024      | Len:   1024 | Batch:  1024 | Thr:20 | Fwd:    0.1226 ms   427.62 GF/s | Bwd:    0.9706 ms    54.02 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n1024_b1024|1024|1|1|1024|20|0.122607|427.616886|0.970590|54.017471|16.00
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:20 | Fwd:    0.0019 ms    58.18 GF/s | Bwd:    0.0019 ms    59.66 GF/s | Mem:   0.03 MB
+RESULT|avx512_logical|throughput|n2048_b1|2048|1|1|1|20|0.001936|58.184488|0.001888|59.655336|0.03
+[run ] n2048_b2         | Len:   2048 | Batch:     2 | Thr:20 | Fwd:    0.0037 ms    61.23 GF/s | Bwd:    0.0034 ms    67.16 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n2048_b2|2048|1|1|2|20|0.003679|61.227859|0.003354|67.162289|0.06
+[run ] n2048_b4         | Len:   2048 | Batch:     4 | Thr:20 | Fwd:    0.0040 ms   113.94 GF/s | Bwd:    0.0038 ms   119.60 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n2048_b4|2048|1|1|4|20|0.003954|113.942721|0.003767|119.596087|0.12
+[run ] n2048_b8         | Len:   2048 | Batch:     8 | Thr:20 | Fwd:    0.0043 ms   209.50 GF/s | Bwd:    0.0042 ms   212.39 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n2048_b8|2048|1|1|8|20|0.004301|209.498987|0.004243|212.385575|0.25
+[run ] n2048_b16        | Len:   2048 | Batch:    16 | Thr:20 | Fwd:    0.0059 ms   304.64 GF/s | Bwd:    0.0049 ms   364.17 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n2048_b16|2048|1|1|16|20|0.005916|304.637072|0.004949|364.169659|0.50
+[run ] n2048_b32        | Len:   2048 | Batch:    32 | Thr:20 | Fwd:    0.0077 ms   469.63 GF/s | Bwd:    0.0076 ms   476.73 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n2048_b32|2048|1|1|32|20|0.007675|469.625713|0.007561|476.728016|1.00
+[run ] n2048_b64        | Len:   2048 | Batch:    64 | Thr:20 | Fwd:    0.0122 ms   591.44 GF/s | Bwd:    0.0123 ms   586.61 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n2048_b64|2048|1|1|64|20|0.012189|591.442857|0.012289|586.605292|2.00
+[run ] n2048_b128       | Len:   2048 | Batch:   128 | Thr:20 | Fwd:    0.0207 ms   696.50 GF/s | Bwd:    0.0211 ms   684.63 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n2048_b128|2048|1|1|128|20|0.020701|696.497761|0.021060|684.625864|4.00
+[run ] n2048_b256       | Len:   2048 | Batch:   256 | Thr:20 | Fwd:    0.0407 ms   708.44 GF/s | Bwd:    0.0413 ms   698.57 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n2048_b256|2048|1|1|256|20|0.040703|708.444894|0.041278|698.571964|8.00
+[run ] n2048_b512       | Len:   2048 | Batch:   512 | Thr:20 | Fwd:    0.1353 ms   426.40 GF/s | Bwd:    0.1279 ms   450.78 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n2048_b512|2048|1|1|512|20|0.135252|426.402736|0.127937|450.780249|16.00
+[run ] n2048_b1024      | Len:   2048 | Batch:  1024 | Thr:20 | Fwd:    1.1495 ms   100.34 GF/s | Bwd:    1.0393 ms   110.98 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n2048_b1024|2048|1|1|1024|20|1.149539|100.338818|1.039282|110.983679|32.00
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr:20 | Fwd:    0.0043 ms    56.82 GF/s | Bwd:    0.0045 ms    54.32 GF/s | Mem:   0.06 MB
+RESULT|avx512_logical|throughput|n4096_b1|4096|1|1|1|20|0.004325|56.823011|0.004524|54.324842|0.06
+[run ] n4096_b2         | Len:   4096 | Batch:     2 | Thr:20 | Fwd:    0.0053 ms    92.39 GF/s | Bwd:    0.0056 ms    88.49 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n4096_b2|4096|1|1|2|20|0.005320|92.394693|0.005555|88.489887|0.12
+[run ] n4096_b4         | Len:   4096 | Batch:     4 | Thr:20 | Fwd:    0.0057 ms   171.19 GF/s | Bwd:    0.0064 ms   153.36 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n4096_b4|4096|1|1|4|20|0.005743|171.186699|0.006410|153.363162|0.25
+[run ] n4096_b8         | Len:   4096 | Batch:     8 | Thr:20 | Fwd:    0.0066 ms   296.34 GF/s | Bwd:    0.0065 ms   304.04 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n4096_b8|4096|1|1|8|20|0.006635|296.340890|0.006467|304.039333|0.50
+[run ] n4096_b16        | Len:   4096 | Batch:    16 | Thr:20 | Fwd:    0.0084 ms   470.34 GF/s | Bwd:    0.0085 ms   460.67 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n4096_b16|4096|1|1|16|20|0.008360|470.335039|0.008536|460.668641|1.00
+[run ] n4096_b32        | Len:   4096 | Batch:    32 | Thr:20 | Fwd:    0.0143 ms   550.34 GF/s | Bwd:    0.0148 ms   530.11 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n4096_b32|4096|1|1|32|20|0.014290|550.339173|0.014835|530.109940|2.00
+[run ] n4096_b64        | Len:   4096 | Batch:    64 | Thr:20 | Fwd:    0.0246 ms   639.72 GF/s | Bwd:    0.0255 ms   617.31 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n4096_b64|4096|1|1|64|20|0.024587|639.718337|0.025479|617.307807|4.00
+[run ] n4096_b128       | Len:   4096 | Batch:   128 | Thr:20 | Fwd:    0.0472 ms   665.90 GF/s | Bwd:    0.0511 ms   615.48 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n4096_b128|4096|1|1|128|20|0.047240|665.899173|0.051110|615.483847|8.00
+[run ] n4096_b256       | Len:   4096 | Batch:   256 | Thr:20 | Fwd:    0.1363 ms   461.64 GF/s | Bwd:    0.3712 ms   169.49 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n4096_b256|4096|1|1|256|20|0.136285|461.641042|0.371193|169.492839|16.00
+[run ] n4096_b512       | Len:   4096 | Batch:   512 | Thr:20 | Fwd:    0.9911 ms   126.95 GF/s | Bwd:    0.8972 ms   140.25 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n4096_b512|4096|1|1|512|20|0.991143|126.953586|0.897157|140.253229|32.00
+[run ] n4096_b1024      | Len:   4096 | Batch:  1024 | Thr:20 | Fwd:    4.9649 ms    50.69 GF/s | Bwd:    2.4836 ms   101.33 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n4096_b1024|4096|1|1|1024|20|4.964931|50.687157|2.483574|101.329064|64.00
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:20 | Fwd:    0.0098 ms    54.07 GF/s | Bwd:    0.0141 ms    37.78 GF/s | Mem:   0.12 MB
+RESULT|avx512_logical|throughput|n8192_b1|8192|1|1|1|20|0.009848|54.068953|0.014095|37.777753|0.12
+[run ] n8192_b2         | Len:   8192 | Batch:     2 | Thr:20 | Fwd:    2.3289 ms     0.46 GF/s | Bwd:    0.0208 ms    51.28 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n8192_b2|8192|1|1|2|20|2.328852|0.457290|0.020767|51.281425|0.25
+[run ] n8192_b4         | Len:   8192 | Batch:     4 | Thr:20 | Fwd:    0.0413 ms    51.63 GF/s | Bwd:    0.0415 ms    51.33 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n8192_b4|8192|1|1|4|20|0.041256|51.627513|0.041498|51.325324|0.50
+[run ] n8192_b8         | Len:   8192 | Batch:     8 | Thr:20 | Fwd:    0.1394 ms    30.55 GF/s | Bwd:    0.6155 ms     6.92 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n8192_b8|8192|1|1|8|20|0.139439|30.549917|0.615512|6.920813|1.00
+[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr:20 | Fwd:    0.0169 ms   504.81 GF/s | Bwd:    0.0170 ms   500.18 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n8192_b16|8192|1|1|16|20|0.016877|504.812012|0.017033|500.180956|2.00
+[run ] n8192_b32        | Len:   8192 | Batch:    32 | Thr:20 | Fwd:    0.0318 ms   536.40 GF/s | Bwd:    0.0324 ms   526.01 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n8192_b32|8192|1|1|32|20|0.031766|536.397857|0.032393|526.013971|4.00
+[run ] n8192_b64        | Len:   8192 | Batch:    64 | Thr:20 | Fwd:    0.0635 ms   536.44 GF/s | Bwd:    0.0651 ms   523.43 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n8192_b64|8192|1|1|64|20|0.063527|536.444964|0.065107|523.427798|8.00
+[run ] n8192_b128       | Len:   8192 | Batch:   128 | Thr:20 | Fwd:    0.1578 ms   431.84 GF/s | Bwd:    0.1574 ms   433.10 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n8192_b128|8192|1|1|128|20|0.157830|431.840189|0.157373|433.095141|16.00
+[run ] n8192_b256       | Len:   8192 | Batch:   256 | Thr:20 | Fwd:    1.0959 ms   124.39 GF/s | Bwd:    1.1475 ms   118.79 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n8192_b256|8192|1|1|256|20|1.095855|124.391380|1.147498|118.793132|32.00
+[run ] n8192_b512       | Len:   8192 | Batch:   512 | Thr:20 | Fwd:    3.2679 ms    83.43 GF/s | Bwd:    5.5036 ms    49.54 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n8192_b512|8192|1|1|512|20|3.267908|83.426393|5.503620|49.536444|64.00
+[run ] n8192_b1024      | Len:   8192 | Batch:  1024 | Thr:20 | Fwd:    8.1359 ms    67.02 GF/s | Bwd:    7.1633 ms    76.12 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n8192_b1024|8192|1|1|1024|20|8.135941|67.018621|7.163253|76.118982|128.00
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr:20 | Fwd:    0.0126 ms    91.38 GF/s | Bwd:    0.0123 ms    93.51 GF/s | Mem:   0.25 MB
+RESULT|avx512_logical|throughput|n16384_b1|16384|1|1|1|20|0.012551|91.380547|0.012264|93.512245|0.25
+[run ] n16384_b2        | Len:  16384 | Batch:     2 | Thr:20 | Fwd:    0.0514 ms    44.60 GF/s | Bwd:    0.6162 ms     3.72 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n16384_b2|16384|1|1|2|20|0.051425|44.604376|0.616174|3.722586|0.50
+[run ] n16384_b4        | Len:  16384 | Batch:     4 | Thr:20 | Fwd:    0.1156 ms    39.68 GF/s | Bwd:    0.1470 ms    31.20 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n16384_b4|16384|1|1|4|20|0.115599|39.684883|0.147049|31.197129|1.00
+[run ] n16384_b8        | Len:  16384 | Batch:     8 | Thr:20 | Fwd:    1.1886 ms     7.72 GF/s | Bwd:    3.1375 ms     2.92 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n16384_b8|16384|1|1|8|20|1.188632|7.718988|3.137543|2.924275|2.00
+[run ] n16384_b16       | Len:  16384 | Batch:    16 | Thr:20 | Fwd:    0.0384 ms   477.59 GF/s | Bwd:    0.0379 ms   484.27 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n16384_b16|16384|1|1|16|20|0.038422|477.592892|0.037892|484.274926|4.00
+[run ] n16384_b32       | Len:  16384 | Batch:    32 | Thr:20 | Fwd:    0.0925 ms   396.92 GF/s | Bwd:    0.0934 ms   393.11 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n16384_b32|16384|1|1|32|20|0.092462|396.921276|0.093357|393.114749|8.00
+[run ] n16384_b64       | Len:  16384 | Batch:    64 | Thr:20 | Fwd:    0.1955 ms   375.36 GF/s | Bwd:    0.8368 ms    87.72 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n16384_b64|16384|1|1|64|20|0.195548|375.356480|0.836788|87.716742|16.00
+[run ] n16384_b128      | Len:  16384 | Batch:   128 | Thr:20 | Fwd:    2.3995 ms    61.18 GF/s | Bwd:    2.2662 ms    64.78 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n16384_b128|16384|1|1|128|20|2.399545|61.178521|2.266246|64.777024|32.00
+[run ] n16384_b256      | Len:  16384 | Batch:   256 | Thr:20 | Fwd:    5.5249 ms    53.14 GF/s | Bwd:    4.2025 ms    69.86 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n16384_b256|16384|1|1|256|20|5.524859|53.141855|4.202492|69.863622|64.00
+[run ] n16384_b512      | Len:  16384 | Batch:   512 | Thr:20 | Fwd:    9.4056 ms    62.43 GF/s | Bwd:    6.0337 ms    97.32 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n16384_b512|16384|1|1|512|20|9.405625|62.430999|6.033715|97.320234|128.00
+[run ] n16384_b1024     | Len:  16384 | Batch:  1024 | Thr:20 | Fwd:   10.5553 ms   111.26 GF/s | Bwd:    9.2148 ms   127.45 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n16384_b1024|16384|1|1|1024|20|10.555317|111.261942|9.214821|127.447420|256.00
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr:20 | Fwd:    0.0178 ms   138.10 GF/s | Bwd:    0.6601 ms     3.72 GF/s | Mem:   0.50 MB
+RESULT|avx512_logical|throughput|n32768_b1|32768|1|1|1|20|0.017796|138.101102|0.660104|3.723052|0.50
+[run ] n32768_b2        | Len:  32768 | Batch:     2 | Thr:20 | Fwd:    0.1262 ms    38.94 GF/s | Bwd:    0.6599 ms     7.45 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n32768_b2|32768|1|1|2|20|0.126232|38.937798|0.659905|7.448347|1.00
+[run ] n32768_b4        | Len:  32768 | Batch:     4 | Thr:20 | Fwd:    2.6497 ms     3.71 GF/s | Bwd:    0.7787 ms    12.62 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n32768_b4|32768|1|1|4|20|2.649728|3.709965|0.778748|12.623342|2.00
+[run ] n32768_b8        | Len:  32768 | Batch:     8 | Thr:20 | Fwd:    1.1326 ms    17.36 GF/s | Bwd:    1.6647 ms    11.81 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n32768_b8|32768|1|1|8|20|1.132575|17.359386|1.664735|11.810169|4.00
+[run ] n32768_b16       | Len:  32768 | Batch:    16 | Thr:20 | Fwd:    0.1201 ms   327.29 GF/s | Bwd:    0.1185 ms   331.88 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n32768_b16|32768|1|1|16|20|0.120143|327.289762|0.118483|331.876742|8.00
+[run ] n32768_b32       | Len:  32768 | Batch:    32 | Thr:20 | Fwd:    0.3638 ms   216.18 GF/s | Bwd:    1.6391 ms    47.98 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n32768_b32|32768|1|1|32|20|0.363794|216.175121|1.639093|47.979694|16.00
+[run ] n32768_b64       | Len:  32768 | Batch:    64 | Thr:20 | Fwd:    1.3503 ms   116.48 GF/s | Bwd:    3.3448 ms    47.02 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n32768_b64|32768|1|1|64|20|1.350326|116.480332|3.344830|47.023731|32.00
+[run ] n32768_b128      | Len:  32768 | Batch:   128 | Thr:20 | Fwd:    6.6065 ms    47.62 GF/s | Bwd:    4.4516 ms    70.66 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n32768_b128|32768|1|1|128|20|6.606517|47.615527|4.451644|70.664411|64.00
+[run ] n32768_b256      | Len:  32768 | Batch:   256 | Thr:20 | Fwd:    7.0837 ms    88.82 GF/s | Bwd:    6.2139 ms   101.25 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n32768_b256|32768|1|1|256|20|7.083734|88.815538|6.213923|101.247738|128.00
+[run ] n32768_b512      | Len:  32768 | Batch:   512 | Thr:20 | Fwd:   11.7679 ms   106.93 GF/s | Bwd:   12.6596 ms    99.39 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n32768_b512|32768|1|1|512|20|11.767875|106.925949|12.659646|99.393872|256.00
+[run ] n32768_b1024     | Len:  32768 | Batch:  1024 | Thr:20 | Fwd:   22.4358 ms   112.17 GF/s | Bwd:   24.7644 ms   101.62 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n32768_b1024|32768|1|1|1024|20|22.435802|112.168150|24.764381|101.621052|512.00
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr:20 | Fwd:    0.0348 ms   150.84 GF/s | Bwd:    0.0349 ms   150.37 GF/s | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n65536_b1|65536|1|1|1|20|0.034758|150.839124|0.034867|150.370024|1.00
+[run ] n65536_b2        | Len:  65536 | Batch:     2 | Thr:20 | Fwd:    0.8598 ms    12.20 GF/s | Bwd:    2.0089 ms     5.22 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n65536_b2|65536|1|1|2|20|0.859753|12.196245|2.008861|5.219753|2.00
+[run ] n65536_b4        | Len:  65536 | Batch:     4 | Thr:20 | Fwd:    0.1965 ms   106.74 GF/s | Bwd:    1.7517 ms    11.97 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n65536_b4|65536|1|1|4|20|0.196478|106.737303|1.751653|11.972414|4.00
+[run ] n65536_b8        | Len:  65536 | Batch:     8 | Thr:20 | Fwd:    0.3029 ms   138.46 GF/s | Bwd:    0.8530 ms    49.17 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n65536_b8|65536|1|1|8|20|0.302931|138.457503|0.852988|49.171882|8.00
+[run ] n65536_b16       | Len:  65536 | Batch:    16 | Thr:20 | Fwd:    2.3946 ms    35.03 GF/s | Bwd:    1.0323 ms    81.26 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n65536_b16|65536|1|1|16|20|2.394616|35.031123|1.032317|81.260018|16.00
+[run ] n65536_b32       | Len:  65536 | Batch:    32 | Thr:20 | Fwd:    6.1242 ms    27.39 GF/s | Bwd:    4.2918 ms    39.09 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n65536_b32|65536|1|1|32|20|6.124239|27.394778|4.291800|39.091330|32.00
+[run ] n65536_b64       | Len:  65536 | Batch:    64 | Thr:20 | Fwd:    5.9419 ms    56.47 GF/s | Bwd:    5.1346 ms    65.35 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n65536_b64|65536|1|1|64|20|5.941872|56.471150|5.134588|65.349803|64.00
+[run ] n65536_b128      | Len:  65536 | Batch:   128 | Thr:20 | Fwd:    7.5107 ms    89.35 GF/s | Bwd:   11.6277 ms    57.71 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n65536_b128|65536|1|1|128|20|7.510687|89.351161|11.627703|57.714636|128.00
+[run ] n65536_b256      | Len:  65536 | Batch:   256 | Thr:20 | Fwd:   13.4817 ms    99.56 GF/s | Bwd:   13.7987 ms    97.27 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n65536_b256|65536|1|1|256|20|13.481669|99.555720|13.798683|97.268503|256.00
+[run ] n65536_b512      | Len:  65536 | Batch:   512 | Thr:20 | Fwd:   25.6431 ms   104.68 GF/s | Bwd:   26.6009 ms   100.91 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n65536_b512|65536|1|1|512|20|25.643078|104.681447|26.600943|100.912006|512.00
+[run ] n65536_b1024     | Len:  65536 | Batch:  1024 | Thr:20 | Fwd:   47.1836 ms   113.78 GF/s | Bwd:   46.4569 ms   115.56 GF/s | Mem:1024.00 MB
+RESULT|avx512_logical|throughput|n65536_b1024|65536|1|1|1024|20|47.183608|113.783354|46.456860|115.563323|1024.00
+[run ] n131072_b1       | Len: 131072 | Batch:     1 | Thr:20 | Fwd:    0.0673 ms   165.62 GF/s | Bwd:    0.0671 ms   166.16 GF/s | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n131072_b1|131072|1|1|1|20|0.067269|165.621262|0.067051|166.158467|2.00
+[run ] n131072_b2       | Len: 131072 | Batch:     2 | Thr:20 | Fwd:    9.4709 ms     2.35 GF/s | Bwd:    2.9965 ms     7.44 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n131072_b2|131072|1|1|2|20|9.470874|2.352712|2.996468|7.436169|4.00
+[run ] n131072_b4       | Len: 131072 | Batch:     4 | Thr:20 | Fwd:    0.2883 ms   154.58 GF/s | Bwd:    0.2780 ms   160.28 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n131072_b4|131072|1|1|4|20|0.288295|154.579578|0.278034|160.284243|8.00
+[run ] n131072_b8       | Len: 131072 | Batch:     8 | Thr:20 | Fwd:    2.4422 ms    36.50 GF/s | Bwd:    1.9029 ms    46.84 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n131072_b8|131072|1|1|8|20|2.442201|36.495348|1.902909|46.838268|16.00
+[run ] n131072_b16      | Len: 131072 | Batch:    16 | Thr:20 | Fwd:    7.7266 ms    23.07 GF/s | Bwd:    7.0079 ms    25.44 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n131072_b16|131072|1|1|16|20|7.726571|23.070769|7.007932|25.436595|32.00
+[run ] n131072_b32      | Len: 131072 | Batch:    32 | Thr:20 | Fwd:   18.1117 ms    19.68 GF/s | Bwd:   17.3984 ms    20.49 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n131072_b32|131072|1|1|32|20|18.111692|19.684292|17.398409|20.491290|64.00
+[run ] n131072_b64      | Len: 131072 | Batch:    64 | Thr:20 | Fwd:  110.5381 ms     6.45 GF/s | Bwd:   24.1035 ms    29.58 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n131072_b64|131072|1|1|64|20|110.538101|6.450551|24.103508|29.582071|128.00
+[run ] n131072_b128     | Len: 131072 | Batch:   128 | Thr:20 | Fwd:   69.1084 ms    20.64 GF/s | Bwd:   55.3457 ms    25.77 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n131072_b128|131072|1|1|128|20|69.108438|20.635155|55.345696|25.766473|256.00
+[run ] n131072_b256     | Len: 131072 | Batch:   256 | Thr:20 | Fwd:   75.3945 ms    37.83 GF/s | Bwd:   84.3458 ms    33.81 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n131072_b256|131072|1|1|256|20|75.394547|37.829350|84.345758|33.814703|512.00
+[run ] n131072_b512     | Len: 131072 | Batch:   512 | Thr:20 | Fwd:  107.0898 ms    53.27 GF/s | Bwd:   81.2311 ms    70.22 GF/s | Mem:1024.00 MB
+RESULT|avx512_logical|throughput|n131072_b512|131072|1|1|512|20|107.089774|53.266089|81.231101|70.222530|1024.00
+[run ] n131072_b1024    | Len: 131072 | Batch:  1024 | Thr:20 | Fwd:  204.7921 ms    55.71 GF/s | Bwd:  239.4016 ms    47.65 GF/s | Mem:2048.00 MB
+RESULT|avx512_logical|throughput|n131072_b1024|131072|1|1|1024|20|204.792053|55.707762|239.401585|47.654266|2048.00
+[run ] n262144_b1       | Len: 262144 | Batch:     1 | Thr:20 | Fwd:    0.1511 ms   156.17 GF/s | Bwd:    0.1450 ms   162.74 GF/s | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n262144_b1|262144|1|1|1|20|0.151073|156.169439|0.144977|162.735511|4.00
+[run ] n262144_b2       | Len: 262144 | Batch:     2 | Thr:20 | Fwd:    4.0536 ms    11.64 GF/s | Bwd:    4.0768 ms    11.57 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n262144_b2|262144|1|1|2|20|4.053600|11.640497|4.076759|11.574372|8.00
+[run ] n262144_b4       | Len: 262144 | Batch:     4 | Thr:20 | Fwd:    1.2416 ms    76.01 GF/s | Bwd:    0.7350 ms   128.40 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n262144_b4|262144|1|1|4|20|1.241620|76.007028|0.734979|128.400703|16.00
+[run ] n262144_b8       | Len: 262144 | Batch:     8 | Thr:20 | Fwd:    3.4868 ms    54.13 GF/s | Bwd:    3.9519 ms    47.76 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n262144_b8|262144|1|1|8|20|3.486813|54.130708|3.951925|47.759929|32.00
+[run ] n262144_b16      | Len: 262144 | Batch:    16 | Thr:20 | Fwd:   10.0009 ms    37.75 GF/s | Bwd:    7.2184 ms    52.29 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n262144_b16|262144|1|1|16|20|10.000871|37.745448|7.218422|52.295000|64.00
+[run ] n262144_b32      | Len: 262144 | Batch:    32 | Thr:20 | Fwd:   15.2265 ms    49.58 GF/s | Bwd:   15.6923 ms    48.11 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n262144_b32|262144|1|1|32|20|15.226522|49.582875|15.692292|48.111182|128.00
+[run ] n262144_b64      | Len: 262144 | Batch:    64 | Thr:20 | Fwd:   31.9639 ms    47.24 GF/s | Bwd:   30.4879 ms    49.53 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n262144_b64|262144|1|1|64|20|31.963912|47.239194|30.487941|49.526121|256.00
+[run ] n262144_b128     | Len: 262144 | Batch:   128 | Thr:20 | Fwd:   39.4373 ms    76.57 GF/s | Bwd:   64.3157 ms    46.95 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n262144_b128|262144|1|1|128|20|39.437254|76.574776|64.315662|46.954331|512.00
+[run ] n262144_b256     | Len: 262144 | Batch:   256 | Thr:20 | Fwd:  111.9051 ms    53.97 GF/s | Bwd:  165.4716 ms    36.50 GF/s | Mem:1024.00 MB
+RESULT|avx512_logical|throughput|n262144_b256|262144|1|1|256|20|111.905139|53.972479|165.471580|36.500514|1024.00
+[run ] n262144_b512     | Len: 262144 | Batch:   512 | Thr:20 | Fwd:  200.9975 ms    60.10 GF/s | Bwd:  188.5434 ms    64.07 GF/s | Mem:2048.00 MB
+RESULT|avx512_logical|throughput|n262144_b512|262144|1|1|512|20|200.997459|60.098250|188.543370|64.067994|2048.00
+[skip] n262144_b1024    | Len: 262144 | Batch:  1024 | Thr:20 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n262144_b1024|262144|1|1|1024|20|4096.00|memory_limit
+[run ] n524288_b1       | Len: 524288 | Batch:     1 | Thr:20 | Fwd:    0.2679 ms   185.89 GF/s | Bwd:    1.1047 ms    45.08 GF/s | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n524288_b1|524288|1|1|1|20|0.267938|185.891433|1.104746|45.084909|8.00
+[run ] n524288_b2       | Len: 524288 | Batch:     2 | Thr:20 | Fwd:   18.2073 ms     5.47 GF/s | Bwd:   11.6697 ms     8.54 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n524288_b2|524288|1|1|2|20|18.207323|5.471135|11.669724|8.536168|16.00
+[run ] n524288_b4       | Len: 524288 | Batch:     4 | Thr:20 | Fwd:    3.6718 ms    54.26 GF/s | Bwd:    3.5105 ms    56.75 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n524288_b4|524288|1|1|4|20|3.671758|54.259967|3.510459|56.753097|32.00
+[run ] n524288_b8       | Len: 524288 | Batch:     8 | Thr:20 | Fwd:    6.8941 ms    57.80 GF/s | Bwd:   23.1472 ms    17.21 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n524288_b8|524288|1|1|8|20|6.894053|57.797479|23.147233|17.214104|64.00
+[run ] n524288_b16      | Len: 524288 | Batch:    16 | Thr:20 | Fwd:   13.9628 ms    57.07 GF/s | Bwd:   13.8082 ms    57.71 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n524288_b16|524288|1|1|16|20|13.962811|57.074307|13.808213|57.713315|128.00
+[run ] n524288_b32      | Len: 524288 | Batch:    32 | Thr:20 | Fwd:   30.8028 ms    51.74 GF/s | Bwd:   26.6389 ms    59.83 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n524288_b32|524288|1|1|32|20|30.802848|51.743122|26.638916|59.831095|256.00
+[run ] n524288_b64      | Len: 524288 | Batch:    64 | Thr:20 | Fwd:   37.3262 ms    85.40 GF/s | Bwd:   56.1045 ms    56.82 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n524288_b64|524288|1|1|64|20|37.326214|85.400332|56.104470|56.816703|512.00
+[run ] n524288_b128     | Len: 524288 | Batch:   128 | Thr:20 | Fwd:   96.2732 ms    66.22 GF/s | Bwd:   70.1039 ms    90.94 GF/s | Mem:1024.00 MB
+RESULT|avx512_logical|throughput|n524288_b128|524288|1|1|128|20|96.273171|66.221378|70.103935|90.941287|1024.00
+[run ] n524288_b256     | Len: 524288 | Batch:   256 | Thr:20 | Fwd:  216.8385 ms    58.80 GF/s | Bwd:  229.3323 ms    55.60 GF/s | Mem:2048.00 MB
+RESULT|avx512_logical|throughput|n524288_b256|524288|1|1|256|20|216.838533|58.802668|229.332317|55.599160|2048.00
+[skip] n524288_b512     | Len: 524288 | Batch:   512 | Thr:20 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n524288_b512|524288|1|1|512|20|4096.00|memory_limit
+[skip] n524288_b1024    | Len: 524288 | Batch:  1024 | Thr:20 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n524288_b1024|524288|1|1|1024|20|8192.00|memory_limit
+[run ] n1048576_b1      | Len:1048576 | Batch:     1 | Thr:20 | Fwd:    0.9719 ms   107.89 GF/s | Bwd:    0.5205 ms   201.46 GF/s | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n1048576_b1|1048576|1|1|1|20|0.971928|107.886183|0.520490|201.459587|16.00
+[run ] n1048576_b2      | Len:1048576 | Batch:     2 | Thr:20 | Fwd:   15.2549 ms    13.75 GF/s | Bwd:   12.5967 ms    16.65 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n1048576_b2|1048576|1|1|2|20|15.254860|13.747435|12.596669|16.648465|32.00
+[run ] n1048576_b4      | Len:1048576 | Batch:     4 | Thr:20 | Fwd:    3.3930 ms   123.62 GF/s | Bwd:    3.4917 ms   120.12 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n1048576_b4|1048576|1|1|4|20|3.392969|123.617517|3.491677|120.122893|64.00
+[run ] n1048576_b8      | Len:1048576 | Batch:     8 | Thr:20 | Fwd:   13.8731 ms    60.47 GF/s | Bwd:   13.8169 ms    60.71 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n1048576_b8|1048576|1|1|8|20|13.873063|60.466880|13.816915|60.712597|128.00
+[run ] n1048576_b16     | Len:1048576 | Batch:    16 | Thr:20 | Fwd:   26.8037 ms    62.59 GF/s | Bwd:   28.0761 ms    59.76 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n1048576_b16|1048576|1|1|16|20|26.803676|62.592967|28.076053|59.756320|256.00
+[run ] n1048576_b32     | Len:1048576 | Batch:    32 | Thr:20 | Fwd:   54.0959 ms    62.03 GF/s | Bwd:   56.5842 ms    59.30 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n1048576_b32|1048576|1|1|32|20|54.095854|62.027733|56.584186|59.300018|512.00
+[run ] n1048576_b64     | Len:1048576 | Batch:    64 | Thr:20 | Fwd:  109.3393 ms    61.38 GF/s | Bwd:  142.9803 ms    46.94 GF/s | Mem:1024.00 MB
+RESULT|avx512_logical|throughput|n1048576_b64|1048576|1|1|64|20|109.339340|61.376687|142.980322|46.935734|1024.00
+[run ] n1048576_b128    | Len:1048576 | Batch:   128 | Thr:20 | Fwd:  209.7002 ms    64.00 GF/s | Bwd:  277.3198 ms    48.40 GF/s | Mem:2048.00 MB
+RESULT|avx512_logical|throughput|n1048576_b128|1048576|1|1|128|20|209.700241|64.004565|277.319820|48.398174|2048.00
+[skip] n1048576_b256    | Len:1048576 | Batch:   256 | Thr:20 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n1048576_b256|1048576|1|1|256|20|4096.00|memory_limit
+[skip] n1048576_b512    | Len:1048576 | Batch:   512 | Thr:20 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n1048576_b512|1048576|1|1|512|20|8192.00|memory_limit
+[skip] n1048576_b1024   | Len:1048576 | Batch:  1024 | Thr:20 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n1048576_b1024|1048576|1|1|1024|20|16384.00|memory_limit
+[run ] n2097152_b1      | Len:2097152 | Batch:     1 | Thr:20 | Fwd:    2.4604 ms    89.50 GF/s | Bwd:    2.9434 ms    74.81 GF/s | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n2097152_b1|2097152|1|1|1|20|2.460417|89.497427|2.943400|74.811766|32.00
+[run ] n2097152_b2      | Len:2097152 | Batch:     2 | Thr:20 | Fwd:   31.6044 ms    13.93 GF/s | Bwd:   33.1589 ms    13.28 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n2097152_b2|2097152|1|1|2|20|31.604374|13.934841|33.158851|13.281580|64.00
+[run ] n2097152_b4      | Len:2097152 | Batch:     4 | Thr:20 | Fwd:   14.1034 ms    62.45 GF/s | Bwd:   12.9687 ms    67.92 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n2097152_b4|2097152|1|1|4|20|14.103386|62.453361|12.968672|67.917813|128.00
+[run ] n2097152_b8      | Len:2097152 | Batch:     8 | Thr:20 | Fwd:   26.9782 ms    65.30 GF/s | Bwd:   26.9762 ms    65.30 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n2097152_b8|2097152|1|1|8|20|26.978210|65.297427|26.976177|65.302348|256.00
+[run ] n2097152_b16     | Len:2097152 | Batch:    16 | Thr:20 | Fwd:   54.1009 ms    65.12 GF/s | Bwd:   55.6120 ms    63.35 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n2097152_b16|2097152|1|1|16|20|54.100908|65.123036|55.611952|63.353564|512.00
+[run ] n2097152_b32     | Len:2097152 | Batch:    32 | Thr:20 | Fwd:  105.9471 ms    66.51 GF/s | Bwd:   67.9964 ms   103.63 GF/s | Mem:1024.00 MB
+RESULT|avx512_logical|throughput|n2097152_b32|2097152|1|1|32|20|105.947136|66.508930|67.996366|103.629519|1024.00
+[run ] n2097152_b64     | Len:2097152 | Batch:    64 | Thr:20 | Fwd:  233.0578 ms    60.47 GF/s | Bwd:  228.8455 ms    61.58 GF/s | Mem:2048.00 MB
+RESULT|avx512_logical|throughput|n2097152_b64|2097152|1|1|64|20|233.057806|60.469382|228.845525|61.582421|2048.00
+[skip] n2097152_b128    | Len:2097152 | Batch:   128 | Thr:20 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n2097152_b128|2097152|1|1|128|20|4096.00|memory_limit
+[skip] n2097152_b256    | Len:2097152 | Batch:   256 | Thr:20 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n2097152_b256|2097152|1|1|256|20|8192.00|memory_limit
+[skip] n2097152_b512    | Len:2097152 | Batch:   512 | Thr:20 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n2097152_b512|2097152|1|1|512|20|16384.00|memory_limit
+[skip] n2097152_b1024   | Len:2097152 | Batch:  1024 | Thr:20 | Mem:32768.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n2097152_b1024|2097152|1|1|1024|20|32768.00|memory_limit
+[run ] n4194304_b1      | Len:4194304 | Batch:     1 | Thr:20 | Fwd:    3.5868 ms   128.63 GF/s | Bwd:    3.6031 ms   128.05 GF/s | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n4194304_b1|4194304|1|1|1|20|3.586804|128.630782|3.603113|128.048556|64.00
+[run ] n4194304_b2      | Len:4194304 | Batch:     2 | Thr:20 | Fwd:   63.8860 ms    14.44 GF/s | Bwd:   63.4966 ms    14.53 GF/s | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n4194304_b2|4194304|1|1|2|20|63.886025|14.443642|63.496572|14.532231|128.00
+[run ] n4194304_b4      | Len:4194304 | Batch:     4 | Thr:20 | Fwd:   29.0430 ms    63.54 GF/s | Bwd:   28.4944 ms    64.77 GF/s | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n4194304_b4|4194304|1|1|4|20|29.043022|63.543448|28.494414|64.766860|256.00
+[run ] n4194304_b8      | Len:4194304 | Batch:     8 | Thr:20 | Fwd:   55.7618 ms    66.19 GF/s | Bwd:   58.9783 ms    62.58 GF/s | Mem: 512.00 MB
+RESULT|avx512_logical|throughput|n4194304_b8|4194304|1|1|8|20|55.761821|66.192019|58.978328|62.582098|512.00
+[run ] n4194304_b16     | Len:4194304 | Batch:    16 | Thr:20 | Fwd:  119.6235 ms    61.71 GF/s | Bwd:  117.1962 ms    62.99 GF/s | Mem:1024.00 MB
+RESULT|avx512_logical|throughput|n4194304_b16|4194304|1|1|16|20|119.623458|61.710096|117.196207|62.988174|1024.00
+[run ] n4194304_b32     | Len:4194304 | Batch:    32 | Thr:20 | Fwd:  233.3018 ms    63.28 GF/s | Bwd:  257.9381 ms    57.24 GF/s | Mem:2048.00 MB
+RESULT|avx512_logical|throughput|n4194304_b32|4194304|1|1|32|20|233.301819|63.282619|257.938094|57.238347|2048.00
+[skip] n4194304_b64     | Len:4194304 | Batch:    64 | Thr:20 | Mem: 4096.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n4194304_b64|4194304|1|1|64|20|4096.00|memory_limit
+[skip] n4194304_b128    | Len:4194304 | Batch:   128 | Thr:20 | Mem: 8192.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n4194304_b128|4194304|1|1|128|20|8192.00|memory_limit
+[skip] n4194304_b256    | Len:4194304 | Batch:   256 | Thr:20 | Mem:16384.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n4194304_b256|4194304|1|1|256|20|16384.00|memory_limit
+[skip] n4194304_b512    | Len:4194304 | Batch:   512 | Thr:20 | Mem:32768.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n4194304_b512|4194304|1|1|512|20|32768.00|memory_limit
+[skip] n4194304_b1024   | Len:4194304 | Batch:  1024 | Thr:20 | Mem:65536.0 MB > limit 3072.0 MB
+SKIP|avx512_logical|throughput|n4194304_b1024|4194304|1|1|1024|20|65536.00|memory_limit
+
+Benchmark workload complete.
+
+
+real	3m36.908s
+user	54m8.330s
+sys	0m29.122s
+[DONE] avx512_logical
+
+============================================================
+ALL RUNS COMPLETE
+Log    : /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/1024_batches/20260225_123049/runs/run01/fft_benchmark_20260225_123049.log
+Report : /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/1024_batches/20260225_123049/runs/run01/fft_benchmark_20260225_123049.report.md
+Lines  : 1347
+Done at: Wed Feb 25 12:49:14 IST 2026
+============================================================
+
+Quick inspect:
+  grep '^PROFILE|' /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/1024_batches/20260225_123049/runs/run01/fft_benchmark_20260225_123049.log
+  grep '^RESULT|' /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/1024_batches/20260225_123049/runs/run01/fft_benchmark_20260225_123049.log | head
+  cat /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/1024_batches/20260225_123049/runs/run01/fft_benchmark_20260225_123049.report.md

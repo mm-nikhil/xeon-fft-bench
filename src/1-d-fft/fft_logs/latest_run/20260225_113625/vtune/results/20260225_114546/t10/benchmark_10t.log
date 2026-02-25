@@ -1,0 +1,30 @@
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : vtune_ports_10t
+profile_desc     : vtune ports 10t
+workload         : throughput
+threads(cli)     : 10
+mkl max threads  : 10
+timed runs       : 80
+warmup runs      : 10
+mem cap (MB)     : 3072.0
+lengths: 8192
+batches: 16
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=10
+[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr:10 | Fwd:    0.0256 ms   332.41 GF/s | Bwd:    0.0255 ms   333.77 GF/s | Mem:   2.00 MB
+RESULT|vtune_ports_10t|throughput|n8192_b16|8192|1|1|16|10|0.025630|332.413739|0.025526|333.770724|2.00
+
+Benchmark workload complete.
+

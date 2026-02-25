@@ -1,0 +1,16 @@
+Function                                     Module                    Function (Full)                                          Source File      Start Address
+-------------------------------------------  ------------------------  -------------------------------------------------------  ---------------  -------------
+OS_BARESYSCALL_DoCallAsmIntel64Linux         libc-dynamic.so           OS_BARESYSCALL_DoCallAsmIntel64Linux                     [Unknown]        0x80954      
+TraverseDwarfRecursive                       libpindwarf.so            TraverseDwarfRecursive(Dwarf_Die_s*&, DWARFData&, int&)  [Unknown]        0x61f0       
+[MKL FFT]@avx512_mg_colbatch_twidl_bwd_16_s  libmkl_avx512.so.2        mkl_dft_avx512_mg_colbatch_twidl_bwd_16_s                [Unknown]        0x21a1240    
+[MKL SERVICE]@domain_get_max_threads         libmkl_intel_thread.so.2  mkl_serv_domain_get_max_threads                          [Unknown]        0x29ce00     
+[ld-linux-x86-64.so.2]                       ld-linux-x86-64.so.2      [ld-linux-x86-64.so.2]                                   [Unknown]        0            
+__kmp_fork_barrier                           libiomp5.so               __kmp_fork_barrier(int, int)                             kmp_barrier.cpp  0x82a40      
+__kmp_fork_call                              libiomp5.so               __kmp_fork_call                                          kmp_runtime.cpp  0xc8080      
+__kmp_join_barrier                           libiomp5.so               __kmp_join_barrier(int)                                  kmp_barrier.cpp  0x80440      
+__kmp_join_call                              libiomp5.so               __kmp_join_call                                          kmp_runtime.cpp  0xcb080      
+dlopen                                       libdl.so.2                dlopen                                                   [Unknown]        0xfe0        
+memcmp                                       libc-dynamic.so           memcmp                                                   [Unknown]        0x69ce0      
+memmove                                      libc-dynamic.so           memmove                                                  [Unknown]        0x69e90      
+memset                                       libc-dynamic.so           memset                                                   [Unknown]        0x6a3b0      
+rand                                         libc.so.6                 rand                                                     [Unknown]        0x51e90      

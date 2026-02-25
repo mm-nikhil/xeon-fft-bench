@@ -1,0 +1,121 @@
+vtune: Collection started. To stop the collection, either press CTRL-C or enter from another console window: vtune -r /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/64k_batch/20260225_131947/vtune/results/20260225_134413/t10/threading_10t -command stop.
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : vtune_ports_10t
+profile_desc     : vtune ports 10t
+workload         : throughput
+threads(cli)     : 10
+mkl max threads  : 10
+timed runs       : 80
+warmup runs      : 10
+mem cap (MB)     : 3072.0
+lengths: 8192
+batches: 16
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=10
+[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr:10 | Fwd:    0.0456 ms   186.76 GF/s | Bwd:    0.0452 ms   188.29 GF/s | Mem:   2.00 MB
+RESULT|vtune_ports_10t|throughput|n8192_b16|8192|1|1|16|10|0.045617|186.764109|0.045249|188.285931|2.00
+
+Benchmark workload complete.
+
+vtune: Collection stopped.
+vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/64k_batch/20260225_131947/vtune/results/20260225_134413/t10/threading_10t'
+vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions  0 % Finalizing the result                            vtune: Executing actions  0 % Clearing the database                            vtune: Executing actions  7 % Clearing the database                            vtune: Executing actions  7 % Loading raw data to the database                 vtune: Executing actions  7 % Loading 'systemcollector-3757389-amdtoolsserver.mvtune: Executing actions 12 % Loading 'systemcollector-3757389-amdtoolsserver.mvtune: Executing actions 12 % Loading '3757389-3757394.0.trace' file           vtune: Executing actions 12 % Loading 'userapicollector-3757394-2c184e90.trace'vtune: Executing actions 12 % Converting API Events to Waits                   vtune: Executing actions 12 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Updating precomputed scalar metrics              vtune: Executing actions 14 % Processing profile metrics and debug information vtune: Executing actions 19 % Processing profile metrics and debug information vtune: Executing actions 19 % Setting data model parameters                    vtune: Executing actions 19 % Resolving module symbols                         vtune: Executing actions 19 % Resolving information for `libc-dynamic.so'      vtune: Executing actions 19 % Resolving information for `libtbbmalloc.so.2'    vtune: Executing actions 19 % Resolving information for `libc.so.6'            vtune: Executing actions 19 % Resolving information for `libiomp5.so'          vtune: Executing actions 19 % Resolving information for `pinbin'               
+vtune: Warning: Cannot locate debugging information for file `/lib64/libc.so.6'.
+vtune: Executing actions 19 % Resolving information for `libtpsstool.so'       vtune: Executing actions 19 % Resolving information for `libmkl_rt.so.2'       vtune: Executing actions 19 % Resolving information for `libmkl_intel_lp64.so.2
+vtune: Warning: Cannot locate debugging information for file `/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/libtpsstool.so'.
+vtune: Executing actions 20 % Resolving information for `libmkl_intel_lp64.so.2vtune: Executing actions 20 % Resolving information for `libittnotify_collector
+vtune: Warning: Cannot locate debugging information for file `/home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64/runtime/libittnotify_collector.so'.
+vtune: Executing actions 20 % Resolving information for `librt.so.1'           
+vtune: Warning: Cannot locate debugging information for file `/lib64/librt.so.1'.
+vtune: Executing actions 20 % Resolving information for dangling locations     vtune: Executing actions 20 % Resolving information for `ld-linux-x86-64.so.2' vtune: Executing actions 20 % Resolving information for `libmkl_core.so.2'     vtune: Executing actions 20 % Resolving information for `fft_benchmark'        
+vtune: Warning: Cannot locate debugging information for file `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_benchmark'.
+vtune: Executing actions 21 % Resolving information for `fft_benchmark'        vtune: Executing actions 21 % Resolving information for `libpthread.so.0'      
+vtune: Warning: Cannot locate debugging information for file `/lib64/libpthread.so.0'.
+vtune: Executing actions 21 % Resolving information for `libmkl_intel_thread.sovtune: Executing actions 21 % Resolving information for `libdl.so.2'           
+vtune: Warning: Cannot locate debugging information for file `/lib64/libdl.so.2'.
+vtune: Executing actions 21 % Resolving information for `libmkl_avx512.so.2'   vtune: Executing actions 21 % Resolving information for `libpindwarf.so'       vtune: Executing actions 21 % Resolving information for `libdwarf.so'          vtune: Executing actions 22 % Resolving information for `libdwarf.so'          vtune: Executing actions 22 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving bottom user stack information          vtune: Executing actions 23 % Resolving sync object name information           vtune: Executing actions 24 % Resolving sync object name information           vtune: Executing actions 24 % Resolving thread name information                vtune: Executing actions 24 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving call target names for dynamic code     vtune: Executing actions 25 % Resolving interrupt name information             vtune: Executing actions 26 % Resolving interrupt name information             vtune: Executing actions 26 % Processing profile metrics and debug information vtune: Executing actions 28 % Processing profile metrics and debug information vtune: Executing actions 30 % Processing profile metrics and debug information vtune: Executing actions 31 % Processing profile metrics and debug information vtune: Executing actions 32 % Processing profile metrics and debug information vtune: Executing actions 33 % Processing profile metrics and debug information vtune: Executing actions 34 % Processing profile metrics and debug information vtune: Executing actions 35 % Processing profile metrics and debug information vtune: Executing actions 35 % Setting data model parameters                    vtune: Executing actions 35 % Precomputing frequently used data                vtune: Executing actions 35 % Precomputing frequently used data                vtune: Executing actions 36 % Precomputing frequently used data                vtune: Executing actions 37 % Precomputing frequently used data                vtune: Executing actions 38 % Precomputing frequently used data                vtune: Executing actions 39 % Precomputing frequently used data                vtune: Executing actions 40 % Precomputing frequently used data                vtune: Executing actions 41 % Precomputing frequently used data                vtune: Executing actions 41 % Updating precomputed scalar metrics              vtune: Executing actions 42 % Updating precomputed scalar metrics              vtune: Executing actions 42 % Discarding redundant overtime data               vtune: Executing actions 44 % Discarding redundant overtime data               vtune: Executing actions 44 % Saving the result                                vtune: Executing actions 46 % Saving the result                                vtune: Executing actions 48 % Saving the result                                vtune: Executing actions 50 % Saving the result                                vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              Elapsed Time: 0.418s
+    Paused Time: 0s
+Effective CPU Utilization: 5.4% (1.077 out of 20 logical CPUs)
+ | The metric value is low, which may signal a poor logical CPU cores
+ | utilization caused by load imbalance, threading runtime overhead, contended
+ | synchronization, or thread/process underutilization. Explore sub-metrics to
+ | estimate the efficiency of MPI and OpenMP parallelism or run the Locks and
+ | Waits analysis to identify parallel bottlenecks for other parallel runtimes.
+ |
+    OpenMP Analysis. Collection Time: 0.418
+        Serial Time (outside parallel regions): 0.408s (97.7%)
+         | Serial Time of your application is high. It directly impacts
+         | application Elapsed Time and scalability. Explore options for
+         | parallelization, algorithm or microarchitecture tuning of the serial
+         | part of the application.
+         |
+
+            Top Serial Hotspots (outside parallel regions)
+            Function                              Module                Serial CPU Time
+            ------------------------------------  --------------------  ---------------
+            [ld-linux-x86-64.so.2]                ld-linux-x86-64.so.2           0.090s
+            memset                                libc-dynamic.so                0.080s
+            memcmp                                libc-dynamic.so                0.080s
+            dlopen                                libdl.so.2                     0.060s
+            _dwarf_next_die_info_ptr.constprop.0  libdwarf.so                    0.020s
+            [Others]                              N/A                            0.060s
+        Parallel Region Time: 0.010s (2.3%)
+            Estimated Ideal Time: 0.007s (1.8%)
+            OpenMP Potential Gain: 0.002s (0.5%)
+    Total Thread Count: 10
+     | The number of threads in the application is significantly lower than the
+     | number of logical cores on the machine. Check if it is resulted by thread
+     | number hard coding that limits application scalability.
+     |
+        Thread Oversubscription: 0s (0.0% of CPU Time)
+    Wait Time with poor CPU Utilization: 0.002s (100.0% of Wait Time)
+
+        Top Waiting Objects
+        Sync Object                                               Wait Time with poor CPU Utilization  (% from Object Wait Time)(%)  Wait Count
+        --------------------------------------------------------  -----------------------------------  ----------------------------  ----------
+        Sleep                                                                                  0.001s                        100.0%          21
+        Stream 0xc5efb2ac                                                                      0.001s                        100.0%          16
+        Stream /proc/cpuinfo 0xb78504fa                                                        0.000s                        100.0%           1
+        Stream /proc/cpuinfo 0x94fc554b                                                        0.000s                        100.0%           1
+        Stream /sys/devices/system/node/node0/cpulist 0xd5ef66d5                               0.000s                        100.0%           1
+        [Others]                                                                               0.000s                        100.0%           8
+    Spin and Overhead Time: 0.040s (8.2% of CPU Time)
+
+        Top Functions with Spin or Overhead Time
+        Function            Module       Spin and Overhead Time  (% from CPU Time)(%)
+        ------------------  -----------  ----------------------  --------------------
+        __kmp_fork_barrier  libiomp5.so                  0.040s                  8.2%
+Collection and Platform Info
+    Application Command Line: /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_benchmark "10" 
+    Operating System: 4.18.0-553.30.1.el8_10.x86_64 Red Hat Enterprise Linux release 8.10 (Ootpa)
+    Computer Name: amdtoolsserver.morphingmachines
+    Result Size: 4.9 MB 
+    Collection start time: 08:14:42 25/02/2026 UTC
+    Collection stop time: 08:14:43 25/02/2026 UTC
+    Collector Type: User-mode sampling and tracing
+    CPU
+        Name: Unknown
+        Frequency: 3.312 GHz
+        Logical CPU Count: 20
+        LLC size: 14.4 MB 
+        Cache Allocation Technology
+            Level 2 capability: not detected
+            Level 3 capability: available
+
+If you want to skip descriptions of detected performance issues in the report,
+enter: vtune -report summary -report-knob show-issues=false -r <my_result_dir>.
+Alternatively, you may view the report in the csv format: vtune -report
+<report_name> -format=csv.
+vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            

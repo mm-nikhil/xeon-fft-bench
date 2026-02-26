@@ -12,6 +12,7 @@ Outputs:
 from __future__ import annotations
 
 import argparse
+import csv
 import itertools
 import math
 import re
@@ -71,6 +72,11 @@ def safe_name(value: str) -> str:
 
 
 def manifest_set_id(manifest: Path) -> str:
+    if manifest.name in {"manifest.tsv", "manifest.txt"}:
+        parent = manifest.parent.name
+        if re.match(r"^\d{8}_\d{6}$", parent):
+            return parent
+        return safe_name(parent)
     name = manifest.name
     if name.endswith(".manifest.txt"):
         name = name[: -len(".manifest.txt")]
@@ -82,6 +88,14 @@ def manifest_set_id(manifest: Path) -> str:
 
 
 def find_latest_mkl_report(repo_src: Path) -> Path:
+    latest_ptr = repo_src / "1-d-fft" / "fft_logs" / "latest_run" / "64k_batch" / "LATEST_SESSION.txt"
+    if latest_ptr.is_file():
+        latest_session = latest_ptr.read_text(errors="replace").strip()
+        if latest_session:
+            p = Path(latest_session) / "latest_run_avg.report.md"
+            if p.is_file():
+                return p
+
     logs_dir = repo_src / "1-d-fft" / "fft_logs"
     cands = sorted(logs_dir.glob("fft_benchmark_1d_5run_avg_*.report.md"))
     if not cands:
@@ -110,20 +124,38 @@ def discover_manifests(gpu_root: Path, explicit: Optional[List[str]]) -> List[Pa
 
 def parse_manifest(manifest: Path, gpu_root: Path) -> List[Tuple[int, Path, Optional[Path]]]:
     rows: List[Tuple[int, Path, Optional[Path]]] = []
-    lines = manifest.read_text(errors="replace").strip().splitlines()
-    for line in lines[1:]:
-        parts = line.split("|")
-        if len(parts) < 2:
-            continue
-        run_idx = int(parts[0])
-        log_rel = parts[1].strip()
-        rpt_rel = parts[2].strip() if len(parts) > 2 else ""
+    text = manifest.read_text(errors="replace").strip().splitlines()
+    if not text:
+        raise ValueError(f"Manifest is empty: {manifest}")
+    delim = "\t" if "\t" in text[0] else "|"
 
-        log_path = (gpu_root / log_rel).resolve()
-        report_path = (gpu_root / rpt_rel).resolve() if rpt_rel else None
-        if not log_path.is_file():
-            raise FileNotFoundError(f"Missing log from manifest {manifest}: {log_rel}")
-        rows.append((run_idx, log_path, report_path if report_path and report_path.is_file() else None))
+    def _resolve_path(raw_path: str) -> Path:
+        p = Path(raw_path)
+        if p.is_absolute():
+            return p.resolve()
+        candidate_manifest = (manifest.parent / p).resolve()
+        if candidate_manifest.is_file():
+            return candidate_manifest
+        return (gpu_root / p).resolve()
+
+    with manifest.open(newline="") as f:
+        reader = csv.DictReader(f, delimiter=delim)
+        for pos, row in enumerate(reader, start=1):
+            run_raw = (row.get("run_index") or row.get("run_id") or str(pos)).strip()
+            log_raw = (row.get("log") or row.get("log_path") or "").strip()
+            rpt_raw = (row.get("report") or row.get("report_path") or "").strip()
+            if not log_raw:
+                continue
+            m = re.search(r"(\d+)$", run_raw)
+            run_idx = int(m.group(1)) if m else pos
+
+            log_path = _resolve_path(log_raw)
+            report_path = _resolve_path(rpt_raw) if rpt_raw else None
+            if not log_path.is_file():
+                raise FileNotFoundError(f"Missing log from manifest {manifest}: {log_raw}")
+            if report_path is not None and not report_path.is_file():
+                report_path = None
+            rows.append((run_idx, log_path, report_path))
 
     if not rows:
         raise ValueError(f"Manifest has no run rows: {manifest}")

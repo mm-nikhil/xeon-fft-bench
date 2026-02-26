@@ -1,0 +1,713 @@
+============================================================
+  FFT BENCHMARK RUN (GPU, cuFFT, 1D)
+  Date       : Wed Feb 25 14:43:27 IST 2026
+  Hostname   : aorus
+  Log file   : ./fft_logs/fft_benchmark_gpu_20260225_144327.log
+  Report file: ./fft_logs/fft_benchmark_gpu_20260225_144327.report.md
+============================================================
+
+[CHECK] GPU context
+Wed Feb 25 14:43:27 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 3080        Off |   00000000:08:00.0 Off |                  N/A |
+|  0%   44C    P8             32W /  320W |     170MiB /  10240MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            2776      G   /usr/lib/xorg/Xorg                       94MiB |
+|    0   N/A  N/A            2947      G   /usr/bin/gnome-shell                     12MiB |
+|    0   N/A  N/A            3561      G   gnome-control-center                      3MiB |
+|    0   N/A  N/A           30872      G   /usr/lib/xorg/Xorg                       14MiB |
++-----------------------------------------------------------------------------------------+
+
+[CHECK] nvcc      : Build cuda_11.5.r11.5/compiler.30672275_0
+[CHECK] host c++  : g++ (Ubuntu 10.5.0-1ubuntu1~22.04.2) 10.5.0
+
+[COMPILE] nvcc -O3 -std=c++14 -ccbin g++ fft_benchmark.cu
+          Binary: fft_benchmark
+
+[CONFIG] timed runs=20, warmup=5, mem_cap_mb=8192
+[CONFIG] run profiles=cufft_gpu
+[CONFIG] timing mode=compute (compute = kernel-only, e2e = H2D+FFT+D2H)
+[CONFIG] throughput lengths=32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304, batches=1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+[CONFIG] batch scaling set=1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536, scale length=16384
+
+============================================================
+RUN PROFILE: cufft_gpu
+Description : cuFFT throughput sweep on RTX 3080 (1D single precision, timing=compute)
+Workload    : throughput
+============================================================
+PROFILE|cufft_gpu|cuFFT throughput sweep on RTX 3080 (1D single precision, timing=compute)|CUDA_CUFFT|1|throughput|32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304|1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536|compute|16384|-|1
+
+############################################################
+# FFT BENCHMARK (cuFFT, 1D, single precision)              #
+############################################################
+profile_id       : cufft_gpu
+profile_desc     : cuFFT throughput sweep on RTX 3080 (1D single precision, timing=compute)
+workload         : throughput
+timing_mode      : compute
+timed runs       : 20
+warmup runs      : 5
+mem cap (MB)     : 8192.0
+threads_field    : 1
+lengths: 32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+batches: 1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+batch_scale_set: 1,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+scale_length     : 16384
+gpu_name         : NVIDIA GeForce RTX 3080
+compute_cap      : 8.6
+sm_count         : 68
+warp_size        : 32
+max_threads_sm   : 1536
+max_threads_blk  : 1024
+global_mem_mb    : 9872.4
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread field)
+====================================================================
+threads_field=1
+[run ] n32_b1           | Mode:compute | Len:     32 | Batch:     1 | Thr: 1 | Fwd:    0.0026 ms     0.31 GF/s | Bwd:    0.0025 ms     0.32 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n32_b1|32|1|1|1|1|0.002606|0.306937|0.002509|0.318878|0.00
+[run ] n32_b2           | Mode:compute | Len:     32 | Batch:     2 | Thr: 1 | Fwd:    0.0026 ms     0.62 GF/s | Bwd:    0.0028 ms     0.57 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n32_b2|32|1|1|2|1|0.002597|0.616143|0.002816|0.568182|0.00
+[run ] n32_b4           | Mode:compute | Len:     32 | Batch:     4 | Thr: 1 | Fwd:    0.0026 ms     1.25 GF/s | Bwd:    0.0027 ms     1.20 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n32_b4|32|1|1|4|1|0.002560|1.250000|0.002658|1.204094|0.00
+[run ] n32_b8           | Mode:compute | Len:     32 | Batch:     8 | Thr: 1 | Fwd:    0.0027 ms     2.40 GF/s | Bwd:    0.0026 ms     2.50 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n32_b8|32|1|1|8|1|0.002662|2.403846|0.002560|2.500000|0.00
+[run ] n32_b16          | Mode:compute | Len:     32 | Batch:    16 | Thr: 1 | Fwd:    0.0027 ms     4.81 GF/s | Bwd:    0.0027 ms     4.78 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n32_b16|32|1|1|16|1|0.002662|4.807692|0.002677|4.781829|0.01
+[run ] n32_b32          | Mode:compute | Len:     32 | Batch:    32 | Thr: 1 | Fwd:    0.0029 ms     8.93 GF/s | Bwd:    0.0030 ms     8.64 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n32_b32|32|1|1|32|1|0.002867|8.928571|0.002963|8.639309|0.02
+[run ] n32_b64          | Mode:compute | Len:     32 | Batch:    64 | Thr: 1 | Fwd:    0.0029 ms    17.61 GF/s | Bwd:    0.0029 ms    17.93 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n32_b64|32|1|1|64|1|0.002907|17.611448|0.002856|17.927171|0.03
+[run ] n32_b128         | Mode:compute | Len:     32 | Batch:   128 | Thr: 1 | Fwd:    0.0029 ms    34.93 GF/s | Bwd:    0.0029 ms    35.09 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n32_b128|32|1|1|128|1|0.002931|34.934498|0.002918|35.087719|0.06
+[run ] n32_b256         | Mode:compute | Len:     32 | Batch:   256 | Thr: 1 | Fwd:    0.0030 ms    68.97 GF/s | Bwd:    0.0029 ms    70.18 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n32_b256|32|1|1|256|1|0.002970|68.965516|0.002918|70.175437|0.12
+[run ] n32_b512         | Mode:compute | Len:     32 | Batch:   512 | Thr: 1 | Fwd:    0.0029 ms   140.35 GF/s | Bwd:    0.0030 ms   137.93 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n32_b512|32|1|1|512|1|0.002918|140.350874|0.002970|137.931031|0.25
+[run ] n32_b1024        | Mode:compute | Len:     32 | Batch:  1024 | Thr: 1 | Fwd:    0.0030 ms   270.61 GF/s | Bwd:    0.0030 ms   270.47 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n32_b1024|32|1|1|1024|1|0.003027|270.613112|0.003029|270.470156|0.50
+[run ] n32_b2048        | Mode:compute | Len:     32 | Batch:  2048 | Thr: 1 | Fwd:    0.0032 ms   507.94 GF/s | Bwd:    0.0032 ms   507.94 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n32_b2048|32|1|1|2048|1|0.003226|507.936512|0.003226|507.936512|1.00
+[run ] n32_b4096        | Mode:compute | Len:     32 | Batch:  4096 | Thr: 1 | Fwd:    0.0042 ms   783.17 GF/s | Bwd:    0.0040 ms   810.13 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n32_b4096|32|1|1|4096|1|0.004184|783.174030|0.004045|810.126606|2.00
+[run ] n32_b8192        | Mode:compute | Len:     32 | Batch:  8192 | Thr: 1 | Fwd:    0.0055 ms  1196.26 GF/s | Bwd:    0.0055 ms  1196.26 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n32_b8192|32|1|1|8192|1|0.005478|1196.261684|0.005478|1196.261684|4.00
+[run ] n32_b16384       | Mode:compute | Len:     32 | Batch: 16384 | Thr: 1 | Fwd:    0.0126 ms  1036.70 GF/s | Bwd:    0.0125 ms  1046.10 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n32_b16384|32|1|1|16384|1|0.012643|1036.699557|0.012530|1046.098866|8.00
+[run ] n32_b32768       | Mode:compute | Len:     32 | Batch: 32768 | Thr: 1 | Fwd:    0.0262 ms  1000.00 GF/s | Bwd:    0.0263 ms   996.11 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n32_b32768|32|1|1|32768|1|0.026214|1000.000003|0.026317|996.108922|16.00
+[run ] n32_b65536       | Mode:compute | Len:     32 | Batch: 65536 | Thr: 1 | Fwd:    0.0506 ms  1036.44 GF/s | Bwd:    0.0506 ms  1036.18 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n32_b65536|32|1|1|65536|1|0.050586|1036.437293|0.050598|1036.175040|32.00
+[run ] n64_b1           | Mode:compute | Len:     64 | Batch:     1 | Thr: 1 | Fwd:    0.0024 ms     0.82 GF/s | Bwd:    0.0024 ms     0.80 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n64_b1|64|1|1|1|1|0.002355|0.815217|0.002406|0.797872|0.00
+[run ] n64_b2           | Mode:compute | Len:     64 | Batch:     2 | Thr: 1 | Fwd:    0.0024 ms     1.60 GF/s | Bwd:    0.0024 ms     1.60 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n64_b2|64|1|1|2|1|0.002406|1.595745|0.002402|1.598934|0.00
+[run ] n64_b4           | Mode:compute | Len:     64 | Batch:     4 | Thr: 1 | Fwd:    0.0024 ms     3.26 GF/s | Bwd:    0.0024 ms     3.19 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n64_b4|64|1|1|4|1|0.002355|3.260869|0.002406|3.191489|0.00
+[run ] n64_b8           | Mode:compute | Len:     64 | Batch:     8 | Thr: 1 | Fwd:    0.0024 ms     6.38 GF/s | Bwd:    0.0024 ms     6.38 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n64_b8|64|1|1|8|1|0.002406|6.382979|0.002406|6.382979|0.01
+[run ] n64_b16          | Mode:compute | Len:     64 | Batch:    16 | Thr: 1 | Fwd:    0.0025 ms    12.50 GF/s | Bwd:    0.0025 ms    12.50 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n64_b16|64|1|1|16|1|0.002458|12.500000|0.002458|12.500000|0.02
+[run ] n64_b32          | Mode:compute | Len:     64 | Batch:    32 | Thr: 1 | Fwd:    0.0026 ms    24.00 GF/s | Bwd:    0.0025 ms    24.49 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n64_b32|64|1|1|32|1|0.002560|24.000001|0.002509|24.489797|0.03
+[run ] n64_b64          | Mode:compute | Len:     64 | Batch:    64 | Thr: 1 | Fwd:    0.0025 ms    48.21 GF/s | Bwd:    0.0028 ms    43.84 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n64_b64|64|1|1|64|1|0.002549|48.210922|0.002803|43.835618|0.06
+[run ] n64_b128         | Mode:compute | Len:     64 | Batch:   128 | Thr: 1 | Fwd:    0.0025 ms    98.21 GF/s | Bwd:    0.0025 ms    97.96 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n64_b128|64|1|1|128|1|0.002502|98.209716|0.002509|97.959187|0.12
+[run ] n64_b256         | Mode:compute | Len:     64 | Batch:   256 | Thr: 1 | Fwd:    0.0026 ms   192.00 GF/s | Bwd:    0.0025 ms   195.92 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n64_b256|64|1|1|256|1|0.002560|192.000005|0.002509|195.918374|0.25
+[run ] n64_b512         | Mode:compute | Len:     64 | Batch:   512 | Thr: 1 | Fwd:    0.0027 ms   362.26 GF/s | Bwd:    0.0027 ms   364.20 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n64_b512|64|1|1|512|1|0.002714|362.264153|0.002699|364.196790|0.50
+[run ] n64_b1024        | Mode:compute | Len:     64 | Batch:  1024 | Thr: 1 | Fwd:    0.0031 ms   640.00 GF/s | Bwd:    0.0031 ms   642.34 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n64_b1024|64|1|1|1024|1|0.003072|640.000016|0.003061|642.341867|1.00
+[run ] n64_b2048        | Mode:compute | Len:     64 | Batch:  2048 | Thr: 1 | Fwd:    0.0037 ms  1052.05 GF/s | Bwd:    0.0037 ms  1052.05 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n64_b2048|64|1|1|2048|1|0.003738|1052.054753|0.003738|1052.054753|2.00
+[run ] n64_b4096        | Mode:compute | Len:     64 | Batch:  4096 | Thr: 1 | Fwd:    0.0046 ms  1725.84 GF/s | Bwd:    0.0045 ms  1745.45 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n64_b4096|64|1|1|4096|1|0.004557|1725.842677|0.004506|1745.454532|4.00
+[run ] n64_b8192        | Mode:compute | Len:     64 | Batch:  8192 | Thr: 1 | Fwd:    0.0128 ms  1229.57 GF/s | Bwd:    0.0120 ms  1307.23 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n64_b8192|64|1|1|8192|1|0.012792|1229.568464|0.012032|1307.234045|8.00
+[run ] n64_b16384       | Mode:compute | Len:     64 | Batch: 16384 | Thr: 1 | Fwd:    0.0264 ms  1190.70 GF/s | Bwd:    0.0264 ms  1190.91 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n64_b16384|64|1|1|16384|1|0.026419|1190.697741|0.026414|1190.914032|16.00
+[run ] n64_b32768       | Mode:compute | Len:     64 | Batch: 32768 | Thr: 1 | Fwd:    0.0514 ms  1224.25 GF/s | Bwd:    0.0513 ms  1225.47 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n64_b32768|64|1|1|32768|1|0.051390|1224.247389|0.051339|1225.468326|32.00
+[run ] n64_b65536       | Mode:compute | Len:     64 | Batch: 65536 | Thr: 1 | Fwd:    0.1002 ms  1255.98 GF/s | Bwd:    0.1001 ms  1256.46 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n64_b65536|64|1|1|65536|1|0.100184|1255.980202|0.100146|1256.461764|64.00
+[run ] n128_b1          | Mode:compute | Len:    128 | Batch:     1 | Thr: 1 | Fwd:    0.0026 ms     1.71 GF/s | Bwd:    0.0026 ms     1.72 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n128_b1|128|1|1|1|1|0.002621|1.709402|0.002610|1.716738|0.00
+[run ] n128_b2          | Mode:compute | Len:    128 | Batch:     2 | Thr: 1 | Fwd:    0.0027 ms     3.38 GF/s | Bwd:    0.0026 ms     3.44 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n128_b2|128|1|1|2|1|0.002654|3.375528|0.002608|3.435583|0.00
+[run ] n128_b4          | Mode:compute | Len:    128 | Batch:     4 | Thr: 1 | Fwd:    0.0027 ms     6.60 GF/s | Bwd:    0.0026 ms     6.86 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n128_b4|128|1|1|4|1|0.002714|6.603774|0.002613|6.858543|0.01
+[run ] n128_b8          | Mode:compute | Len:    128 | Batch:     8 | Thr: 1 | Fwd:    0.0028 ms    12.96 GF/s | Bwd:    0.0027 ms    13.21 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n128_b8|128|1|1|8|1|0.002765|12.962963|0.002714|13.207547|0.02
+[run ] n128_b16         | Mode:compute | Len:    128 | Batch:    16 | Thr: 1 | Fwd:    0.0027 ms    26.42 GF/s | Bwd:    0.0027 ms    26.42 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n128_b16|128|1|1|16|1|0.002714|26.415094|0.002714|26.415094|0.03
+[run ] n128_b32         | Mode:compute | Len:    128 | Batch:    32 | Thr: 1 | Fwd:    0.0027 ms    52.83 GF/s | Bwd:    0.0027 ms    52.15 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n128_b32|128|1|1|32|1|0.002714|52.830189|0.002749|52.153666|0.06
+[run ] n128_b64         | Mode:compute | Len:    128 | Batch:    64 | Thr: 1 | Fwd:    0.0027 ms   106.22 GF/s | Bwd:    0.0027 ms   106.04 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n128_b64|128|1|1|64|1|0.002699|106.224064|0.002704|106.035506|0.12
+[run ] n128_b128        | Mode:compute | Len:    128 | Batch:   128 | Thr: 1 | Fwd:    0.0028 ms   208.01 GF/s | Bwd:    0.0027 ms   211.32 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n128_b128|128|1|1|128|1|0.002757|208.009290|0.002714|211.320756|0.25
+[run ] n128_b256        | Mode:compute | Len:    128 | Batch:   256 | Thr: 1 | Fwd:    0.0029 ms   392.98 GF/s | Bwd:    0.0029 ms   394.28 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n128_b256|128|1|1|256|1|0.002918|392.982449|0.002909|394.279430|0.50
+[run ] n128_b512        | Mode:compute | Len:    128 | Batch:   512 | Thr: 1 | Fwd:    0.0032 ms   711.11 GF/s | Bwd:    0.0032 ms   711.11 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n128_b512|128|1|1|512|1|0.003226|711.111117|0.003226|711.111117|1.00
+[run ] n128_b1024       | Mode:compute | Len:    128 | Batch:  1024 | Thr: 1 | Fwd:    0.0039 ms  1165.53 GF/s | Bwd:    0.0039 ms  1179.92 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n128_b1024|128|1|1|1024|1|0.003936|1165.528405|0.003888|1179.917642|2.00
+[run ] n128_b2048       | Mode:compute | Len:    128 | Batch:  2048 | Thr: 1 | Fwd:    0.0050 ms  1829.15 GF/s | Bwd:    0.0049 ms  1872.76 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n128_b2048|128|1|1|2048|1|0.005016|1829.154769|0.004899|1872.762880|4.00
+[run ] n128_b4096       | Mode:compute | Len:    128 | Batch:  4096 | Thr: 1 | Fwd:    0.0135 ms  1356.61 GF/s | Bwd:    0.0132 ms  1389.15 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n128_b4096|128|1|1|4096|1|0.013526|1356.612311|0.013210|1389.147365|8.00
+[run ] n128_b8192       | Mode:compute | Len:    128 | Batch:  8192 | Thr: 1 | Fwd:    0.0271 ms  1354.37 GF/s | Bwd:    0.0271 ms  1355.01 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n128_b8192|128|1|1|8192|1|0.027098|1354.369356|0.027085|1355.009422|16.00
+[run ] n128_b16384      | Mode:compute | Len:    128 | Batch: 16384 | Thr: 1 | Fwd:    0.0514 ms  1427.89 GF/s | Bwd:    0.0514 ms  1426.69 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n128_b16384|128|1|1|16384|1|0.051405|1427.888501|0.051448|1426.689487|32.00
+[run ] n128_b32768      | Mode:compute | Len:    128 | Batch: 32768 | Thr: 1 | Fwd:    0.1006 ms  1459.88 GF/s | Bwd:    0.1006 ms  1459.88 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n128_b32768|128|1|1|32768|1|0.100557|1459.877760|0.100557|1459.877760|64.00
+[run ] n128_b65536      | Mode:compute | Len:    128 | Batch: 65536 | Thr: 1 | Fwd:    0.1982 ms  1481.40 GF/s | Bwd:    0.1980 ms  1482.55 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n128_b65536|128|1|1|65536|1|0.198192|1481.398237|0.198038|1482.547229|128.00
+[run ] n256_b1          | Mode:compute | Len:    256 | Batch:     1 | Thr: 1 | Fwd:    0.0028 ms     3.71 GF/s | Bwd:    0.0027 ms     3.77 GF/s | Mem:   0.00 MB
+RESULT|cufft_gpu|throughput|n256_b1|256|1|1|1|1|0.002762|3.707995|0.002714|3.773585|0.00
+[run ] n256_b2          | Mode:compute | Len:    256 | Batch:     2 | Thr: 1 | Fwd:    0.0027 ms     7.55 GF/s | Bwd:    0.0027 ms     7.55 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n256_b2|256|1|1|2|1|0.002714|7.547170|0.002714|7.547170|0.01
+[run ] n256_b4          | Mode:compute | Len:    256 | Batch:     4 | Thr: 1 | Fwd:    0.0028 ms    14.81 GF/s | Bwd:    0.0028 ms    14.81 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n256_b4|256|1|1|4|1|0.002765|14.814815|0.002765|14.814815|0.02
+[run ] n256_b8          | Mode:compute | Len:    256 | Batch:     8 | Thr: 1 | Fwd:    0.0028 ms    29.09 GF/s | Bwd:    0.0028 ms    29.63 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n256_b8|256|1|1|8|1|0.002816|29.090909|0.002765|29.629630|0.03
+[run ] n256_b16         | Mode:compute | Len:    256 | Batch:    16 | Thr: 1 | Fwd:    0.0028 ms    59.26 GF/s | Bwd:    0.0027 ms    60.38 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n256_b16|256|1|1|16|1|0.002765|59.259259|0.002714|60.377359|0.06
+[run ] n256_b32         | Mode:compute | Len:    256 | Batch:    32 | Thr: 1 | Fwd:    0.0028 ms   118.52 GF/s | Bwd:    0.0028 ms   118.52 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n256_b32|256|1|1|32|1|0.002765|118.518518|0.002765|118.518518|0.12
+[run ] n256_b64         | Mode:compute | Len:    256 | Batch:    64 | Thr: 1 | Fwd:    0.0029 ms   224.56 GF/s | Bwd:    0.0029 ms   228.57 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n256_b64|256|1|1|64|1|0.002918|224.561399|0.002867|228.571425|0.25
+[run ] n256_b128        | Mode:compute | Len:    256 | Batch:   128 | Thr: 1 | Fwd:    0.0031 ms   426.67 GF/s | Bwd:    0.0030 ms   433.90 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n256_b128|256|1|1|128|1|0.003072|426.666677|0.003021|433.898292|0.50
+[run ] n256_b256        | Mode:compute | Len:    256 | Batch:   256 | Thr: 1 | Fwd:    0.0033 ms   800.00 GF/s | Bwd:    0.0032 ms   812.70 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n256_b256|256|1|1|256|1|0.003277|800.000002|0.003226|812.698419|1.00
+[run ] n256_b512        | Mode:compute | Len:    256 | Batch:   512 | Thr: 1 | Fwd:    0.0039 ms  1330.95 GF/s | Bwd:    0.0039 ms  1350.14 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n256_b512|256|1|1|512|1|0.003939|1330.950508|0.003883|1350.144163|2.00
+[run ] n256_b1024       | Mode:compute | Len:    256 | Batch:  1024 | Thr: 1 | Fwd:    0.0051 ms  2048.00 GF/s | Bwd:    0.0052 ms  2022.72 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n256_b1024|256|1|1|1024|1|0.005120|2048.000052|0.005184|2022.716055|4.00
+[run ] n256_b2048       | Mode:compute | Len:    256 | Batch:  2048 | Thr: 1 | Fwd:    0.0136 ms  1545.66 GF/s | Bwd:    0.0132 ms  1587.79 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n256_b2048|256|1|1|2048|1|0.013568|1545.660321|0.013208|1587.789175|8.00
+[run ] n256_b4096       | Mode:compute | Len:    256 | Batch:  4096 | Thr: 1 | Fwd:    0.0270 ms  1554.09 GF/s | Bwd:    0.0266 ms  1579.47 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n256_b4096|256|1|1|4096|1|0.026989|1554.090507|0.026555|1579.466085|16.00
+[run ] n256_b8192       | Mode:compute | Len:    256 | Batch:  8192 | Thr: 1 | Fwd:    0.0514 ms  1633.50 GF/s | Bwd:    0.0515 ms  1630.00 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n256_b8192|256|1|1|8192|1|0.051354|1633.499577|0.051464|1629.995420|32.00
+[run ] n256_b16384      | Mode:compute | Len:    256 | Batch: 16384 | Thr: 1 | Fwd:    0.1003 ms  1671.97 GF/s | Bwd:    0.1000 ms  1677.83 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n256_b16384|256|1|1|16384|1|0.100344|1671.969986|0.099994|1677.829007|64.00
+[run ] n256_b32768      | Mode:compute | Len:    256 | Batch: 32768 | Thr: 1 | Fwd:    0.1975 ms  1699.14 GF/s | Bwd:    0.1979 ms  1695.19 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n256_b32768|256|1|1|32768|1|0.197478|1699.144398|0.197939|1695.188781|128.00
+[run ] n256_b65536      | Mode:compute | Len:    256 | Batch: 65536 | Thr: 1 | Fwd:    0.3925 ms  1709.76 GF/s | Bwd:    0.3921 ms  1711.35 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n256_b65536|256|1|1|65536|1|0.392504|1709.762547|0.392141|1711.346156|256.00
+[run ] n512_b1          | Mode:compute | Len:    512 | Batch:     1 | Thr: 1 | Fwd:    0.0031 ms     7.38 GF/s | Bwd:    0.0031 ms     7.47 GF/s | Mem:   0.01 MB
+RESULT|cufft_gpu|throughput|n512_b1|512|1|1|1|1|0.003123|7.377049|0.003085|7.468880|0.01
+[run ] n512_b2          | Mode:compute | Len:    512 | Batch:     2 | Thr: 1 | Fwd:    0.0031 ms    14.75 GF/s | Bwd:    0.0031 ms    14.75 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n512_b2|512|1|1|2|1|0.003123|14.754099|0.003123|14.754099|0.02
+[run ] n512_b4          | Mode:compute | Len:    512 | Batch:     4 | Thr: 1 | Fwd:    0.0032 ms    28.63 GF/s | Bwd:    0.0032 ms    28.63 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n512_b4|512|1|1|4|1|0.003219|28.628231|0.003219|28.628231|0.03
+[run ] n512_b8          | Mode:compute | Len:    512 | Batch:     8 | Thr: 1 | Fwd:    0.0032 ms    57.14 GF/s | Bwd:    0.0032 ms    58.06 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n512_b8|512|1|1|8|1|0.003226|57.142858|0.003174|58.064517|0.06
+[run ] n512_b16         | Mode:compute | Len:    512 | Batch:    16 | Thr: 1 | Fwd:    0.0032 ms   114.29 GF/s | Bwd:    0.0032 ms   116.13 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n512_b16|512|1|1|16|1|0.003226|114.285715|0.003174|116.129034|0.12
+[run ] n512_b32         | Mode:compute | Len:    512 | Batch:    32 | Thr: 1 | Fwd:    0.0032 ms   228.57 GF/s | Bwd:    0.0032 ms   228.57 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n512_b32|512|1|1|32|1|0.003226|228.571430|0.003226|228.571430|0.25
+[run ] n512_b64         | Mode:compute | Len:    512 | Batch:    64 | Thr: 1 | Fwd:    0.0034 ms   436.36 GF/s | Bwd:    0.0034 ms   438.44 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n512_b64|512|1|1|64|1|0.003379|436.363633|0.003363|438.439594|0.50
+[run ] n512_b128        | Mode:compute | Len:    512 | Batch:   128 | Thr: 1 | Fwd:    0.0036 ms   822.86 GF/s | Bwd:    0.0035 ms   834.78 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n512_b128|512|1|1|128|1|0.003584|822.857121|0.003533|834.782590|1.00
+[run ] n512_b256        | Mode:compute | Len:    512 | Batch:   256 | Thr: 1 | Fwd:    0.0044 ms  1354.30 GF/s | Bwd:    0.0044 ms  1339.53 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n512_b256|512|1|1|256|1|0.004355|1354.298308|0.004403|1339.534884|2.00
+[run ] n512_b512        | Mode:compute | Len:    512 | Batch:   512 | Thr: 1 | Fwd:    0.0056 ms  2094.55 GF/s | Bwd:    0.0056 ms  2094.55 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n512_b512|512|1|1|512|1|0.005632|2094.545438|0.005632|2094.545438|4.00
+[run ] n512_b1024       | Mode:compute | Len:    512 | Batch:  1024 | Thr: 1 | Fwd:    0.0145 ms  1628.27 GF/s | Bwd:    0.0139 ms  1700.37 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n512_b1024|512|1|1|1024|1|0.014490|1628.268544|0.013875|1700.369022|8.00
+[run ] n512_b2048       | Mode:compute | Len:    512 | Batch:  2048 | Thr: 1 | Fwd:    0.0276 ms  1709.83 GF/s | Bwd:    0.0274 ms  1722.62 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n512_b2048|512|1|1|2048|1|0.027597|1709.833115|0.027392|1722.616825|16.00
+[run ] n512_b4096       | Mode:compute | Len:    512 | Batch:  4096 | Thr: 1 | Fwd:    0.0520 ms  1815.63 GF/s | Bwd:    0.0520 ms  1814.17 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n512_b4096|512|1|1|4096|1|0.051978|1815.625239|0.052019|1814.173134|32.00
+[run ] n512_b8192       | Mode:compute | Len:    512 | Batch:  8192 | Thr: 1 | Fwd:    0.1012 ms  1865.59 GF/s | Bwd:    0.1011 ms  1866.53 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n512_b8192|512|1|1|8192|1|0.101171|1865.587127|0.101120|1866.531736|64.00
+[run ] n512_b16384      | Mode:compute | Len:    512 | Batch: 16384 | Thr: 1 | Fwd:    0.1986 ms  1900.53 GF/s | Bwd:    0.1983 ms  1903.64 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n512_b16384|512|1|1|16384|1|0.198622|1900.527581|0.198298|1903.640627|128.00
+[run ] n512_b32768      | Mode:compute | Len:    512 | Batch: 32768 | Thr: 1 | Fwd:    0.3938 ms  1917.00 GF/s | Bwd:    0.3941 ms  1915.51 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n512_b32768|512|1|1|32768|1|0.393830|1917.004706|0.394138|1915.510536|256.00
+[run ] n512_b65536      | Mode:compute | Len:    512 | Batch: 65536 | Thr: 1 | Fwd:    0.7845 ms  1924.64 GF/s | Bwd:    0.7839 ms  1926.14 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n512_b65536|512|1|1|65536|1|0.784538|1924.636164|0.783923|1926.144610|512.00
+[run ] n1024_b1         | Mode:compute | Len:   1024 | Batch:     1 | Thr: 1 | Fwd:    0.0034 ms    14.93 GF/s | Bwd:    0.0034 ms    14.94 GF/s | Mem:   0.02 MB
+RESULT|cufft_gpu|throughput|n1024_b1|1024|1|1|1|1|0.003430|14.925373|0.003427|14.939309|0.02
+[run ] n1024_b2         | Mode:compute | Len:   1024 | Batch:     2 | Thr: 1 | Fwd:    0.0038 ms    26.67 GF/s | Bwd:    0.0038 ms    26.67 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n1024_b2|1024|1|1|2|1|0.003840|26.666665|0.003840|26.666665|0.03
+[run ] n1024_b4         | Mode:compute | Len:   1024 | Batch:     4 | Thr: 1 | Fwd:    0.0038 ms    53.33 GF/s | Bwd:    0.0038 ms    53.33 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n1024_b4|1024|1|1|4|1|0.003840|53.333331|0.003840|53.333331|0.06
+[run ] n1024_b8         | Mode:compute | Len:   1024 | Batch:     8 | Thr: 1 | Fwd:    0.0039 ms   105.35 GF/s | Bwd:    0.0039 ms   105.26 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n1024_b8|1024|1|1|8|1|0.003888|105.349789|0.003891|105.263163|0.12
+[run ] n1024_b16        | Mode:compute | Len:   1024 | Batch:    16 | Thr: 1 | Fwd:    0.0039 ms   210.79 GF/s | Bwd:    0.0039 ms   210.96 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n1024_b16|1024|1|1|16|1|0.003886|210.786323|0.003883|210.960025|0.25
+[run ] n1024_b32        | Mode:compute | Len:   1024 | Batch:    32 | Thr: 1 | Fwd:    0.0038 ms   426.67 GF/s | Bwd:    0.0038 ms   426.67 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n1024_b32|1024|1|1|32|1|0.003840|426.666646|0.003840|426.666646|0.50
+[run ] n1024_b64        | Mode:compute | Len:   1024 | Batch:    64 | Thr: 1 | Fwd:    0.0039 ms   831.17 GF/s | Bwd:    0.0039 ms   841.76 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n1024_b64|1024|1|1|64|1|0.003942|831.168864|0.003893|841.759180|1.00
+[run ] n1024_b128       | Mode:compute | Len:   1024 | Batch:   128 | Thr: 1 | Fwd:    0.0045 ms  1472.32 GF/s | Bwd:    0.0045 ms  1471.26 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n1024_b128|1024|1|1|128|1|0.004451|1472.322073|0.004454|1471.264362|2.00
+[run ] n1024_b256       | Mode:compute | Len:   1024 | Batch:   256 | Thr: 1 | Fwd:    0.0058 ms  2245.61 GF/s | Bwd:    0.0058 ms  2265.49 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n1024_b256|1024|1|1|256|1|0.005837|2245.613991|0.005786|2265.486688|4.00
+[run ] n1024_b512       | Mode:compute | Len:   1024 | Batch:   512 | Thr: 1 | Fwd:    0.0151 ms  1741.50 GF/s | Bwd:    0.0150 ms  1753.42 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n1024_b512|1024|1|1|512|1|0.015053|1741.496612|0.014950|1753.424588|8.00
+[run ] n1024_b1024      | Mode:compute | Len:   1024 | Batch:  1024 | Thr: 1 | Fwd:    0.0261 ms  2007.84 GF/s | Bwd:    0.0259 ms  2023.72 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n1024_b1024|1024|1|1|1024|1|0.026112|2007.843202|0.025907|2023.715370|16.00
+[run ] n1024_b2048      | Mode:compute | Len:   1024 | Batch:  2048 | Thr: 1 | Fwd:    0.0507 ms  2068.69 GF/s | Bwd:    0.0507 ms  2066.60 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n1024_b2048|1024|1|1|2048|1|0.050688|2068.686929|0.050739|2066.599438|32.00
+[run ] n1024_b4096      | Mode:compute | Len:   1024 | Batch:  4096 | Thr: 1 | Fwd:    0.0999 ms  2100.24 GF/s | Bwd:    0.0998 ms  2101.59 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n1024_b4096|1024|1|1|4096|1|0.099853|2100.243551|0.099789|2101.590499|64.00
+[run ] n1024_b8192      | Mode:compute | Len:   1024 | Batch:  8192 | Thr: 1 | Fwd:    0.1981 ms  2117.34 GF/s | Bwd:    0.1978 ms  2119.95 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n1024_b8192|1024|1|1|8192|1|0.198093|2117.343042|0.197850|2119.945703|128.00
+[run ] n1024_b16384     | Mode:compute | Len:   1024 | Batch: 16384 | Thr: 1 | Fwd:    0.3942 ms  2128.13 GF/s | Bwd:    0.3940 ms  2128.90 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n1024_b16384|1024|1|1|16384|1|0.394178|2128.129026|0.394035|2128.898149|256.00
+[run ] n1024_b32768     | Mode:compute | Len:   1024 | Batch: 32768 | Thr: 1 | Fwd:    0.7861 ms  2134.17 GF/s | Bwd:    0.7860 ms  2134.45 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n1024_b32768|1024|1|1|32768|1|0.786125|2134.166988|0.786022|2134.445086|512.00
+[run ] n1024_b65536     | Mode:compute | Len:   1024 | Batch: 65536 | Thr: 1 | Fwd:    1.5697 ms  2137.65 GF/s | Bwd:    1.5699 ms  2137.37 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n1024_b65536|1024|1|1|65536|1|1.569690|2137.647651|1.569894|2137.368718|1024.00
+[run ] n2048_b1         | Mode:compute | Len:   2048 | Batch:     1 | Thr: 1 | Fwd:    0.0043 ms    25.94 GF/s | Bwd:    0.0043 ms    25.91 GF/s | Mem:   0.03 MB
+RESULT|cufft_gpu|throughput|n2048_b1|2048|1|1|1|1|0.004342|25.939573|0.004347|25.910931|0.03
+[run ] n2048_b2         | Mode:compute | Len:   2048 | Batch:     2 | Thr: 1 | Fwd:    0.0050 ms    44.90 GF/s | Bwd:    0.0050 ms    44.91 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n2048_b2|2048|1|1|2|1|0.005018|44.897961|0.005016|44.912282|0.06
+[run ] n2048_b4         | Mode:compute | Len:   2048 | Batch:     4 | Thr: 1 | Fwd:    0.0050 ms    89.80 GF/s | Bwd:    0.0050 ms    89.80 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n2048_b4|2048|1|1|4|1|0.005018|89.795921|0.005018|89.795921|0.12
+[run ] n2048_b8         | Mode:compute | Len:   2048 | Batch:     8 | Thr: 1 | Fwd:    0.0051 ms   176.00 GF/s | Bwd:    0.0051 ms   176.00 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n2048_b8|2048|1|1|8|1|0.005120|176.000004|0.005120|176.000004|0.25
+[run ] n2048_b16        | Mode:compute | Len:   2048 | Batch:    16 | Thr: 1 | Fwd:    0.0051 ms   352.00 GF/s | Bwd:    0.0052 ms   349.27 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n2048_b16|2048|1|1|16|1|0.005120|352.000009|0.005160|349.271306|0.50
+[run ] n2048_b32        | Mode:compute | Len:   2048 | Batch:    32 | Thr: 1 | Fwd:    0.0052 ms   697.03 GF/s | Bwd:    0.0052 ms   691.47 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n2048_b32|2048|1|1|32|1|0.005171|697.029718|0.005213|691.467180|1.00
+[run ] n2048_b64        | Mode:compute | Len:   2048 | Batch:    64 | Thr: 1 | Fwd:    0.0052 ms  1377.02 GF/s | Bwd:    0.0052 ms  1380.39 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n2048_b64|2048|1|1|64|1|0.005235|1377.017114|0.005222|1380.392182|2.00
+[run ] n2048_b128       | Mode:compute | Len:   2048 | Batch:   128 | Thr: 1 | Fwd:    0.0067 ms  2166.15 GF/s | Bwd:    0.0067 ms  2166.15 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n2048_b128|2048|1|1|128|1|0.006656|2166.153840|0.006656|2166.153840|4.00
+[run ] n2048_b256       | Mode:compute | Len:   2048 | Batch:   256 | Thr: 1 | Fwd:    0.0167 ms  1722.32 GF/s | Bwd:    0.0165 ms  1743.65 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n2048_b256|2048|1|1|256|1|0.016742|1722.324227|0.016538|1743.653328|8.00
+[run ] n2048_b512       | Mode:compute | Len:   2048 | Batch:   512 | Thr: 1 | Fwd:    0.0262 ms  2204.31 GF/s | Bwd:    0.0264 ms  2183.47 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n2048_b512|2048|1|1|512|1|0.026163|2204.305322|0.026413|2183.474683|16.00
+[run ] n2048_b1024      | Mode:compute | Len:   2048 | Batch:  1024 | Thr: 1 | Fwd:    0.0509 ms  2264.69 GF/s | Bwd:    0.0510 ms  2259.58 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n2048_b1024|2048|1|1|1024|1|0.050931|2264.689736|0.051046|2259.578680|32.00
+[run ] n2048_b2048      | Mode:compute | Len:   2048 | Batch:  2048 | Thr: 1 | Fwd:    0.0998 ms  2311.75 GF/s | Bwd:    0.0998 ms  2311.79 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n2048_b2048|2048|1|1|2048|1|0.099789|2311.749549|0.099787|2311.786694|64.00
+[run ] n2048_b4096      | Mode:compute | Len:   2048 | Batch:  4096 | Thr: 1 | Fwd:    0.1974 ms  2336.93 GF/s | Bwd:    0.1973 ms  2338.14 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n2048_b4096|2048|1|1|4096|1|0.197427|2336.929446|0.197325|2338.142184|128.00
+[run ] n2048_b8192      | Mode:compute | Len:   2048 | Batch:  8192 | Thr: 1 | Fwd:    0.3927 ms  2349.73 GF/s | Bwd:    0.3928 ms  2348.86 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n2048_b8192|2048|1|1|8192|1|0.392704|2349.726146|0.392850|2348.855407|256.00
+[run ] n2048_b16384     | Mode:compute | Len:   2048 | Batch: 16384 | Thr: 1 | Fwd:    0.7837 ms  2354.95 GF/s | Bwd:    0.7841 ms  2353.56 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n2048_b16384|2048|1|1|16384|1|0.783667|2354.945824|0.784128|2353.561872|512.00
+[run ] n2048_b32768     | Mode:compute | Len:   2048 | Batch: 32768 | Thr: 1 | Fwd:    1.5658 ms  2357.19 GF/s | Bwd:    1.5658 ms  2357.18 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n2048_b32768|2048|1|1|32768|1|1.565843|2357.188458|1.565850|2357.178839|1024.00
+[run ] n2048_b65536     | Mode:compute | Len:   2048 | Batch: 65536 | Thr: 1 | Fwd:    3.1293 ms  2358.95 GF/s | Bwd:    3.1303 ms  2358.23 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n2048_b65536|2048|1|1|65536|1|3.129344|2358.952890|3.130306|2358.228178|2048.00
+[run ] n4096_b1         | Mode:compute | Len:   4096 | Batch:     1 | Thr: 1 | Fwd:    0.0048 ms    51.06 GF/s | Bwd:    0.0048 ms    50.68 GF/s | Mem:   0.06 MB
+RESULT|cufft_gpu|throughput|n4096_b1|4096|1|1|1|1|0.004813|51.063828|0.004850|50.676344|0.06
+[run ] n4096_b2         | Mode:compute | Len:   4096 | Batch:     2 | Thr: 1 | Fwd:    0.0049 ms   101.05 GF/s | Bwd:    0.0048 ms   102.13 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n4096_b2|4096|1|1|2|1|0.004864|101.052628|0.004813|102.127657|0.12
+[run ] n4096_b4         | Mode:compute | Len:   4096 | Batch:     4 | Thr: 1 | Fwd:    0.0050 ms   197.94 GF/s | Bwd:    0.0050 ms   197.94 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n4096_b4|4096|1|1|4|1|0.004966|197.938152|0.004966|197.938152|0.25
+[run ] n4096_b8         | Mode:compute | Len:   4096 | Batch:     8 | Thr: 1 | Fwd:    0.0050 ms   392.59 GF/s | Bwd:    0.0050 ms   395.24 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n4096_b8|4096|1|1|8|1|0.005008|392.587849|0.004974|395.239636|0.50
+[run ] n4096_b16        | Mode:compute | Len:   4096 | Batch:    16 | Thr: 1 | Fwd:    0.0050 ms   784.67 GF/s | Bwd:    0.0050 ms   791.75 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n4096_b16|4096|1|1|16|1|0.005011|784.674304|0.004966|791.752606|1.00
+[run ] n4096_b32        | Mode:compute | Len:   4096 | Batch:    32 | Thr: 1 | Fwd:    0.0051 ms  1536.00 GF/s | Bwd:    0.0052 ms  1520.79 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n4096_b32|4096|1|1|32|1|0.005120|1536.000039|0.005171|1520.792112|2.00
+[run ] n4096_b64        | Mode:compute | Len:   4096 | Batch:    64 | Thr: 1 | Fwd:    0.0065 ms  2438.10 GF/s | Bwd:    0.0065 ms  2418.90 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n4096_b64|4096|1|1|64|1|0.006451|2438.095257|0.006502|2418.897512|4.00
+[run ] n4096_b128       | Mode:compute | Len:   4096 | Batch:   128 | Thr: 1 | Fwd:    0.0155 ms  2034.44 GF/s | Bwd:    0.0152 ms  2067.16 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n4096_b128|4096|1|1|128|1|0.015462|2034.437084|0.015218|2067.164435|8.00
+[run ] n4096_b256       | Mode:compute | Len:   4096 | Batch:   256 | Thr: 1 | Fwd:    0.0270 ms  2327.27 GF/s | Bwd:    0.0270 ms  2331.69 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n4096_b256|4096|1|1|256|1|0.027034|2327.272709|0.026982|2331.688820|16.00
+[run ] n4096_b512       | Mode:compute | Len:   4096 | Batch:   512 | Thr: 1 | Fwd:    0.0538 ms  2340.99 GF/s | Bwd:    0.0534 ms  2356.84 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n4096_b512|4096|1|1|512|1|0.053750|2340.989387|0.053389|2356.844959|32.00
+[run ] n4096_b1024      | Mode:compute | Len:   4096 | Batch:  1024 | Thr: 1 | Fwd:    0.0993 ms  2535.12 GF/s | Bwd:    0.0994 ms  2532.30 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n4096_b1024|4096|1|1|1024|1|0.099269|2535.119191|0.099379|2532.302943|64.00
+[run ] n4096_b2048      | Mode:compute | Len:   4096 | Batch:  2048 | Thr: 1 | Fwd:    0.1970 ms  2554.68 GF/s | Bwd:    0.1967 ms  2559.35 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n4096_b2048|4096|1|1|2048|1|0.197018|2554.677779|0.196658|2559.354355|128.00
+[run ] n4096_b4096      | Mode:compute | Len:   4096 | Batch:  4096 | Thr: 1 | Fwd:    0.3923 ms  2566.01 GF/s | Bwd:    0.3920 ms  2567.69 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n4096_b4096|4096|1|1|4096|1|0.392294|2566.014050|0.392038|2567.689741|256.00
+[run ] n4096_b8192      | Mode:compute | Len:   4096 | Batch:  8192 | Thr: 1 | Fwd:    0.7837 ms  2569.07 GF/s | Bwd:    0.7835 ms  2569.56 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n4096_b8192|4096|1|1|8192|1|0.783656|2569.068543|0.783507|2569.556361|512.00
+[run ] n4096_b16384     | Mode:compute | Len:   4096 | Batch: 16384 | Thr: 1 | Fwd:    1.5657 ms  2571.74 GF/s | Bwd:    1.5658 ms  2571.55 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n4096_b16384|4096|1|1|16384|1|1.565683|2571.741146|1.565798|2571.551929|1024.00
+[run ] n4096_b32768     | Mode:compute | Len:   4096 | Batch: 32768 | Thr: 1 | Fwd:    3.1298 ms  2573.02 GF/s | Bwd:    3.1295 ms  2573.28 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n4096_b32768|4096|1|1|32768|1|3.129805|2573.024259|3.129498|2573.276894|2048.00
+[run ] n4096_b65536     | Mode:compute | Len:   4096 | Batch: 65536 | Thr: 1 | Fwd:    6.2562 ms  2574.41 GF/s | Bwd:    6.2578 ms  2573.78 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n4096_b65536|4096|1|1|65536|1|6.256229|2574.414762|6.257766|2573.782158|4096.00
+[run ] n8192_b1         | Mode:compute | Len:   8192 | Batch:     1 | Thr: 1 | Fwd:    0.0083 ms    64.12 GF/s | Bwd:    0.0083 ms    63.80 GF/s | Mem:   0.12 MB
+RESULT|cufft_gpu|throughput|n8192_b1|8192|1|1|1|1|0.008304|64.123315|0.008346|63.803679|0.12
+[run ] n8192_b2         | Mode:compute | Len:   8192 | Batch:     2 | Thr: 1 | Fwd:    0.0080 ms   132.48 GF/s | Bwd:    0.0078 ms   135.95 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n8192_b2|8192|1|1|2|1|0.008038|132.484075|0.007834|135.947712|0.25
+[run ] n8192_b4         | Mode:compute | Len:   8192 | Batch:     4 | Thr: 1 | Fwd:    0.0080 ms   266.67 GF/s | Bwd:    0.0079 ms   268.39 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n8192_b4|8192|1|1|4|1|0.007987|266.666676|0.007936|268.387094|0.50
+[run ] n8192_b8         | Mode:compute | Len:   8192 | Batch:     8 | Thr: 1 | Fwd:    0.0080 ms   533.33 GF/s | Bwd:    0.0079 ms   536.77 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n8192_b8|8192|1|1|8|1|0.007987|533.333352|0.007936|536.774188|1.00
+[run ] n8192_b16        | Mode:compute | Len:   8192 | Batch:    16 | Thr: 1 | Fwd:    0.0079 ms  1073.55 GF/s | Bwd:    0.0079 ms  1073.55 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n8192_b16|8192|1|1|16|1|0.007936|1073.548376|0.007936|1073.548376|2.00
+[run ] n8192_b32        | Mode:compute | Len:   8192 | Batch:    32 | Thr: 1 | Fwd:    0.0080 ms  2136.76 GF/s | Bwd:    0.0079 ms  2158.85 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n8192_b32|8192|1|1|32|1|0.007974|2136.757525|0.007893|2158.848537|4.00
+[run ] n8192_b64        | Mode:compute | Len:   8192 | Batch:    64 | Thr: 1 | Fwd:    0.0176 ms  1940.52 GF/s | Bwd:    0.0175 ms  1946.20 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n8192_b64|8192|1|1|64|1|0.017562|1940.524824|0.017510|1946.198751|8.00
+[run ] n8192_b128       | Mode:compute | Len:   8192 | Batch:   128 | Thr: 1 | Fwd:    0.0299 ms  2279.94 GF/s | Bwd:    0.0297 ms  2295.17 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n8192_b128|8192|1|1|128|1|0.029894|2279.940083|0.029696|2295.172443|16.00
+[run ] n8192_b256       | Mode:compute | Len:   8192 | Batch:   256 | Thr: 1 | Fwd:    0.0556 ms  2449.94 GF/s | Bwd:    0.0560 ms  2435.73 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n8192_b256|8192|1|1|256|1|0.055640|2449.943921|0.055965|2435.725412|32.00
+[run ] n8192_b512       | Mode:compute | Len:   8192 | Batch:   512 | Thr: 1 | Fwd:    0.1081 ms  2522.03 GF/s | Bwd:    0.1083 ms  2516.45 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n8192_b512|8192|1|1|512|1|0.108099|2522.033134|0.108339|2516.446069|64.00
+[run ] n8192_b1024      | Mode:compute | Len:   8192 | Batch:  1024 | Thr: 1 | Fwd:    0.2003 ms  2721.59 GF/s | Bwd:    0.2004 ms  2720.20 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n8192_b1024|8192|1|1|1024|1|0.200346|2721.594527|0.200448|2720.204498|128.00
+[run ] n8192_b2048      | Mode:compute | Len:   8192 | Batch:  2048 | Thr: 1 | Fwd:    0.3959 ms  2754.68 GF/s | Bwd:    0.3964 ms  2750.88 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n8192_b2048|8192|1|1|2048|1|0.395878|2754.681770|0.396426|2750.879425|256.00
+[run ] n8192_b4096      | Mode:compute | Len:   8192 | Batch:  4096 | Thr: 1 | Fwd:    0.7891 ms  2763.81 GF/s | Bwd:    0.7876 ms  2769.20 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n8192_b4096|8192|1|1|4096|1|0.789141|2763.813618|0.787605|2769.203610|512.00
+[run ] n8192_b8192      | Mode:compute | Len:   8192 | Batch:  8192 | Thr: 1 | Fwd:    1.5713 ms  2776.13 GF/s | Bwd:    1.5716 ms  2775.53 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n8192_b8192|8192|1|1|8192|1|1.571277|2776.134842|1.571618|2775.532770|1024.00
+[run ] n8192_b16384     | Mode:compute | Len:   8192 | Batch: 16384 | Thr: 1 | Fwd:    3.1377 ms  2780.39 GF/s | Bwd:    3.1375 ms  2780.62 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n8192_b16384|8192|1|1|16384|1|3.137741|2780.393007|3.137485|2780.619840|2048.00
+[run ] n8192_b32768     | Mode:compute | Len:   8192 | Batch: 32768 | Thr: 1 | Fwd:    6.2702 ms  2782.73 GF/s | Bwd:    6.2692 ms  2783.19 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n8192_b32768|8192|1|1|32768|1|6.270218|2782.727170|6.269184|2783.185870|4096.00
+[skip] n8192_b65536     | Len:   8192 | Batch: 65536 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n8192_b65536|8192|1|1|65536|1|8192.00|CUFFT_INTERNAL_ERROR
+[run ] n16384_b1        | Mode:compute | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0103 ms   110.89 GF/s | Bwd:    0.0103 ms   111.55 GF/s | Mem:   0.25 MB
+RESULT|cufft_gpu|throughput|n16384_b1|16384|1|1|1|1|0.010342|110.891092|0.010282|111.546840|0.25
+[run ] n16384_b2        | Mode:compute | Len:  16384 | Batch:     2 | Thr: 1 | Fwd:    0.0103 ms   221.99 GF/s | Bwd:    0.0103 ms   222.89 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n16384_b2|16384|1|1|2|1|0.010333|221.988238|0.010291|222.885569|0.50
+[run ] n16384_b4        | Mode:compute | Len:  16384 | Batch:     4 | Thr: 1 | Fwd:    0.0103 ms   445.70 GF/s | Bwd:    0.0103 ms   445.77 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n16384_b4|16384|1|1|4|1|0.010293|445.701860|0.010291|445.771139|1.00
+[run ] n16384_b8        | Mode:compute | Len:  16384 | Batch:     8 | Thr: 1 | Fwd:    0.0104 ms   882.76 GF/s | Bwd:    0.0104 ms   883.98 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n16384_b8|16384|1|1|8|1|0.010394|882.758607|0.010379|883.983378|2.00
+[run ] n16384_b16       | Mode:compute | Len:  16384 | Batch:    16 | Thr: 1 | Fwd:    0.0162 ms  1135.19 GF/s | Bwd:    0.0162 ms  1134.18 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n16384_b16|16384|1|1|16|1|0.016165|1135.187531|0.016179|1134.177249|4.00
+[run ] n16384_b32       | Mode:compute | Len:  16384 | Batch:    32 | Thr: 1 | Fwd:    0.0234 ms  1565.07 GF/s | Bwd:    0.0236 ms  1554.88 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n16384_b32|16384|1|1|32|1|0.023450|1565.065519|0.023603|1554.880732|8.00
+[run ] n16384_b64       | Mode:compute | Len:  16384 | Batch:    64 | Thr: 1 | Fwd:    0.0373 ms  1966.53 GF/s | Bwd:    0.0375 ms  1958.47 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n16384_b64|16384|1|1|64|1|0.037325|1966.529435|0.037478|1958.469983|16.00
+[run ] n16384_b128      | Mode:compute | Len:  16384 | Batch:   128 | Thr: 1 | Fwd:    0.0718 ms  2045.08 GF/s | Bwd:    0.0717 ms  2046.54 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n16384_b128|16384|1|1|128|1|0.071782|2045.078510|0.071731|2046.538249|32.00
+[run ] n16384_b256      | Mode:compute | Len:  16384 | Batch:   256 | Thr: 1 | Fwd:    0.1327 ms  2212.40 GF/s | Bwd:    0.1335 ms  2199.62 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n16384_b256|16384|1|1|256|1|0.132707|2212.398985|0.133478|2199.616366|64.00
+[run ] n16384_b512      | Mode:compute | Len:  16384 | Batch:   512 | Thr: 1 | Fwd:    0.2349 ms  2500.28 GF/s | Bwd:    0.2343 ms  2505.75 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n16384_b512|16384|1|1|512|1|0.234854|2500.283535|0.234342|2505.746034|128.00
+[run ] n16384_b1024     | Mode:compute | Len:  16384 | Batch:  1024 | Thr: 1 | Fwd:    0.4185 ms  2805.93 GF/s | Bwd:    0.4199 ms  2796.59 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n16384_b1024|16384|1|1|1024|1|0.418544|2805.929848|0.419942|2796.586338|256.00
+[run ] n16384_b2048     | Mode:compute | Len:  16384 | Batch:  2048 | Thr: 1 | Fwd:    0.8105 ms  2897.80 GF/s | Bwd:    0.8100 ms  2899.84 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n16384_b2048|16384|1|1|2048|1|0.810549|2897.802441|0.809979|2899.840363|512.00
+[run ] n16384_b4096     | Mode:compute | Len:  16384 | Batch:  4096 | Thr: 1 | Fwd:    1.5981 ms  2939.49 GF/s | Bwd:    1.5966 ms  2942.32 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n16384_b4096|16384|1|1|4096|1|1.598106|2939.493121|1.596570|2942.321075|1024.00
+[run ] n16384_b8192     | Mode:compute | Len:  16384 | Batch:  8192 | Thr: 1 | Fwd:    3.1732 ms  2960.84 GF/s | Bwd:    3.1749 ms  2959.27 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n16384_b8192|16384|1|1|8192|1|3.173171|2960.836421|3.174853|2959.268253|2048.00
+[run ] n16384_b16384    | Mode:compute | Len:  16384 | Batch: 16384 | Thr: 1 | Fwd:    6.3255 ms  2970.59 GF/s | Bwd:    6.3295 ms  2968.69 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n16384_b16384|16384|1|1|16384|1|6.325504|2970.590510|6.329549|2968.692236|4096.00
+[skip] n16384_b32768    | Len:  16384 | Batch: 32768 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n16384_b32768|16384|1|1|32768|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n16384_b65536    | Len:  16384 | Batch: 65536 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n16384_b65536|16384|1|1|65536|1|16384.00|memory_limit
+[run ] n32768_b1        | Mode:compute | Len:  32768 | Batch:     1 | Thr: 1 | Fwd:    0.0083 ms   296.47 GF/s | Bwd:    0.0082 ms   300.00 GF/s | Mem:   0.50 MB
+RESULT|cufft_gpu|throughput|n32768_b1|32768|1|1|1|1|0.008290|296.467857|0.008192|300.000008|0.50
+[run ] n32768_b2        | Mode:compute | Len:  32768 | Batch:     2 | Thr: 1 | Fwd:    0.0082 ms   596.27 GF/s | Bwd:    0.0082 ms   596.50 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n32768_b2|32768|1|1|2|1|0.008243|596.273279|0.008240|596.504843|1.00
+[run ] n32768_b4        | Mode:compute | Len:  32768 | Batch:     4 | Thr: 1 | Fwd:    0.0087 ms  1130.03 GF/s | Bwd:    0.0086 ms  1137.57 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n32768_b4|32768|1|1|4|1|0.008699|1130.034906|0.008642|1137.567135|2.00
+[run ] n32768_b8        | Mode:compute | Len:  32768 | Batch:     8 | Thr: 1 | Fwd:    0.0141 ms  1396.36 GF/s | Bwd:    0.0140 ms  1399.86 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n32768_b8|32768|1|1|8|1|0.014080|1396.363644|0.014045|1399.863255|4.00
+[run ] n32768_b16       | Mode:compute | Len:  32768 | Batch:    16 | Thr: 1 | Fwd:    0.0251 ms  1564.15 GF/s | Bwd:    0.0251 ms  1564.15 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n32768_b16|32768|1|1|16|1|0.025139|1564.154743|0.025139|1564.154743|8.00
+[run ] n32768_b32       | Mode:compute | Len:  32768 | Batch:    32 | Thr: 1 | Fwd:    0.0571 ms  1377.58 GF/s | Bwd:    0.0568 ms  1385.03 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n32768_b32|32768|1|1|32|1|0.057088|1377.578485|0.056781|1385.031627|16.00
+[run ] n32768_b64       | Mode:compute | Len:  32768 | Batch:    64 | Thr: 1 | Fwd:    0.1100 ms  1429.52 GF/s | Bwd:    0.1102 ms  1426.85 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n32768_b64|32768|1|1|64|1|0.110027|1429.522804|0.110234|1426.846198|32.00
+[run ] n32768_b128      | Mode:compute | Len:  32768 | Batch:   128 | Thr: 1 | Fwd:    0.2150 ms  1462.86 GF/s | Bwd:    0.2147 ms  1464.95 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n32768_b128|32768|1|1|128|1|0.215040|1462.857195|0.214733|1464.949997|64.00
+[run ] n32768_b256      | Mode:compute | Len:  32768 | Batch:   256 | Thr: 1 | Fwd:    0.4243 ms  1482.63 GF/s | Bwd:    0.4244 ms  1482.27 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n32768_b256|32768|1|1|256|1|0.424346|1482.625522|0.424448|1482.267746|128.00
+[run ] n32768_b512      | Mode:compute | Len:  32768 | Batch:   512 | Thr: 1 | Fwd:    0.7935 ms  1585.75 GF/s | Bwd:    0.7937 ms  1585.44 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n32768_b512|32768|1|1|512|1|0.793498|1585.752980|0.793656|1585.436481|256.00
+[run ] n32768_b1024     | Mode:compute | Len:  32768 | Batch:  1024 | Thr: 1 | Fwd:    1.5811 ms  1591.66 GF/s | Bwd:    1.5817 ms  1591.10 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n32768_b1024|32768|1|1|1024|1|1.581107|1591.658266|1.581666|1591.096362|512.00
+[run ] n32768_b2048     | Mode:compute | Len:  32768 | Batch:  2048 | Thr: 1 | Fwd:    3.1582 ms  1593.70 GF/s | Bwd:    3.1575 ms  1594.01 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n32768_b2048|32768|1|1|2048|1|3.158170|1593.696827|3.157542|1594.013360|1024.00
+[run ] n32768_b4096     | Mode:compute | Len:  32768 | Batch:  4096 | Thr: 1 | Fwd:    6.3123 ms  1594.72 GF/s | Bwd:    6.3067 ms  1596.13 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n32768_b4096|32768|1|1|4096|1|6.312288|1594.719657|6.306702|1596.132008|2048.00
+[run ] n32768_b8192     | Mode:compute | Len:  32768 | Batch:  8192 | Thr: 1 | Fwd:   12.6174 ms  1595.63 GF/s | Bwd:   12.5956 ms  1598.39 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n32768_b8192|32768|1|1|8192|1|12.617373|1595.630039|12.595557|1598.393765|4096.00
+[skip] n32768_b16384    | Len:  32768 | Batch: 16384 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n32768_b16384|32768|1|1|16384|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n32768_b32768    | Len:  32768 | Batch: 32768 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n32768_b32768|32768|1|1|32768|1|16384.00|memory_limit
+[skip] n32768_b65536    | Len:  32768 | Batch: 65536 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n32768_b65536|32768|1|1|65536|1|32768.00|memory_limit
+[run ] n65536_b1        | Mode:compute | Len:  65536 | Batch:     1 | Thr: 1 | Fwd:    0.0076 ms   688.11 GF/s | Bwd:    0.0075 ms   695.86 GF/s | Mem:   1.00 MB
+RESULT|cufft_gpu|throughput|n65536_b1|65536|1|1|1|1|0.007619|688.114247|0.007534|695.859028|1.00
+[run ] n65536_b2        | Mode:compute | Len:  65536 | Batch:     2 | Thr: 1 | Fwd:    0.0086 ms  1219.05 GF/s | Bwd:    0.0086 ms  1226.35 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n65536_b2|65536|1|1|2|1|0.008602|1219.047629|0.008550|1226.347264|2.00
+[run ] n65536_b4        | Mode:compute | Len:  65536 | Batch:     4 | Thr: 1 | Fwd:    0.0134 ms  1569.35 GF/s | Bwd:    0.0134 ms  1564.48 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n65536_b4|65536|1|1|4|1|0.013363|1569.348609|0.013405|1564.478396|4.00
+[run ] n65536_b8        | Mode:compute | Len:  65536 | Batch:     8 | Thr: 1 | Fwd:    0.0241 ms  1742.98 GF/s | Bwd:    0.0239 ms  1754.18 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n65536_b8|65536|1|1|8|1|0.024064|1742.978727|0.023910|1754.175569|8.00
+[run ] n65536_b16       | Mode:compute | Len:  65536 | Batch:    16 | Thr: 1 | Fwd:    0.0574 ms  1462.65 GF/s | Bwd:    0.0571 ms  1468.10 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n65536_b16|65536|1|1|16|1|0.057352|1462.653078|0.057139|1468.100359|16.00
+[run ] n65536_b32       | Mode:compute | Len:  65536 | Batch:    32 | Thr: 1 | Fwd:    0.1103 ms  1521.35 GF/s | Bwd:    0.1099 ms  1526.93 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n65536_b32|65536|1|1|32|1|0.110278|1521.351001|0.109875|1526.933800|32.00
+[run ] n65536_b64       | Mode:compute | Len:  65536 | Batch:    64 | Thr: 1 | Fwd:    0.2147 ms  1562.59 GF/s | Bwd:    0.2149 ms  1561.50 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n65536_b64|65536|1|1|64|1|0.214736|1562.589908|0.214886|1561.496284|64.00
+[run ] n65536_b128      | Mode:compute | Len:  65536 | Batch:   128 | Thr: 1 | Fwd:    0.4256 ms  1576.71 GF/s | Bwd:    0.4256 ms  1576.93 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n65536_b128|65536|1|1|128|1|0.425626|1576.711137|0.425566|1576.930557|128.00
+[run ] n65536_b256      | Mode:compute | Len:  65536 | Batch:   256 | Thr: 1 | Fwd:    0.7896 ms  1699.92 GF/s | Bwd:    0.7895 ms  1700.03 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n65536_b256|65536|1|1|256|1|0.789555|1699.915665|0.789504|1700.025933|256.00
+[run ] n65536_b512      | Mode:compute | Len:  65536 | Batch:   512 | Thr: 1 | Fwd:    1.5779 ms  1701.24 GF/s | Bwd:    1.5769 ms  1702.34 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n65536_b512|65536|1|1|512|1|1.577882|1701.239511|1.576858|1702.344344|512.00
+[run ] n65536_b1024     | Mode:compute | Len:  65536 | Batch:  1024 | Thr: 1 | Fwd:    3.1489 ms  1704.93 GF/s | Bwd:    3.1490 ms  1704.89 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n65536_b1024|65536|1|1|1024|1|3.148941|1704.925363|3.149013|1704.886431|1024.00
+[run ] n65536_b2048     | Mode:compute | Len:  65536 | Batch:  2048 | Thr: 1 | Fwd:    6.2913 ms  1706.71 GF/s | Bwd:    6.2806 ms  1709.62 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n65536_b2048|65536|1|1|2048|1|6.291302|1706.708310|6.280602|1709.616227|2048.00
+[run ] n65536_b4096     | Mode:compute | Len:  65536 | Batch:  4096 | Thr: 1 | Fwd:   12.5779 ms  1707.34 GF/s | Bwd:   12.5542 ms  1710.57 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n65536_b4096|65536|1|1|4096|1|12.577946|1707.340529|12.554230|1710.565732|4096.00
+[skip] n65536_b8192     | Len:  65536 | Batch:  8192 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n65536_b8192|65536|1|1|8192|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n65536_b16384    | Len:  65536 | Batch: 16384 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n65536_b16384|65536|1|1|16384|1|16384.00|memory_limit
+[skip] n65536_b32768    | Len:  65536 | Batch: 32768 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n65536_b32768|65536|1|1|32768|1|32768.00|memory_limit
+[skip] n65536_b65536    | Len:  65536 | Batch: 65536 | Thr: 1 | Mem:65536.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n65536_b65536|65536|1|1|65536|1|65536.00|memory_limit
+[run ] n131072_b1       | Mode:compute | Len: 131072 | Batch:     1 | Thr: 1 | Fwd:    0.0096 ms  1157.45 GF/s | Bwd:    0.0096 ms  1163.64 GF/s | Mem:   2.00 MB
+RESULT|cufft_gpu|throughput|n131072_b1|131072|1|1|1|1|0.009626|1157.446775|0.009574|1163.636377|2.00
+[run ] n131072_b2       | Mode:compute | Len: 131072 | Batch:     2 | Thr: 1 | Fwd:    0.0146 ms  1527.02 GF/s | Bwd:    0.0144 ms  1543.26 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n131072_b2|131072|1|1|2|1|0.014592|1527.017612|0.014438|1543.262446|4.00
+[run ] n131072_b4       | Mode:compute | Len: 131072 | Batch:     4 | Thr: 1 | Fwd:    0.0250 ms  1783.61 GF/s | Bwd:    0.0250 ms  1779.96 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n131072_b4|131072|1|1|4|1|0.024986|1783.606592|0.025037|1779.959107|8.00
+[run ] n131072_b8       | Mode:compute | Len: 131072 | Batch:     8 | Thr: 1 | Fwd:    0.0570 ms  1562.66 GF/s | Bwd:    0.0564 ms  1579.67 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n131072_b8|131072|1|1|8|1|0.057037|1562.657114|0.056422|1579.673308|16.00
+[run ] n131072_b16      | Mode:compute | Len: 131072 | Batch:    16 | Thr: 1 | Fwd:    0.1117 ms  1595.60 GF/s | Bwd:    0.1114 ms  1600.74 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n131072_b16|131072|1|1|16|1|0.111718|1595.600305|0.111360|1600.735610|32.00
+[run ] n131072_b32      | Mode:compute | Len: 131072 | Batch:    32 | Thr: 1 | Fwd:    0.2154 ms  1655.15 GF/s | Bwd:    0.2150 ms  1657.90 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n131072_b32|131072|1|1|32|1|0.215398|1655.146131|0.215040|1657.904821|64.00
+[run ] n131072_b64      | Mode:compute | Len: 131072 | Batch:    64 | Thr: 1 | Fwd:    0.4235 ms  1683.81 GF/s | Bwd:    0.4234 ms  1684.17 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n131072_b64|131072|1|1|64|1|0.423464|1683.807029|0.423373|1684.169818|128.00
+[run ] n131072_b128     | Mode:compute | Len: 131072 | Batch:   128 | Thr: 1 | Fwd:    0.7900 ms  1805.22 GF/s | Bwd:    0.7898 ms  1805.70 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n131072_b128|131072|1|1|128|1|0.789965|1805.223886|0.789757|1805.699323|256.00
+[run ] n131072_b256     | Mode:compute | Len: 131072 | Batch:   256 | Thr: 1 | Fwd:    1.5729 ms  1813.27 GF/s | Bwd:    1.5731 ms  1813.10 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n131072_b256|131072|1|1|256|1|1.572915|1813.274339|1.573069|1813.097242|512.00
+[run ] n131072_b512     | Mode:compute | Len: 131072 | Batch:   512 | Thr: 1 | Fwd:    3.1374 ms  1818.16 GF/s | Bwd:    3.1385 ms  1817.50 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n131072_b512|131072|1|1|512|1|3.137382|1818.156942|3.138509|1817.504366|1024.00
+[run ] n131072_b1024    | Mode:compute | Len: 131072 | Batch:  1024 | Thr: 1 | Fwd:    6.2882 ms  1814.28 GF/s | Bwd:    6.2691 ms  1819.79 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n131072_b1024|131072|1|1|1024|1|6.288171|1814.280524|6.269123|1819.793094|2048.00
+[run ] n131072_b2048    | Mode:compute | Len: 131072 | Batch:  2048 | Thr: 1 | Fwd:   12.5556 ms  1817.28 GF/s | Bwd:   12.5165 ms  1822.95 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n131072_b2048|131072|1|1|2048|1|12.555571|1817.282049|12.516502|1822.954454|4096.00
+[skip] n131072_b4096    | Len: 131072 | Batch:  4096 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n131072_b4096|131072|1|1|4096|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n131072_b8192    | Len: 131072 | Batch:  8192 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n131072_b8192|131072|1|1|8192|1|16384.00|memory_limit
+[skip] n131072_b16384   | Len: 131072 | Batch: 16384 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n131072_b16384|131072|1|1|16384|1|32768.00|memory_limit
+[skip] n131072_b32768   | Len: 131072 | Batch: 32768 | Thr: 1 | Mem:65536.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n131072_b32768|131072|1|1|32768|1|65536.00|memory_limit
+[skip] n131072_b65536   | Len: 131072 | Batch: 65536 | Thr: 1 | Mem:131072.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n131072_b65536|131072|1|1|65536|1|131072.00|memory_limit
+[run ] n262144_b1       | Mode:compute | Len: 262144 | Batch:     1 | Thr: 1 | Fwd:    0.0161 ms  1467.52 GF/s | Bwd:    0.0157 ms  1500.98 GF/s | Mem:   4.00 MB
+RESULT|cufft_gpu|throughput|n262144_b1|262144|1|1|1|1|0.016077|1467.515903|0.015718|1500.977153|4.00
+[run ] n262144_b2       | Mode:compute | Len: 262144 | Batch:     2 | Thr: 1 | Fwd:    0.0256 ms  1843.20 GF/s | Bwd:    0.0255 ms  1850.60 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n262144_b2|262144|1|1|2|1|0.025600|1843.199912|0.025498|1850.602378|8.00
+[run ] n262144_b4       | Mode:compute | Len: 262144 | Batch:     4 | Thr: 1 | Fwd:    0.0574 ms  1644.61 GF/s | Bwd:    0.0573 ms  1645.71 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n262144_b4|262144|1|1|4|1|0.057382|1644.613016|0.057344|1645.714242|16.00
+[run ] n262144_b8       | Mode:compute | Len: 262144 | Batch:     8 | Thr: 1 | Fwd:    0.1137 ms  1660.54 GF/s | Bwd:    0.1130 ms  1669.57 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n262144_b8|262144|1|1|8|1|0.113664|1660.540610|0.113050|1669.565180|32.00
+[run ] n262144_b16      | Mode:compute | Len: 262144 | Batch:    16 | Thr: 1 | Fwd:    0.2178 ms  1733.25 GF/s | Bwd:    0.2178 ms  1733.55 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n262144_b16|262144|1|1|16|1|0.217792|1733.247053|0.217754|1733.552778|64.00
+[run ] n262144_b32      | Mode:compute | Len: 262144 | Batch:    32 | Thr: 1 | Fwd:    0.4274 ms  1766.57 GF/s | Bwd:    0.4269 ms  1768.51 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n262144_b32|262144|1|1|32|1|0.427366|1766.574818|0.426899|1768.508185|128.00
+[run ] n262144_b64      | Mode:compute | Len: 262144 | Batch:    64 | Thr: 1 | Fwd:    0.7962 ms  1896.42 GF/s | Bwd:    0.7953 ms  1898.49 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n262144_b64|262144|1|1|64|1|0.796211|1896.418249|0.795341|1898.493683|256.00
+[run ] n262144_b128     | Mode:compute | Len: 262144 | Batch:   128 | Thr: 1 | Fwd:    1.5848 ms  1905.49 GF/s | Bwd:    1.5852 ms  1905.01 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n262144_b128|262144|1|1|128|1|1.584845|1905.485583|1.585238|1905.012491|512.00
+[run ] n262144_b256     | Mode:compute | Len: 262144 | Batch:   256 | Thr: 1 | Fwd:    3.1603 ms  1911.17 GF/s | Bwd:    3.1629 ms  1909.59 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n262144_b256|262144|1|1|256|1|3.160269|1911.165845|3.162875|1909.590934|1024.00
+[run ] n262144_b512     | Mode:compute | Len: 262144 | Batch:   512 | Thr: 1 | Fwd:    6.3166 ms  1912.35 GF/s | Bwd:    6.3164 ms  1912.42 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n262144_b512|262144|1|1|512|1|6.316640|1912.345067|6.316406|1912.415865|2048.00
+[run ] n262144_b1024    | Mode:compute | Len: 262144 | Batch:  1024 | Thr: 1 | Fwd:   12.6217 ms  1914.10 GF/s | Bwd:   12.6062 ms  1916.46 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n262144_b1024|262144|1|1|1024|1|12.621722|1914.096326|12.606157|1916.459647|4096.00
+[skip] n262144_b2048    | Len: 262144 | Batch:  2048 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n262144_b2048|262144|1|1|2048|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n262144_b4096    | Len: 262144 | Batch:  4096 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n262144_b4096|262144|1|1|4096|1|16384.00|memory_limit
+[skip] n262144_b8192    | Len: 262144 | Batch:  8192 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n262144_b8192|262144|1|1|8192|1|32768.00|memory_limit
+[skip] n262144_b16384   | Len: 262144 | Batch: 16384 | Thr: 1 | Mem:65536.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n262144_b16384|262144|1|1|16384|1|65536.00|memory_limit
+[skip] n262144_b32768   | Len: 262144 | Batch: 32768 | Thr: 1 | Mem:131072.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n262144_b32768|262144|1|1|32768|1|131072.00|memory_limit
+[skip] n262144_b65536   | Len: 262144 | Batch: 65536 | Thr: 1 | Mem:262144.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n262144_b65536|262144|1|1|65536|1|262144.00|memory_limit
+[run ] n524288_b1       | Mode:compute | Len: 524288 | Batch:     1 | Thr: 1 | Fwd:    0.0275 ms  1808.91 GF/s | Bwd:    0.0274 ms  1814.93 GF/s | Mem:   8.00 MB
+RESULT|cufft_gpu|throughput|n524288_b1|524288|1|1|1|1|0.027534|1808.913847|0.027443|1814.925350|8.00
+[run ] n524288_b2       | Mode:compute | Len: 524288 | Batch:     2 | Thr: 1 | Fwd:    0.0598 ms  1666.02 GF/s | Bwd:    0.0603 ms  1651.61 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n524288_b2|524288|1|1|2|1|0.059792|1666.020871|0.060314|1651.612895|16.00
+[run ] n524288_b4       | Mode:compute | Len: 524288 | Batch:     4 | Thr: 1 | Fwd:    0.1186 ms  1679.59 GF/s | Bwd:    0.1181 ms  1687.42 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n524288_b4|524288|1|1|4|1|0.118618|1679.594341|0.118067|1687.424040|32.00
+[run ] n524288_b8       | Mode:compute | Len: 524288 | Batch:     8 | Thr: 1 | Fwd:    0.2230 ms  1786.68 GF/s | Bwd:    0.2228 ms  1788.29 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n524288_b8|524288|1|1|8|1|0.223016|1786.682930|0.222816|1788.286735|64.00
+[run ] n524288_b16      | Mode:compute | Len: 524288 | Batch:    16 | Thr: 1 | Fwd:    0.4331 ms  1840.04 GF/s | Bwd:    0.4333 ms  1839.38 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n524288_b16|524288|1|1|16|1|0.433098|1840.041963|0.433254|1839.376098|128.00
+[run ] n524288_b32      | Mode:compute | Len: 524288 | Batch:    32 | Thr: 1 | Fwd:    0.8015 ms  1988.48 GF/s | Bwd:    0.8017 ms  1988.10 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n524288_b32|524288|1|1|32|1|0.801536|1988.476555|0.801690|1988.095481|256.00
+[run ] n524288_b64      | Mode:compute | Len: 524288 | Batch:    64 | Thr: 1 | Fwd:    1.5902 ms  2004.55 GF/s | Bwd:    1.5901 ms  2004.74 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n524288_b64|524288|1|1|64|1|1.590221|2004.546145|1.590067|2004.739830|512.00
+[run ] n524288_b128     | Mode:compute | Len: 524288 | Batch:   128 | Thr: 1 | Fwd:    3.1673 ms  2012.84 GF/s | Bwd:    3.1667 ms  2013.24 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n524288_b128|524288|1|1|128|1|3.167334|2012.841508|3.166707|2013.240132|1024.00
+[run ] n524288_b256     | Mode:compute | Len: 524288 | Batch:   256 | Thr: 1 | Fwd:    6.3205 ms  2017.36 GF/s | Bwd:    6.3198 ms  2017.59 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n524288_b256|524288|1|1|256|1|6.320480|2017.360110|6.319770|2017.586847|2048.00
+[run ] n524288_b512     | Mode:compute | Len: 524288 | Batch:   512 | Thr: 1 | Fwd:   12.6266 ms  2019.66 GF/s | Bwd:   12.6215 ms  2020.48 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n524288_b512|524288|1|1|512|1|12.626585|2019.656743|12.621465|2020.476047|4096.00
+[skip] n524288_b1024    | Len: 524288 | Batch:  1024 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n524288_b1024|524288|1|1|1024|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n524288_b2048    | Len: 524288 | Batch:  2048 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n524288_b2048|524288|1|1|2048|1|16384.00|memory_limit
+[skip] n524288_b4096    | Len: 524288 | Batch:  4096 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n524288_b4096|524288|1|1|4096|1|32768.00|memory_limit
+[skip] n524288_b8192    | Len: 524288 | Batch:  8192 | Thr: 1 | Mem:65536.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n524288_b8192|524288|1|1|8192|1|65536.00|memory_limit
+[skip] n524288_b16384   | Len: 524288 | Batch: 16384 | Thr: 1 | Mem:131072.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n524288_b16384|524288|1|1|16384|1|131072.00|memory_limit
+[skip] n524288_b32768   | Len: 524288 | Batch: 32768 | Thr: 1 | Mem:262144.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n524288_b32768|524288|1|1|32768|1|262144.00|memory_limit
+[skip] n524288_b65536   | Len: 524288 | Batch: 65536 | Thr: 1 | Mem:524288.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n524288_b65536|524288|1|1|65536|1|524288.00|memory_limit
+[run ] n1048576_b1      | Mode:compute | Len:1048576 | Batch:     1 | Thr: 1 | Fwd:    0.0640 ms  1638.65 GF/s | Bwd:    0.0638 ms  1642.34 GF/s | Mem:  16.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b1|1048576|1|1|1|1|0.063990|1638.645740|0.063846|1642.341687|16.00
+[run ] n1048576_b2      | Mode:compute | Len:1048576 | Batch:     2 | Thr: 1 | Fwd:    0.1248 ms  1680.76 GF/s | Bwd:    0.1241 ms  1690.47 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b2|1048576|1|1|2|1|0.124774|1680.755075|0.124058|1690.466325|32.00
+[run ] n1048576_b4      | Mode:compute | Len:1048576 | Batch:     4 | Thr: 1 | Fwd:    0.2314 ms  1812.40 GF/s | Bwd:    0.2336 ms  1795.31 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b4|1048576|1|1|4|1|0.231422|1812.401907|0.233626|1795.310082|64.00
+[run ] n1048576_b8      | Mode:compute | Len:1048576 | Batch:     8 | Thr: 1 | Fwd:    0.4423 ms  1896.54 GF/s | Bwd:    0.4420 ms  1897.84 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b8|1048576|1|1|8|1|0.442312|1896.536372|0.442008|1897.840684|128.00
+[run ] n1048576_b16     | Mode:compute | Len:1048576 | Batch:    16 | Thr: 1 | Fwd:    0.8166 ms  2054.42 GF/s | Bwd:    0.8166 ms  2054.55 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b16|1048576|1|1|16|1|0.816640|2054.420074|0.816589|2054.548917|256.00
+[run ] n1048576_b32     | Mode:compute | Len:1048576 | Batch:    32 | Thr: 1 | Fwd:    1.6110 ms  2082.77 GF/s | Bwd:    1.6073 ms  2087.60 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b32|1048576|1|1|32|1|1.611048|2082.770553|1.607322|2087.599213|512.00
+[run ] n1048576_b64     | Mode:compute | Len:1048576 | Batch:    64 | Thr: 1 | Fwd:    3.1907 ms  2103.28 GF/s | Bwd:    3.1907 ms  2103.24 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b64|1048576|1|1|64|1|3.190672|2103.283122|3.190733|2103.243015|1024.00
+[run ] n1048576_b128    | Mode:compute | Len:1048576 | Batch:   128 | Thr: 1 | Fwd:    6.3521 ms  2112.97 GF/s | Bwd:    6.3520 ms  2113.01 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b128|1048576|1|1|128|1|6.352077|2112.973975|6.351974|2113.007983|2048.00
+[run ] n1048576_b256    | Mode:compute | Len:1048576 | Batch:   256 | Thr: 1 | Fwd:   12.6807 ms  2116.89 GF/s | Bwd:   12.6282 ms  2125.69 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n1048576_b256|1048576|1|1|256|1|12.680653|2116.889912|12.628173|2125.687181|4096.00
+[skip] n1048576_b512    | Len:1048576 | Batch:   512 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n1048576_b512|1048576|1|1|512|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n1048576_b1024   | Len:1048576 | Batch:  1024 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n1048576_b1024|1048576|1|1|1024|1|16384.00|memory_limit
+[skip] n1048576_b2048   | Len:1048576 | Batch:  2048 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n1048576_b2048|1048576|1|1|2048|1|32768.00|memory_limit
+[skip] n1048576_b4096   | Len:1048576 | Batch:  4096 | Thr: 1 | Mem:65536.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n1048576_b4096|1048576|1|1|4096|1|65536.00|memory_limit
+[skip] n1048576_b8192   | Len:1048576 | Batch:  8192 | Thr: 1 | Mem:131072.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n1048576_b8192|1048576|1|1|8192|1|131072.00|memory_limit
+[skip] n1048576_b16384  | Len:1048576 | Batch: 16384 | Thr: 1 | Mem:262144.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n1048576_b16384|1048576|1|1|16384|1|262144.00|memory_limit
+[skip] n1048576_b32768  | Len:1048576 | Batch: 32768 | Thr: 1 | Mem:524288.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n1048576_b32768|1048576|1|1|32768|1|524288.00|memory_limit
+[skip] n1048576_b65536  | Len:1048576 | Batch: 65536 | Thr: 1 | Mem:1048576.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n1048576_b65536|1048576|1|1|65536|1|1048576.00|memory_limit
+[run ] n2097152_b1      | Mode:compute | Len:2097152 | Batch:     1 | Thr: 1 | Fwd:    0.1270 ms  1733.49 GF/s | Bwd:    0.1274 ms  1728.62 GF/s | Mem:  32.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b1|2097152|1|1|1|1|0.127027|1733.494536|0.127386|1728.617304|32.00
+[run ] n2097152_b2      | Mode:compute | Len:2097152 | Batch:     2 | Thr: 1 | Fwd:    0.2367 ms  1860.21 GF/s | Bwd:    0.2381 ms  1849.45 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b2|2097152|1|1|2|1|0.236749|1860.207685|0.238126|1849.446031|64.00
+[run ] n2097152_b4      | Mode:compute | Len:2097152 | Batch:     4 | Thr: 1 | Fwd:    0.4542 ms  1939.26 GF/s | Bwd:    0.4542 ms  1939.26 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b4|2097152|1|1|4|1|0.454195|1939.262709|0.454195|1939.262709|128.00
+[run ] n2097152_b8      | Mode:compute | Len:2097152 | Batch:     8 | Thr: 1 | Fwd:    0.8382 ms  2101.55 GF/s | Bwd:    0.8402 ms  2096.66 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b8|2097152|1|1|8|1|0.838242|2101.551305|0.840195|2096.664827|256.00
+[run ] n2097152_b16     | Mode:compute | Len:2097152 | Batch:    16 | Thr: 1 | Fwd:    1.6496 ms  2135.79 GF/s | Bwd:    1.6491 ms  2136.40 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b16|2097152|1|1|16|1|1.649608|2135.789397|1.649138|2136.398547|512.00
+[run ] n2097152_b32     | Mode:compute | Len:2097152 | Batch:    32 | Thr: 1 | Fwd:    3.2809 ms  2147.72 GF/s | Bwd:    3.2786 ms  2149.19 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b32|2097152|1|1|32|1|3.280883|2147.723849|3.278643|2149.191188|1024.00
+[run ] n2097152_b64     | Mode:compute | Len:2097152 | Batch:    64 | Thr: 1 | Fwd:    6.5275 ms  2158.99 GF/s | Bwd:    6.5277 ms  2158.94 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b64|2097152|1|1|64|1|6.527539|2158.985386|6.527685|2158.937189|2048.00
+[run ] n2097152_b128    | Mode:compute | Len:2097152 | Batch:   128 | Thr: 1 | Fwd:   13.0273 ms  2163.59 GF/s | Bwd:   13.0220 ms  2164.48 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n2097152_b128|2097152|1|1|128|1|13.027318|2163.586034|13.021951|2164.477676|4096.00
+[skip] n2097152_b256    | Len:2097152 | Batch:   256 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n2097152_b256|2097152|1|1|256|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n2097152_b512    | Len:2097152 | Batch:   512 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b512|2097152|1|1|512|1|16384.00|memory_limit
+[skip] n2097152_b1024   | Len:2097152 | Batch:  1024 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b1024|2097152|1|1|1024|1|32768.00|memory_limit
+[skip] n2097152_b2048   | Len:2097152 | Batch:  2048 | Thr: 1 | Mem:65536.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b2048|2097152|1|1|2048|1|65536.00|memory_limit
+[skip] n2097152_b4096   | Len:2097152 | Batch:  4096 | Thr: 1 | Mem:131072.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b4096|2097152|1|1|4096|1|131072.00|memory_limit
+[skip] n2097152_b8192   | Len:2097152 | Batch:  8192 | Thr: 1 | Mem:262144.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b8192|2097152|1|1|8192|1|262144.00|memory_limit
+[skip] n2097152_b16384  | Len:2097152 | Batch: 16384 | Thr: 1 | Mem:524288.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b16384|2097152|1|1|16384|1|524288.00|memory_limit
+[skip] n2097152_b32768  | Len:2097152 | Batch: 32768 | Thr: 1 | Mem:1048576.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b32768|2097152|1|1|32768|1|1048576.00|memory_limit
+[skip] n2097152_b65536  | Len:2097152 | Batch: 65536 | Thr: 1 | Mem:2097152.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n2097152_b65536|2097152|1|1|65536|1|2097152.00|memory_limit
+[run ] n4194304_b1      | Mode:compute | Len:4194304 | Batch:     1 | Thr: 1 | Fwd:    0.2607 ms  1769.75 GF/s | Bwd:    0.2595 ms  1777.71 GF/s | Mem:  64.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b1|4194304|1|1|1|1|0.260699|1769.753950|0.259533|1777.707571|64.00
+[run ] n4194304_b2      | Mode:compute | Len:4194304 | Batch:     2 | Thr: 1 | Fwd:    0.5100 ms  1809.48 GF/s | Bwd:    0.5109 ms  1806.22 GF/s | Mem: 128.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b2|4194304|1|1|2|1|0.509952|1809.477838|0.510872|1806.219389|128.00
+[run ] n4194304_b4      | Mode:compute | Len:4194304 | Batch:     4 | Thr: 1 | Fwd:    0.9496 ms  1943.43 GF/s | Bwd:    0.9495 ms  1943.66 GF/s | Mem: 256.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b4|4194304|1|1|4|1|0.949606|1943.430166|0.949494|1943.659525|256.00
+[run ] n4194304_b8      | Mode:compute | Len:4194304 | Batch:     8 | Thr: 1 | Fwd:    1.8794 ms  1963.88 GF/s | Bwd:    1.8780 ms  1965.42 GF/s | Mem: 512.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b8|4194304|1|1|8|1|1.879437|1963.879484|1.877965|1965.418923|512.00
+[run ] n4194304_b16     | Mode:compute | Len:4194304 | Batch:    16 | Thr: 1 | Fwd:    3.7218 ms  1983.43 GF/s | Bwd:    3.7266 ms  1980.86 GF/s | Mem:1024.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b16|4194304|1|1|16|1|3.721818|1983.432687|3.726643|1980.864361|1024.00
+[run ] n4194304_b32     | Mode:compute | Len:4194304 | Batch:    32 | Thr: 1 | Fwd:    7.4382 ms  1984.89 GF/s | Bwd:    7.3793 ms  2000.72 GF/s | Mem:2048.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b32|4194304|1|1|32|1|7.438182|1984.886891|7.379302|2000.724411|2048.00
+[run ] n4194304_b64     | Mode:compute | Len:4194304 | Batch:    64 | Thr: 1 | Fwd:   14.7813 ms  1997.65 GF/s | Bwd:   14.5640 ms  2027.45 GF/s | Mem:4096.00 MB
+RESULT|cufft_gpu|throughput|n4194304_b64|4194304|1|1|64|1|14.781337|1997.647453|14.564041|2027.452400|4096.00
+[skip] n4194304_b128    | Len:4194304 | Batch:   128 | Thr: 1 | Mem:8192.00 MB | Reason:CUFFT_INTERNAL_ERROR
+SKIP|cufft_gpu|throughput|n4194304_b128|4194304|1|1|128|1|8192.00|CUFFT_INTERNAL_ERROR
+[skip] n4194304_b256    | Len:4194304 | Batch:   256 | Thr: 1 | Mem:16384.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b256|4194304|1|1|256|1|16384.00|memory_limit
+[skip] n4194304_b512    | Len:4194304 | Batch:   512 | Thr: 1 | Mem:32768.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b512|4194304|1|1|512|1|32768.00|memory_limit
+[skip] n4194304_b1024   | Len:4194304 | Batch:  1024 | Thr: 1 | Mem:65536.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b1024|4194304|1|1|1024|1|65536.00|memory_limit
+[skip] n4194304_b2048   | Len:4194304 | Batch:  2048 | Thr: 1 | Mem:131072.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b2048|4194304|1|1|2048|1|131072.00|memory_limit
+[skip] n4194304_b4096   | Len:4194304 | Batch:  4096 | Thr: 1 | Mem:262144.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b4096|4194304|1|1|4096|1|262144.00|memory_limit
+[skip] n4194304_b8192   | Len:4194304 | Batch:  8192 | Thr: 1 | Mem:524288.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b8192|4194304|1|1|8192|1|524288.00|memory_limit
+[skip] n4194304_b16384  | Len:4194304 | Batch: 16384 | Thr: 1 | Mem:1048576.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b16384|4194304|1|1|16384|1|1048576.00|memory_limit
+[skip] n4194304_b32768  | Len:4194304 | Batch: 32768 | Thr: 1 | Mem:2097152.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b32768|4194304|1|1|32768|1|2097152.00|memory_limit
+[skip] n4194304_b65536  | Len:4194304 | Batch: 65536 | Thr: 1 | Mem:4194304.00 MB | Reason:memory_limit
+SKIP|cufft_gpu|throughput|n4194304_b65536|4194304|1|1|65536|1|4194304.00|memory_limit
+
+Benchmark workload complete.
+
+
+real	1m6.553s
+user	0m30.346s
+sys	0m34.897s
+[DONE] cufft_gpu
+
+============================================================
+ALL RUNS COMPLETE
+Log    : ./fft_logs/fft_benchmark_gpu_20260225_144327.log
+Report : ./fft_logs/fft_benchmark_gpu_20260225_144327.report.md
+Lines  : 705
+Done at: Wed Feb 25 14:44:34 IST 2026
+============================================================
+
+Quick inspect:
+  grep '^PROFILE|' ./fft_logs/fft_benchmark_gpu_20260225_144327.log
+  grep '^RESULT|' ./fft_logs/fft_benchmark_gpu_20260225_144327.log | head
+  cat ./fft_logs/fft_benchmark_gpu_20260225_144327.report.md

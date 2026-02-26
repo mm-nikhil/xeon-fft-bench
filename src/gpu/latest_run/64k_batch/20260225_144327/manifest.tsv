@@ -1,0 +1,2 @@
+run_id	log_path	report_path
+run01	/home/nikhil/workspace/xeon-fft-bench/src/gpu/latest_run/64k_batch/20260225_144327/runs/run01/fft_benchmark_gpu_20260225_144327.log	/home/nikhil/workspace/xeon-fft-bench/src/gpu/latest_run/64k_batch/20260225_144327/runs/run01/fft_benchmark_gpu_20260225_144327.report.md

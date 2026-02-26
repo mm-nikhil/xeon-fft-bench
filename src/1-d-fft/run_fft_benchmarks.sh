@@ -19,7 +19,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 TIMESTAMP="$(date +"%Y%m%d_%H%M%S")"
-LOGDIR="./fft_logs"
+LOGDIR="${BENCH_LOGDIR:-./fft_logs}"
 mkdir -p "$LOGDIR"
 LOGFILE="${LOGDIR}/fft_benchmark_${TIMESTAMP}.log"
 REPORT_MD="${LOGDIR}/fft_benchmark_${TIMESTAMP}.report.md"

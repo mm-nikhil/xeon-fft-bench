@@ -1,0 +1,36 @@
+0 [4132771584] INFO perfrun.launcher <> - Launcher main begin
+0 [4132771584] INFO perfrun.launcher <> - MessageCatalogInit finished
+1 [4132771584] INFO perfrun.launcher <> - Launcher instance created
+1 [4132771584] INFO perfrun.launcher <> - argc = 6; cmdline = /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/bin32/amplxe-runss -dump-vdso -r /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/vtune_results_ports/20260224_162124/t10/hotspots_10t --tmp-dir /tmp/amplxe-tmp-nikhil 
+7 [4132771584] INFO perfrun.launcher <> - create msngr2::ICliToolContext
+8 [4132771584] INFO perfrun.launcher <> - create file finder object
+11 [4132158272] INFO perfrun.launcher <> - plugin [remoteplug] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.vdso <> - dumping [vdso] pseudomodule
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132158272] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+11 [4132771584] INFO perfrun.launcher <> - Application exit code: 0
+11 [4132771584] INFO perfrun.launcher <> - Exit code: 0

@@ -1,0 +1,3 @@
+97 [139629489133312] INFO mrtehelpers.mrteenv <> - Product libs directory: /home/nikhil/workspace/vtune/oneapi/vtune/2025.8/lib64
+97 [139629489133312] INFO mrtehelpers.mrteenv <> - File mask: amplxe_samplingmrte_clrprof*
+100 [139629489133312] INFO mrtehelpers.mrteenv <> - File name: libamplxe_samplingmrte_clrprof_1.0.so

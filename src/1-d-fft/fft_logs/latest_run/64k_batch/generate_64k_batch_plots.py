@@ -312,6 +312,46 @@ def plot_lengthwise_summary(df: pd.DataFrame, out_dir: Path, peak_gflops: float)
     return generated
 
 
+def plot_nwise_cases(df: pd.DataFrame, out_dir: Path, peak_gflops: float) -> List[str]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    generated: List[str] = []
+    valid = df[df["valid"]].copy()
+
+    for length in sorted(valid["length"].dropna().unique()):
+        sub = valid[valid["length"] == length].copy()
+        if sub.empty:
+            continue
+
+        fig, ax = plt.subplots(figsize=(12.5, 6.8))
+        for profile in PROFILE_ORDER:
+            p = sub[sub["profile"] == profile].sort_values("batch")
+            if p.empty:
+                continue
+            ax.plot(
+                p["batch"],
+                p["max_sp_gflops"],
+                marker="o",
+                linewidth=2.0,
+                label=PROFILE_LABEL.get(profile, profile),
+                color=PROFILE_COLOR.get(profile),
+            )
+
+        style_plot(ax)
+        ax.axhline(peak_gflops, color="#B22222", linestyle="--", linewidth=1.2, label="Peak (2112 SP GFLOPS)")
+        ax.set_xlabel("Batch size")
+        ax.set_ylabel("Throughput (Max of Fwd/Bwd SP GFLOPS)")
+        ax.set_title(f"N-wise throughput vs batch | N={int(length)}")
+        ax.legend(fontsize=9)
+        ax.set_ylim(bottom=0)
+        out = out_dir / f"n{int(length)}_throughput_vs_batch.png"
+        fig.tight_layout()
+        fig.savefig(out, dpi=170)
+        plt.close(fig)
+        generated.append(str(out))
+
+    return generated
+
+
 def plot_heatmaps(df: pd.DataFrame, out_dir: Path) -> List[str]:
     out_dir.mkdir(parents=True, exist_ok=True)
     generated: List[str] = []
@@ -466,6 +506,7 @@ def main() -> None:
 
     generated: List[str] = []
     generated.extend(plot_batch_panels(df, plots_root / "line_by_batch", args.peak_gflops))
+    generated.extend(plot_nwise_cases(df, plots_root / "n-wise", args.peak_gflops))
     generated.extend(plot_batchwise_summary(df, plots_root / "batchwise", args.peak_gflops))
     generated.extend(plot_lengthwise_summary(df, plots_root / "lengthwise", args.peak_gflops))
     generated.extend(plot_heatmaps(df, plots_root / "heatmaps"))

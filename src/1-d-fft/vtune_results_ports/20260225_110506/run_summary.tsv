@@ -1,0 +1,2 @@
+threads	case	fwd_gflops	bwd_gflops	peak_gflops	fwd_pct_of_peak	bwd_pct_of_peak
+10	n8192_b16	9.42971	267.928	2112.000000	0.4465	12.6860

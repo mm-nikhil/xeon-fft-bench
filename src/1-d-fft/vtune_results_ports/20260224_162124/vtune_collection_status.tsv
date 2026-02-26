@@ -1,0 +1,2 @@
+status	analysis	threads	path_or_log
+OK	hotspots	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/vtune_results_ports/20260224_162124/t10/hotspots_10t

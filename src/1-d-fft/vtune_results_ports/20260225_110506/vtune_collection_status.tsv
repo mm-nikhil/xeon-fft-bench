@@ -1,0 +1,4 @@
+status	analysis	threads	path_or_log
+UNSUPPORTED	hpc-performance	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/vtune_results_ports/20260225_110506/t10/hpc-performance_10t.collect.log
+OK	hotspots	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/vtune_results_ports/20260225_110506/t10/hotspots_10t
+OK	threading	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/vtune_results_ports/20260225_110506/t10/threading_10t

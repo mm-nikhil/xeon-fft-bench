@@ -25,6 +25,9 @@ PROFILE_COLOR = {
     "avx512_phys": "#F58518",
     "avx512_logical": "#54A24B",
 }
+GPU_PROFILE_ID = "gpu_cufft"
+GPU_LABEL = "GPU cuFFT"
+GPU_COLOR = "#E45756"
 
 
 def parse_args() -> argparse.Namespace:
@@ -46,6 +49,11 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=2112.0,
         help="Peak SP GFLOPS denominator used for peak overlays",
+    )
+    parser.add_argument(
+        "--gpu-csv",
+        default=None,
+        help="Optional GPU latest_run_avg.csv for CPU-vs-GPU n-wise plots (auto-detected if omitted)",
     )
     return parser.parse_args()
 
@@ -92,6 +100,26 @@ def load_data(csv_path: Path) -> pd.DataFrame:
     df["max_pct_peak"] = df[["fwd_pct_of_peak", "bwd_pct_of_peak"]].max(axis=1)
     df["valid"] = (df["avg_fwd_sp_gflops"] > 0) | (df["avg_bwd_sp_gflops"] > 0)
     df = df[df["profile"].isin(PROFILE_ORDER)].copy()
+    return df
+
+
+def load_gpu_data(csv_path: Path) -> pd.DataFrame:
+    df = pd.read_csv(csv_path)
+    df = df[df["workload"] == "throughput"].copy()
+
+    numeric_cols = [
+        "length",
+        "batch",
+        "avg_fwd_sp_gflops",
+        "avg_bwd_sp_gflops",
+    ]
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    df["max_sp_gflops"] = df[["avg_fwd_sp_gflops", "avg_bwd_sp_gflops"]].max(axis=1)
+    df["valid"] = (df["avg_fwd_sp_gflops"] > 0) | (df["avg_bwd_sp_gflops"] > 0)
+    df = df[df["valid"]].copy()
+    df["profile"] = GPU_PROFILE_ID
     return df
 
 
@@ -352,6 +380,61 @@ def plot_nwise_cases(df: pd.DataFrame, out_dir: Path, peak_gflops: float) -> Lis
     return generated
 
 
+def plot_nwise_with_gpu(df_cpu: pd.DataFrame, df_gpu: pd.DataFrame, out_dir: Path, peak_gflops: float) -> List[str]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    generated: List[str] = []
+
+    valid_cpu = df_cpu[df_cpu["valid"]].copy()
+    valid_gpu = df_gpu[df_gpu["valid"]].copy()
+    lengths = sorted(set(valid_cpu["length"].dropna().unique()).union(set(valid_gpu["length"].dropna().unique())))
+
+    for length in lengths:
+        cpu_sub = valid_cpu[valid_cpu["length"] == length].copy()
+        gpu_sub = valid_gpu[valid_gpu["length"] == length].copy()
+        if cpu_sub.empty and gpu_sub.empty:
+            continue
+
+        fig, ax = plt.subplots(figsize=(12.8, 7.0))
+        for profile in PROFILE_ORDER:
+            p = cpu_sub[cpu_sub["profile"] == profile].sort_values("batch")
+            if p.empty:
+                continue
+            ax.plot(
+                p["batch"],
+                p["max_sp_gflops"],
+                marker="o",
+                linewidth=2.0,
+                label=PROFILE_LABEL.get(profile, profile),
+                color=PROFILE_COLOR.get(profile),
+            )
+
+        if not gpu_sub.empty:
+            g = gpu_sub.sort_values("batch")
+            ax.plot(
+                g["batch"],
+                g["max_sp_gflops"],
+                marker="o",
+                linewidth=2.0,
+                label=GPU_LABEL,
+                color=GPU_COLOR,
+            )
+
+        style_plot(ax)
+        ax.axhline(peak_gflops, color="#B22222", linestyle="--", linewidth=1.2, label="CPU Peak (2112 SP GFLOPS)")
+        ax.set_xlabel("Batch size")
+        ax.set_ylabel("Throughput (Max of Fwd/Bwd SP GFLOPS)")
+        ax.set_title(f"N-wise throughput vs batch with GPU | N={int(length)}")
+        ax.legend(fontsize=9)
+        ax.set_ylim(bottom=0)
+        out = out_dir / f"n{int(length)}_throughput_vs_batch_with_gpu.png"
+        fig.tight_layout()
+        fig.savefig(out, dpi=170)
+        plt.close(fig)
+        generated.append(str(out))
+
+    return generated
+
+
 def plot_heatmaps(df: pd.DataFrame, out_dir: Path) -> List[str]:
     out_dir.mkdir(parents=True, exist_ok=True)
     generated: List[str] = []
@@ -503,10 +586,17 @@ def main() -> None:
     plots_root = session / "plots"
 
     df = load_data(csv_path)
+    gpu_df = pd.DataFrame()
+    auto_gpu_csv = Path(__file__).resolve().parents[4] / "gpu" / "latest_run" / "64k_batch" / "current" / "latest_run_avg.csv"
+    gpu_csv_path = Path(args.gpu_csv).resolve() if args.gpu_csv else auto_gpu_csv
+    if gpu_csv_path.is_file():
+        gpu_df = load_gpu_data(gpu_csv_path)
 
     generated: List[str] = []
     generated.extend(plot_batch_panels(df, plots_root / "line_by_batch", args.peak_gflops))
     generated.extend(plot_nwise_cases(df, plots_root / "n-wise", args.peak_gflops))
+    if not gpu_df.empty:
+        generated.extend(plot_nwise_with_gpu(df, gpu_df, plots_root / "n-wise-with-gpu", args.peak_gflops))
     generated.extend(plot_batchwise_summary(df, plots_root / "batchwise", args.peak_gflops))
     generated.extend(plot_lengthwise_summary(df, plots_root / "lengthwise", args.peak_gflops))
     generated.extend(plot_heatmaps(df, plots_root / "heatmaps"))

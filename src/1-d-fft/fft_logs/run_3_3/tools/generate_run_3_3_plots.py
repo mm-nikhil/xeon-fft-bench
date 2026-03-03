@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 import matplotlib
 
@@ -25,9 +26,12 @@ PROFILE_COLOR = {
     "avx512_logical": "#54A24B",
 }
 
+BATCH_ORDER = [1, 10, 16, 150, 256, 1024]
+LENGTH_ORDER = [2**i for i in range(1, 17)]
+
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate forward-only plots for run_3_3")
+    parser = argparse.ArgumentParser(description="Generate simplified forward-only plots for run_3_3")
     parser.add_argument(
         "--root",
         default=str(Path(__file__).resolve().parents[1]),
@@ -42,7 +46,7 @@ def parse_args() -> argparse.Namespace:
         "--peak-gflops",
         type=float,
         default=2112.0,
-        help="SP peak denominator for peak overlays",
+        help="SP peak denominator (reporting reference only)",
     )
     return parser.parse_args()
 
@@ -54,7 +58,7 @@ def pick_session(root: Path, explicit: str | None) -> Path:
             raise SystemExit(f"CSV not found in session: {session}")
         return session
 
-    sessions = []
+    sessions: List[Path] = []
     for p in sorted(root.iterdir()):
         if p.is_dir() and (p / "latest_run_avg.csv").is_file():
             sessions.append(p)
@@ -63,362 +67,297 @@ def pick_session(root: Path, explicit: str | None) -> Path:
     return sessions[-1]
 
 
-def style_plot(ax: plt.Axes, xlog: bool = True) -> None:
-    ax.grid(True, alpha=0.25)
-    if xlog:
-        ax.set_xscale("log", base=2)
-
-
 def load_data(csv_path: Path) -> pd.DataFrame:
     df = pd.read_csv(csv_path)
     df = df[df["workload"] == "throughput"].copy()
 
-    numeric_cols = ["length", "batch", "threads", "avg_fwd_sp_gflops", "fwd_pct_of_peak", "avg_mem_mb"]
+    numeric_cols = ["length", "batch", "threads", "avg_fwd_sp_gflops", "fwd_pct_of_peak"]
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    df["valid"] = df["avg_fwd_sp_gflops"] > 0
     df = df[df["profile"].isin(PROFILE_ORDER)].copy()
+    df = df.dropna(subset=["length", "batch", "avg_fwd_sp_gflops"]).copy()
+    df["length"] = df["length"].astype(int)
+    df["batch"] = df["batch"].astype(int)
     return df
 
 
-def plot_batch_panels(df: pd.DataFrame, out_dir: Path, peak_gflops: float) -> List[str]:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    generated: List[str] = []
+def validate_matrix(df: pd.DataFrame) -> Dict[str, int]:
+    profile_set = set(df["profile"].unique())
+    missing_profiles = [p for p in PROFILE_ORDER if p not in profile_set]
+    if missing_profiles:
+        raise SystemExit(f"Missing required profile rows: {', '.join(missing_profiles)}")
 
-    for batch in sorted(df["batch"].dropna().unique()):
-        sub = df[(df["batch"] == batch) & df["valid"]].copy()
-        if sub.empty:
-            continue
+    lengths = sorted(df["length"].unique().tolist())
+    batches = sorted(df["batch"].unique().tolist())
 
-        fig, ax = plt.subplots(figsize=(12.5, 6.5))
+    if lengths != LENGTH_ORDER:
+        raise SystemExit(f"Length set mismatch. Expected {LENGTH_ORDER}, found {lengths}")
+    if batches != BATCH_ORDER:
+        raise SystemExit(f"Batch set mismatch. Expected {BATCH_ORDER}, found {batches}")
+
+    key_cols = ["length", "batch", "profile"]
+    dup_count = int(df.duplicated(subset=key_cols, keep=False).sum())
+    if dup_count > 0:
+        raise SystemExit(f"Duplicate rows detected for (length,batch,profile). duplicate_rows={dup_count}")
+
+    expected = pd.MultiIndex.from_product(
+        [LENGTH_ORDER, BATCH_ORDER, PROFILE_ORDER], names=["length", "batch", "profile"]
+    )
+    present = pd.MultiIndex.from_frame(df[key_cols])
+    missing = expected.difference(present)
+    extra = present.difference(expected)
+
+    if len(missing) or len(extra):
+        raise SystemExit(
+            "Matrix coverage mismatch: "
+            f"missing={len(missing)} extra={len(extra)} "
+            "(expected 16 lengths x 6 batches x 3 profiles = 288 rows)"
+        )
+
+    expected_rows = len(LENGTH_ORDER) * len(BATCH_ORDER) * len(PROFILE_ORDER)
+    if len(df) != expected_rows:
+        raise SystemExit(f"Row count mismatch. expected={expected_rows} found={len(df)}")
+
+    non_positive = int((df["avg_fwd_sp_gflops"] <= 0).sum())
+    if non_positive:
+        raise SystemExit(f"Found non-positive avg_fwd_sp_gflops rows: {non_positive}")
+
+    return {
+        "expected_rows": expected_rows,
+        "found_rows": int(len(df)),
+        "num_lengths": len(lengths),
+        "num_batches": len(batches),
+        "num_profiles": len(profile_set),
+    }
+
+
+def clean_plots_root(plots_root: Path) -> None:
+    if plots_root.exists():
+        for child in plots_root.iterdir():
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
+    plots_root.mkdir(parents=True, exist_ok=True)
+
+
+def plot_master(df: pd.DataFrame, out_path: Path) -> str:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    base = (
+        df[df["profile"] == "baseline_sse42_1t"][["length", "batch", "avg_fwd_sp_gflops"]]
+        .rename(columns={"avg_fwd_sp_gflops": "baseline_gflops"})
+        .copy()
+    )
+    phys = (
+        df[df["profile"] == "avx512_phys"][["length", "batch", "avg_fwd_sp_gflops"]]
+        .rename(columns={"avg_fwd_sp_gflops": "phys_gflops"})
+        .copy()
+    )
+    logical = (
+        df[df["profile"] == "avx512_logical"][["length", "batch", "avg_fwd_sp_gflops"]]
+        .rename(columns={"avg_fwd_sp_gflops": "logical_gflops"})
+        .copy()
+    )
+
+    phys_inc = phys.merge(base, on=["length", "batch"], how="inner")
+    logical_inc = logical.merge(base, on=["length", "batch"], how="inner")
+    phys_inc["pct_inc"] = 100.0 * (phys_inc["phys_gflops"] - phys_inc["baseline_gflops"]) / phys_inc["baseline_gflops"]
+    logical_inc["pct_inc"] = (
+        100.0 * (logical_inc["logical_gflops"] - logical_inc["baseline_gflops"]) / logical_inc["baseline_gflops"]
+    )
+
+    piv_base = (
+        base.pivot(index="length", columns="batch", values="baseline_gflops")
+        .reindex(index=LENGTH_ORDER, columns=BATCH_ORDER)
+        .copy()
+    )
+    piv_phys_inc = (
+        phys_inc.pivot(index="length", columns="batch", values="pct_inc")
+        .reindex(index=LENGTH_ORDER, columns=BATCH_ORDER)
+        .copy()
+    )
+    piv_logical_inc = (
+        logical_inc.pivot(index="length", columns="batch", values="pct_inc")
+        .reindex(index=LENGTH_ORDER, columns=BATCH_ORDER)
+        .copy()
+    )
+
+    vmax_inc = np.nanmax(
+        np.abs(np.concatenate([piv_phys_inc.to_numpy().ravel(), piv_logical_inc.to_numpy().ravel()]))
+    )
+    if not np.isfinite(vmax_inc) or vmax_inc == 0:
+        vmax_inc = 1.0
+
+    fig, axes = plt.subplots(1, 3, figsize=(21, 7.5))
+
+    sns.heatmap(
+        piv_base,
+        cmap="viridis",
+        ax=axes[0],
+        cbar_kws={"label": "Forward SP GFLOPS"},
+        xticklabels=[str(b) for b in BATCH_ORDER],
+        yticklabels=[str(n) for n in LENGTH_ORDER],
+    )
+    axes[0].set_title("A) Baseline SSE4.2 1T (GFLOPS)")
+    axes[0].set_xlabel("Batch")
+    axes[0].set_ylabel("Length (N)")
+
+    sns.heatmap(
+        piv_phys_inc,
+        cmap="RdYlGn",
+        center=0.0,
+        vmin=-vmax_inc,
+        vmax=vmax_inc,
+        ax=axes[1],
+        cbar_kws={"label": "% increase vs baseline"},
+        xticklabels=[str(b) for b in BATCH_ORDER],
+        yticklabels=[str(n) for n in LENGTH_ORDER],
+    )
+    axes[1].set_title("B) AVX512 10T (% increase vs baseline)")
+    axes[1].set_xlabel("Batch")
+    axes[1].set_ylabel("Length (N)")
+
+    sns.heatmap(
+        piv_logical_inc,
+        cmap="RdYlGn",
+        center=0.0,
+        vmin=-vmax_inc,
+        vmax=vmax_inc,
+        ax=axes[2],
+        cbar_kws={"label": "% increase vs baseline"},
+        xticklabels=[str(b) for b in BATCH_ORDER],
+        yticklabels=[str(n) for n in LENGTH_ORDER],
+    )
+    axes[2].set_title("C) AVX512 20T (% increase vs baseline)")
+    axes[2].set_xlabel("Batch")
+    axes[2].set_ylabel("Length (N)")
+
+    fig.suptitle("run_3_3 Master View: All N/Batches/Profiles", fontsize=16, y=1.02)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=170, bbox_inches="tight")
+    plt.close(fig)
+    return str(out_path)
+
+
+def plot_nwise_compact(df: pd.DataFrame, out_path: Path) -> str:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    x = np.arange(len(BATCH_ORDER))
+    fig, axes = plt.subplots(4, 4, figsize=(22, 14), sharex=True)
+    axes_flat = axes.ravel()
+
+    legend_handles = []
+    legend_labels = []
+    for idx, length in enumerate(LENGTH_ORDER):
+        ax = axes_flat[idx]
+        sub = df[df["length"] == length]
+        for profile in PROFILE_ORDER:
+            p = sub[sub["profile"] == profile].set_index("batch").reindex(BATCH_ORDER)
+            line = ax.plot(
+                x,
+                p["avg_fwd_sp_gflops"].to_numpy(),
+                marker="o",
+                linewidth=1.8,
+                color=PROFILE_COLOR[profile],
+                label=PROFILE_LABEL[profile],
+            )[0]
+            if idx == 0:
+                legend_handles.append(line)
+                legend_labels.append(PROFILE_LABEL[profile])
+
+        ax.set_title(f"N={length}", fontsize=10)
+        ax.grid(True, alpha=0.25)
+        ax.set_ylim(bottom=0)
+        ax.set_xticks(x)
+        ax.set_xticklabels([str(b) for b in BATCH_ORDER], fontsize=8)
+        if idx % 4 == 0:
+            ax.set_ylabel("GFLOPS", fontsize=9)
+        if idx >= 12:
+            ax.set_xlabel("Batch", fontsize=9)
+
+    fig.legend(legend_handles, legend_labels, loc="upper center", ncol=3, frameon=True, fontsize=9)
+    fig.suptitle("N-wise Compact View: Forward GFLOPS vs Batch (All N)", fontsize=16, y=1.01)
+    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    fig.savefig(out_path, dpi=170, bbox_inches="tight")
+    plt.close(fig)
+    return str(out_path)
+
+
+def plot_line_by_batch_compact(df: pd.DataFrame, out_path: Path) -> str:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    x = np.array(LENGTH_ORDER, dtype=float)
+    fig, axes = plt.subplots(2, 3, figsize=(22, 10.5), sharex=True)
+    axes_flat = axes.ravel()
+
+    legend_handles = []
+    legend_labels = []
+    for idx, batch in enumerate(BATCH_ORDER):
+        ax = axes_flat[idx]
+        sub = df[df["batch"] == batch]
         for profile in PROFILE_ORDER:
             p = sub[sub["profile"] == profile].sort_values("length")
-            if p.empty:
-                continue
-            ax.plot(
-                p["length"],
-                p["avg_fwd_sp_gflops"],
+            line = ax.plot(
+                p["length"].to_numpy(dtype=float),
+                p["avg_fwd_sp_gflops"].to_numpy(),
                 marker="o",
-                linewidth=2.0,
-                label=PROFILE_LABEL.get(profile, profile),
-                color=PROFILE_COLOR.get(profile),
-            )
+                linewidth=1.8,
+                color=PROFILE_COLOR[profile],
+                label=PROFILE_LABEL[profile],
+            )[0]
+            if idx == 0:
+                legend_handles.append(line)
+                legend_labels.append(PROFILE_LABEL[profile])
 
-        style_plot(ax)
-        ax.axhline(peak_gflops, color="#B22222", linestyle="--", linewidth=1.2, label=f"Peak ({peak_gflops:.0f} SP GFLOPS)")
-        ax.set_xlabel("Length (N)")
-        ax.set_ylabel("Forward SP GFLOPS")
-        ax.set_title(f"Forward throughput vs N | batch={int(batch)}")
-        ax.legend(fontsize=9)
+        ax.set_title(f"Batch={batch}", fontsize=11)
+        ax.grid(True, alpha=0.25)
         ax.set_ylim(bottom=0)
+        ax.set_xscale("log", base=2)
+        ax.set_xticks(x)
+        ax.set_xticklabels([str(n) for n in LENGTH_ORDER], rotation=45, ha="right", fontsize=7)
+        if idx % 3 == 0:
+            ax.set_ylabel("GFLOPS", fontsize=9)
+        if idx >= 3:
+            ax.set_xlabel("Length (N)", fontsize=9)
 
-        out = out_dir / f"batch_{int(batch):04d}_forward_panel.png"
-        fig.tight_layout()
-        fig.savefig(out, dpi=170)
-        plt.close(fig)
-        generated.append(str(out))
-    return generated
-
-
-def plot_nwise_cases(df: pd.DataFrame, out_dir: Path, peak_gflops: float) -> List[str]:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    generated: List[str] = []
-    valid = df[df["valid"]].copy()
-
-    for length in sorted(valid["length"].dropna().unique()):
-        sub = valid[valid["length"] == length].copy()
-        if sub.empty:
-            continue
-
-        fig, ax = plt.subplots(figsize=(12.5, 6.8))
-        for profile in PROFILE_ORDER:
-            p = sub[sub["profile"] == profile].sort_values("batch")
-            if p.empty:
-                continue
-            ax.plot(
-                p["batch"],
-                p["avg_fwd_sp_gflops"],
-                marker="o",
-                linewidth=2.0,
-                label=PROFILE_LABEL.get(profile, profile),
-                color=PROFILE_COLOR.get(profile),
-            )
-
-        style_plot(ax)
-        ax.axhline(peak_gflops, color="#B22222", linestyle="--", linewidth=1.2, label=f"Peak ({peak_gflops:.0f} SP GFLOPS)")
-        ax.set_xlabel("Batch size")
-        ax.set_ylabel("Forward SP GFLOPS")
-        ax.set_title(f"N-wise forward throughput vs batch | N={int(length)}")
-        ax.legend(fontsize=9)
-        ax.set_ylim(bottom=0)
-        out = out_dir / f"n{int(length)}_forward_throughput_vs_batch.png"
-        fig.tight_layout()
-        fig.savefig(out, dpi=170)
-        plt.close(fig)
-        generated.append(str(out))
-
-    return generated
-
-
-def plot_batchwise_summary(df: pd.DataFrame, out_dir: Path, peak_gflops: float) -> List[str]:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    generated: List[str] = []
-
-    valid = df[df["valid"]].copy()
-    by_batch = (
-        valid.groupby(["batch", "profile"], as_index=False)[["avg_fwd_sp_gflops", "fwd_pct_of_peak"]]
-        .max()
-        .sort_values(["batch", "profile"])
-    )
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    for profile in PROFILE_ORDER:
-        p = by_batch[by_batch["profile"] == profile]
-        if p.empty:
-            continue
-        ax.plot(
-            p["batch"],
-            p["avg_fwd_sp_gflops"],
-            marker="o",
-            linewidth=2.0,
-            label=PROFILE_LABEL.get(profile, profile),
-            color=PROFILE_COLOR.get(profile),
-        )
-    ax.axhline(peak_gflops, color="#B22222", linestyle="--", linewidth=1.2, label=f"Peak ({peak_gflops:.0f} SP GFLOPS)")
-    style_plot(ax)
-    ax.set_xlabel("Batch size")
-    ax.set_ylabel("Best forward SP GFLOPS over N")
-    ax.set_title("Batch-wise best forward throughput")
-    ax.legend()
-    out = out_dir / "batchwise_best_forward_gflops_line.png"
-    fig.tight_layout()
-    fig.savefig(out, dpi=170)
+    fig.legend(legend_handles, legend_labels, loc="upper center", ncol=3, frameon=True, fontsize=9)
+    fig.suptitle("Line-by-Batch Compact View: Forward GFLOPS vs N (All Batches)", fontsize=16, y=1.03)
+    fig.tight_layout(rect=[0, 0, 1, 0.97])
+    fig.savefig(out_path, dpi=170, bbox_inches="tight")
     plt.close(fig)
-    generated.append(str(out))
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    for profile in PROFILE_ORDER:
-        p = by_batch[by_batch["profile"] == profile]
-        if p.empty:
-            continue
-        ax.plot(
-            p["batch"],
-            p["fwd_pct_of_peak"],
-            marker="o",
-            linewidth=2.0,
-            label=PROFILE_LABEL.get(profile, profile),
-            color=PROFILE_COLOR.get(profile),
-        )
-    ax.axhline(100.0, color="#B22222", linestyle="--", linewidth=1.2, label="100% peak")
-    style_plot(ax)
-    ax.set_xlabel("Batch size")
-    ax.set_ylabel("Best forward % peak over N")
-    ax.set_title("Batch-wise best forward %peak")
-    ax.legend()
-    out = out_dir / "batchwise_best_forward_pct_peak_line.png"
-    fig.tight_layout()
-    fig.savefig(out, dpi=170)
-    plt.close(fig)
-    generated.append(str(out))
-
-    return generated
+    return str(out_path)
 
 
-def plot_lengthwise_summary(df: pd.DataFrame, out_dir: Path, peak_gflops: float) -> List[str]:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    generated: List[str] = []
-    valid = df[df["valid"]].copy()
-
-    by_len = (
-        valid.groupby(["length", "profile"], as_index=False)[["avg_fwd_sp_gflops", "fwd_pct_of_peak"]]
-        .max()
-        .sort_values(["length", "profile"])
-    )
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    for profile in PROFILE_ORDER:
-        p = by_len[by_len["profile"] == profile]
-        if p.empty:
-            continue
-        ax.plot(
-            p["length"],
-            p["avg_fwd_sp_gflops"],
-            marker="o",
-            linewidth=2.0,
-            label=PROFILE_LABEL.get(profile, profile),
-            color=PROFILE_COLOR.get(profile),
-        )
-    ax.axhline(peak_gflops, color="#B22222", linestyle="--", linewidth=1.2, label=f"Peak ({peak_gflops:.0f} SP GFLOPS)")
-    style_plot(ax)
-    ax.set_xlabel("Length (N)")
-    ax.set_ylabel("Best forward SP GFLOPS over batches")
-    ax.set_title("Length-wise best forward throughput")
-    ax.legend()
-    out = out_dir / "lengthwise_best_forward_gflops_line.png"
-    fig.tight_layout()
-    fig.savefig(out, dpi=170)
-    plt.close(fig)
-    generated.append(str(out))
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    for profile in PROFILE_ORDER:
-        p = by_len[by_len["profile"] == profile]
-        if p.empty:
-            continue
-        ax.plot(
-            p["length"],
-            p["fwd_pct_of_peak"],
-            marker="o",
-            linewidth=2.0,
-            label=PROFILE_LABEL.get(profile, profile),
-            color=PROFILE_COLOR.get(profile),
-        )
-    ax.axhline(100.0, color="#B22222", linestyle="--", linewidth=1.2, label="100% peak")
-    style_plot(ax)
-    ax.set_xlabel("Length (N)")
-    ax.set_ylabel("Best forward % peak over batches")
-    ax.set_title("Length-wise best forward %peak")
-    ax.legend()
-    out = out_dir / "lengthwise_best_forward_pct_peak_line.png"
-    fig.tight_layout()
-    fig.savefig(out, dpi=170)
-    plt.close(fig)
-    generated.append(str(out))
-
-    return generated
-
-
-def plot_heatmaps(df: pd.DataFrame, out_dir: Path) -> List[str]:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    generated: List[str] = []
-    valid = df[df["valid"]].copy()
-
-    for profile in PROFILE_ORDER:
-        p = valid[valid["profile"] == profile].copy()
-        if p.empty:
-            continue
-
-        piv_g = p.pivot_table(index="length", columns="batch", values="avg_fwd_sp_gflops", aggfunc="max")
-        piv_p = p.pivot_table(index="length", columns="batch", values="fwd_pct_of_peak", aggfunc="max")
-        piv_g = piv_g.reindex(index=sorted(piv_g.index), columns=sorted(piv_g.columns))
-        piv_p = piv_p.reindex(index=sorted(piv_p.index), columns=sorted(piv_p.columns))
-
-        fig, ax = plt.subplots(figsize=(11, 7.5))
-        sns.heatmap(piv_g, cmap="viridis", ax=ax, cbar_kws={"label": "Forward SP GFLOPS"})
-        ax.set_title(f"Heatmap: forward SP GFLOPS | {PROFILE_LABEL.get(profile, profile)}")
-        ax.set_xlabel("Batch")
-        ax.set_ylabel("Length (N)")
-        out = out_dir / f"heatmap_forward_gflops_{profile}.png"
-        fig.tight_layout()
-        fig.savefig(out, dpi=170)
-        plt.close(fig)
-        generated.append(str(out))
-
-        fig, ax = plt.subplots(figsize=(11, 7.5))
-        sns.heatmap(piv_p, cmap="YlOrRd", ax=ax, cbar_kws={"label": "Forward % of peak"})
-        ax.set_title(f"Heatmap: forward %peak | {PROFILE_LABEL.get(profile, profile)}")
-        ax.set_xlabel("Batch")
-        ax.set_ylabel("Length (N)")
-        out = out_dir / f"heatmap_forward_pct_peak_{profile}.png"
-        fig.tight_layout()
-        fig.savefig(out, dpi=170)
-        plt.close(fig)
-        generated.append(str(out))
-
-    return generated
-
-
-def plot_peak_summary(df: pd.DataFrame, out_dir: Path, peak_gflops: float) -> List[str]:
-    out_dir.mkdir(parents=True, exist_ok=True)
-    generated: List[str] = []
-    valid = df[df["valid"]].copy()
-
-    overall = (
-        valid.groupby("profile", as_index=False)[["avg_fwd_sp_gflops", "fwd_pct_of_peak"]]
-        .max()
-        .set_index("profile")
-        .reindex(PROFILE_ORDER)
-        .reset_index()
-    )
-    overall["label"] = overall["profile"].map(lambda x: PROFILE_LABEL.get(x, x))
-
-    fig, ax = plt.subplots(figsize=(10, 5.8))
-    ax.bar(overall["label"], overall["avg_fwd_sp_gflops"], color="#4C78A8")
-    ax.axhline(peak_gflops, color="#B22222", linestyle="--", linewidth=1.2, label=f"Peak ({peak_gflops:.0f})")
-    ax.set_ylabel("Best Forward SP GFLOPS")
-    ax.set_title("Overall best forward throughput by profile")
-    ax.grid(True, axis="y", alpha=0.25)
-    ax.legend()
-    out = out_dir / "overall_best_forward_gflops_bar.png"
-    fig.tight_layout()
-    fig.savefig(out, dpi=170)
-    plt.close(fig)
-    generated.append(str(out))
-
-    fig, ax = plt.subplots(figsize=(10, 5.8))
-    ax.bar(overall["label"], overall["fwd_pct_of_peak"], color="#54A24B")
-    ax.axhline(100.0, color="#B22222", linestyle="--", linewidth=1.2, label="100% peak")
-    ax.set_ylabel("Best Forward % of Peak")
-    ax.set_title("Overall best forward %peak by profile")
-    ax.grid(True, axis="y", alpha=0.25)
-    ax.legend()
-    out = out_dir / "overall_best_forward_pct_peak_bar.png"
-    fig.tight_layout()
-    fig.savefig(out, dpi=170)
-    plt.close(fig)
-    generated.append(str(out))
-
-    return generated
-
-
-def write_summary(df: pd.DataFrame, out_path: Path, peak_gflops: float, generated_files: List[str]) -> None:
-    valid = df[df["valid"]].copy()
-    if valid.empty:
-        out_path.write_text("No valid throughput points found.\n")
-        return
-
-    top_overall = valid.sort_values("avg_fwd_sp_gflops", ascending=False).head(15).copy()
-    top_overall["profile_label"] = top_overall["profile"].map(lambda x: PROFILE_LABEL.get(x, x))
-
-    by_profile = (
-        valid.groupby("profile", as_index=False)[["avg_fwd_sp_gflops", "fwd_pct_of_peak"]]
-        .max()
-        .set_index("profile")
-        .reindex(PROFILE_ORDER)
-        .reset_index()
-    )
-    by_profile["profile_label"] = by_profile["profile"].map(lambda x: PROFILE_LABEL.get(x, x))
-
+def write_summary(
+    out_path: Path,
+    csv_path: Path,
+    peak_gflops: float,
+    coverage: Dict[str, int],
+    generated_files: List[str],
+) -> None:
     lines: List[str] = []
-    lines.append("# run_3_3 Plot Summary")
+    lines.append("# run_3_3 Plot Summary (Simplified)")
     lines.append("")
-    lines.append(f"- Peak denominator used in plots: {peak_gflops:.1f} SP GFLOPS")
-    lines.append(f"- Valid data points plotted: {len(valid)}")
-    lines.append(f"- Batches covered: {', '.join(str(int(x)) for x in sorted(valid['batch'].unique()))}")
+    lines.append(f"- CSV source: `{csv_path}`")
+    lines.append(f"- Peak denominator reference: {peak_gflops:.1f} SP GFLOPS")
+    lines.append("- Plot contract: exactly 3 PNG files")
+    lines.append("- Batch labels forced explicitly on batch axes: `1, 10, 16, 150, 256, 1024`")
     lines.append("")
-    lines.append("## Best Observed Forward Throughput by Profile")
+    lines.append("## Coverage Checks")
     lines.append("")
-    lines.append("| Profile | Best Forward GFLOPS | Best Forward % Peak |")
-    lines.append("|---|---:|---:|")
-    for _, row in by_profile.iterrows():
-        lines.append(
-            f"| {row['profile_label']} | {row['avg_fwd_sp_gflops']:.2f} | {row['fwd_pct_of_peak']:.2f}% |"
-        )
+    lines.append(
+        f"- Throughput rows expected: {coverage['expected_rows']} | found: {coverage['found_rows']}"
+    )
+    lines.append(
+        f"- Dimensions: lengths={coverage['num_lengths']} batches={coverage['num_batches']} profiles={coverage['num_profiles']}"
+    )
+    lines.append("- Coverage status: PASS (complete 16 x 6 x 3 matrix)")
     lines.append("")
-    lines.append("## Top 15 Forward Cases")
+    lines.append("## Generated Files")
     lines.append("")
-    lines.append("| Case | N | Batch | Profile | Fwd GFLOPS | Fwd % Peak | Mem MB |")
-    lines.append("|---|---:|---:|---|---:|---:|---:|")
-    for _, row in top_overall.iterrows():
-        lines.append(
-            f"| {row['case']} | {int(row['length'])} | {int(row['batch'])} | {row['profile_label']} | "
-            f"{row['avg_fwd_sp_gflops']:.2f} | {row['fwd_pct_of_peak']:.2f}% | {row['avg_mem_mb']:.2f} |"
-        )
-    lines.append("")
-    lines.append("## Generated Plot Files")
-    lines.append("")
-    for p in sorted(generated_files):
+    for p in generated_files:
         lines.append(f"- `{p}`")
     lines.append("")
 
@@ -435,22 +374,26 @@ def main() -> None:
     plots_root = session / "plots"
 
     df = load_data(csv_path)
+    coverage = validate_matrix(df)
+
+    clean_plots_root(plots_root)
 
     generated: List[str] = []
-    generated.extend(plot_batch_panels(df, plots_root / "line_by_batch", args.peak_gflops))
-    generated.extend(plot_nwise_cases(df, plots_root / "n-wise", args.peak_gflops))
-    generated.extend(plot_batchwise_summary(df, plots_root / "batchwise", args.peak_gflops))
-    generated.extend(plot_lengthwise_summary(df, plots_root / "lengthwise", args.peak_gflops))
-    generated.extend(plot_heatmaps(df, plots_root / "heatmaps"))
-    generated.extend(plot_peak_summary(df, plots_root / "peak_summary", args.peak_gflops))
+    generated.append(plot_master(df, plots_root / "master" / "all_cases_master.png"))
+    generated.append(plot_nwise_compact(df, plots_root / "n-wise" / "nwise_all_lengths_compact.png"))
+    generated.append(
+        plot_line_by_batch_compact(df, plots_root / "line_by_batch" / "line_by_batch_all_batches_compact.png")
+    )
 
     summary_path = plots_root / "PLOTS_SUMMARY.md"
-    write_summary(df, summary_path, args.peak_gflops, generated)
+    write_summary(summary_path, csv_path, args.peak_gflops, coverage, generated)
 
     print(f"Session: {session}")
     print(f"CSV: {csv_path}")
     print(f"Plots root: {plots_root}")
     print(f"Generated files: {len(generated)}")
+    for p in generated:
+        print(f" - {p}")
     print(f"Summary: {summary_path}")
 
 

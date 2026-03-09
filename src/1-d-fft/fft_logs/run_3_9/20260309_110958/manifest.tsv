@@ -1,0 +1,4 @@
+run_id	log_path	report_path
+run01	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_3_9/20260309_110958/runs/run01/fft_benchmark_20260309_110959.log	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_3_9/20260309_110958/runs/run01/fft_benchmark_20260309_110959.report.md
+run02	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_3_9/20260309_110958/runs/run02/fft_benchmark_20260309_111255.log	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_3_9/20260309_110958/runs/run02/fft_benchmark_20260309_111255.report.md
+run03	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_3_9/20260309_110958/runs/run03/fft_benchmark_20260309_111546.log	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_3_9/20260309_110958/runs/run03/fft_benchmark_20260309_111546.report.md

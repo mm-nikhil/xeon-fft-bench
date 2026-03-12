@@ -1,7 +1,0 @@
-status	analysis	threads	path_or_log
-UNSUPPORTED	hpc-performance	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/hpc-performance_10t.collect.log
-OK	hotspots	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/hotspots_10t
-OK	threading	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/threading_10t
-UNSUPPORTED	hpc-performance	20	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/hpc-performance_20t.collect.log
-OK	hotspots	20	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/hotspots_20t
-OK	threading	20	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/threading_20t

@@ -1,3 +1,0 @@
-status	analysis	threads	path_or_log
-OK	hotspots	10	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/smoke_113508/vtune/results/20260225_113509/t10/hotspots_10t
-OK	hotspots	20	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/smoke_113508/vtune/results/20260225_113509/t20/hotspots_20t

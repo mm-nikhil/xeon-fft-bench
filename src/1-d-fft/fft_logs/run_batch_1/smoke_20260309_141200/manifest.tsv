@@ -1,0 +1,2 @@
+run_id	log_path	report_path
+run01	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_batch_1/smoke_20260309_141200/runs/run01/fft_benchmark_20260309_141201.log	/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_batch_1/smoke_20260309_141200/runs/run01/fft_benchmark_20260309_141201.report.md

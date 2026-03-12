@@ -1,0 +1,307 @@
+============================================================
+FFT RUN run03
+Date: Mon Mar  9 14:14:36 IST 2026
+Host: amdtoolsserver.morphingmachines
+============================================================
+CONFIG|BENCH_NRUNS|20
+CONFIG|BENCH_WARMUP|5
+CONFIG|BENCH_MAX_MEM_MB|3072
+CONFIG|BENCH_MIN_TOTAL_MS|75
+CONFIG|BENCH_MAX_ADAPT_ITERS|100000000
+CONFIG|BENCH_VALIDATE|1
+CONFIG|BENCH_VALIDATE_TOL|1e-4
+CONFIG|BENCH_VALIDATE_STRICT|1
+CONFIG|BENCH_STREAM_MODE|1
+CONFIG|BENCH_STREAM_TARGET_MB|1024
+CONFIG|BENCH_STREAM_MIN_SLOTS|64
+CONFIG|BENCH_STREAM_MAX_SLOTS|32768
+CONFIG|THROUGHPUT_LENGTHS|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+CONFIG|THROUGHPUT_BATCHES|1
+============================================================
+RUN PROFILE: baseline_sse42_1t
+Description : MKL SSE4.2 baseline, single thread (CPU path, no AVX2/AVX512 kernels)
+ISA         : SSE4_2
+Threads     : 1
+Workload    : throughput
+============================================================
+PROFILE|baseline_sse42_1t|MKL SSE4.2 baseline, single thread (CPU path, no AVX2/AVX512 kernels)|SSE4_2|1|throughput|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536|1|1,10,20|65536|1024|10
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : baseline_sse42_1t
+profile_desc     : MKL SSE4.2 baseline, single thread (CPU path, no AVX2/AVX512 kernels)
+workload         : throughput
+threads(cli)     : 1
+mkl max threads  : 1
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 1
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 1
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 1
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=1
+CHECK|baseline_sse42_1t|throughput|n2_b1|2|1|1|1|1|1.14557866e-08|1.49011612e-08|1.00000000e-04|PASS
+[run ] n2_b1            | Len:      2 | Batch:     1 | Thr: 1 | Fwd:    0.0000 ms     0.46 GF/s (iters:3794749) | Bwd:    0.0000 ms     0.51 GF/s (iters:3811867) | Slots:32768 | Mem:   1.00 MB
+RESULT|baseline_sse42_1t|throughput|n2_b1|2|1|1|1|1|0.000022|0.464661|0.000020|0.506271|1.00
+CHECK|baseline_sse42_1t|throughput|n4_b1|4|1|1|1|1|4.49494167e-08|5.96046448e-08|1.00000000e-04|PASS
+[run ] n4_b1            | Len:      4 | Batch:     1 | Thr: 1 | Fwd:    0.0000 ms     1.91 GF/s (iters:3595480) | Bwd:    0.0000 ms     1.73 GF/s (iters:3532254) | Slots:32768 | Mem:   2.00 MB
+RESULT|baseline_sse42_1t|throughput|n4_b1|4|1|1|1|1|0.000021|1.912387|0.000023|1.732554|2.00
+CHECK|baseline_sse42_1t|throughput|n8_b1|8|1|1|1|1|6.88878659e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n8_b1            | Len:      8 | Batch:     1 | Thr: 1 | Fwd:    0.0000 ms     5.40 GF/s (iters:3377343) | Bwd:    0.0000 ms     5.45 GF/s (iters:3408062) | Slots:32768 | Mem:   4.00 MB
+RESULT|baseline_sse42_1t|throughput|n8_b1|8|1|1|1|1|0.000022|5.398357|0.000022|5.450966|4.00
+CHECK|baseline_sse42_1t|throughput|n16_b1|16|1|1|1|1|7.84653068e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n16_b1           | Len:     16 | Batch:     1 | Thr: 1 | Fwd:    0.0000 ms    11.87 GF/s (iters:2798670) | Bwd:    0.0000 ms    12.16 GF/s (iters:2850522) | Slots:32768 | Mem:   8.00 MB
+RESULT|baseline_sse42_1t|throughput|n16_b1|16|1|1|1|1|0.000027|11.872204|0.000026|12.156972|8.00
+CHECK|baseline_sse42_1t|throughput|n32_b1|32|1|1|1|1|9.00251380e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr: 1 | Fwd:    0.0000 ms    17.34 GF/s (iters:1677180) | Bwd:    0.0001 ms    15.71 GF/s (iters:1702195) | Slots:32768 | Mem:  16.00 MB
+RESULT|baseline_sse42_1t|throughput|n32_b1|32|1|1|1|1|0.000046|17.342252|0.000051|15.705190|16.00
+CHECK|baseline_sse42_1t|throughput|n64_b1|64|1|1|1|1|9.87097078e-08|1.78813934e-07|1.00000000e-04|PASS
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr: 1 | Fwd:    0.0001 ms    17.38 GF/s (iters:683167) | Bwd:    0.0001 ms    17.50 GF/s (iters:684685) | Slots:32768 | Mem:  32.00 MB
+RESULT|baseline_sse42_1t|throughput|n64_b1|64|1|1|1|1|0.000111|17.375084|0.000110|17.502659|32.00
+CHECK|baseline_sse42_1t|throughput|n128_b1|128|1|1|1|1|1.20228186e-07|1.88486437e-07|1.00000000e-04|PASS
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr: 1 | Fwd:    0.0002 ms    19.22 GF/s (iters:323835) | Bwd:    0.0002 ms    19.22 GF/s (iters:334510) | Slots:32768 | Mem:  64.00 MB
+RESULT|baseline_sse42_1t|throughput|n128_b1|128|1|1|1|1|0.000233|19.220758|0.000233|19.216364|64.00
+CHECK|baseline_sse42_1t|throughput|n256_b1|256|1|1|1|1|1.22083733e-07|2.66560075e-07|1.00000000e-04|PASS
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr: 1 | Fwd:    0.0006 ms    17.53 GF/s (iters:135417) | Bwd:    0.0006 ms    18.19 GF/s (iters:148707) | Slots:32768 | Mem: 128.00 MB
+RESULT|baseline_sse42_1t|throughput|n256_b1|256|1|1|1|1|0.000584|17.525548|0.000563|18.193828|128.00
+CHECK|baseline_sse42_1t|throughput|n512_b1|512|1|1|1|1|1.11145544e-07|2.38447681e-07|1.00000000e-04|PASS
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr: 1 | Fwd:    0.0012 ms    19.58 GF/s (iters:64412) | Bwd:    0.0012 ms    19.34 GF/s (iters:67165) | Slots:32768 | Mem: 256.00 MB
+RESULT|baseline_sse42_1t|throughput|n512_b1|512|1|1|1|1|0.001177|19.577245|0.001191|19.343093|256.00
+CHECK|baseline_sse42_1t|throughput|n1024_b1|1024|1|1|1|1|1.25435741e-07|2.96622950e-07|1.00000000e-04|PASS
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 1 | Fwd:    0.0029 ms    17.82 GF/s (iters:27091) | Bwd:    0.0028 ms    18.24 GF/s (iters:29265) | Slots:32768 | Mem: 512.01 MB
+RESULT|baseline_sse42_1t|throughput|n1024_b1|1024|1|1|1|1|0.002873|17.821681|0.002807|18.239209|512.01
+CHECK|baseline_sse42_1t|throughput|n2048_b1|2048|1|1|1|1|1.50457418e-07|3.31948242e-07|1.00000000e-04|PASS
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 1 | Fwd:    0.0059 ms    19.06 GF/s (iters:12888) | Bwd:    0.0059 ms    19.17 GF/s (iters:14358) | Slots:32768 | Mem:1024.02 MB
+RESULT|baseline_sse42_1t|throughput|n2048_b1|2048|1|1|1|1|0.005911|19.056962|0.005877|19.165201|1024.02
+CHECK|baseline_sse42_1t|throughput|n4096_b1|4096|1|1|1|1|1.46660253e-07|3.58867484e-07|1.00000000e-04|PASS
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr: 1 | Fwd:    0.0127 ms    19.39 GF/s (iters:6215) | Bwd:    0.0125 ms    19.74 GF/s (iters:7518) | Slots:16384 | Mem:1024.03 MB
+RESULT|baseline_sse42_1t|throughput|n4096_b1|4096|1|1|1|1|0.012673|19.391809|0.012450|19.739718|1024.03
+CHECK|baseline_sse42_1t|throughput|n8192_b1|8192|1|1|1|1|1.52875060e-07|3.68634369e-07|1.00000000e-04|PASS
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 1 | Fwd:    0.0271 ms    19.64 GF/s (iters:2923) | Bwd:    0.0272 ms    19.56 GF/s (iters:3129) | Slots:8192 | Mem:1024.06 MB
+RESULT|baseline_sse42_1t|throughput|n8192_b1|8192|1|1|1|1|0.027113|19.639445|0.027227|19.557157|1024.06
+CHECK|baseline_sse42_1t|throughput|n16384_b1|16384|1|1|1|1|1.80413193e-07|5.49527672e-07|1.00000000e-04|PASS
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0673 ms    17.03 GF/s (iters:1148) | Bwd:    0.0665 ms    17.24 GF/s (iters:1232) | Slots:4096 | Mem:1024.12 MB
+RESULT|baseline_sse42_1t|throughput|n16384_b1|16384|1|1|1|1|0.067334|17.032766|0.066506|17.244860|1024.12
+CHECK|baseline_sse42_1t|throughput|n32768_b1|32768|1|1|1|1|1.77308715e-07|5.05981649e-07|1.00000000e-04|PASS
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr: 1 | Fwd:    0.1570 ms    15.65 GF/s (iters:478) | Bwd:    0.1582 ms    15.53 GF/s (iters:484) | Slots:2048 | Mem:1024.25 MB
+RESULT|baseline_sse42_1t|throughput|n32768_b1|32768|1|1|1|1|0.157015|15.652033|0.158237|15.531148|1024.25
+CHECK|baseline_sse42_1t|throughput|n65536_b1|65536|1|1|1|1|1.87929160e-07|5.49527672e-07|1.00000000e-04|PASS
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr: 1 | Fwd:    0.3907 ms    13.42 GF/s (iters:194) | Bwd:    0.3957 ms    13.25 GF/s (iters:195) | Slots:1024 | Mem:1024.50 MB
+RESULT|baseline_sse42_1t|throughput|n65536_b1|65536|1|1|1|1|0.390689|13.419582|0.395657|13.251060|1024.50
+
+Benchmark workload complete.
+
+[DONE] baseline_sse42_1t
+
+============================================================
+RUN PROFILE: avx512_phys
+Description : MKL AVX-512, physical-core thread count
+ISA         : AVX512
+Threads     : 10
+Workload    : throughput
+============================================================
+PROFILE|avx512_phys|MKL AVX-512, physical-core thread count|AVX512|10|throughput|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536|1|1,10,20|65536|1024|10
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_phys
+profile_desc     : MKL AVX-512, physical-core thread count
+workload         : throughput
+threads(cli)     : 10
+mkl max threads  : 10
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 1
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 1
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=10
+CHECK|avx512_phys|throughput|n2_b1|2|1|1|1|10|1.14557866e-08|1.49011612e-08|1.00000000e-04|PASS
+[run ] n2_b1            | Len:      2 | Batch:     1 | Thr:10 | Fwd:    0.0000 ms     0.46 GF/s (iters:3473627) | Bwd:    0.0000 ms     0.41 GF/s (iters:3749294) | Slots:32768 | Mem:   1.00 MB
+RESULT|avx512_phys|throughput|n2_b1|2|1|1|1|10|0.000022|0.460114|0.000024|0.409584|1.00
+CHECK|avx512_phys|throughput|n4_b1|4|1|1|1|10|4.49494167e-08|5.96046448e-08|1.00000000e-04|PASS
+[run ] n4_b1            | Len:      4 | Batch:     1 | Thr:10 | Fwd:    0.0000 ms     1.69 GF/s (iters:3225325) | Bwd:    0.0000 ms     1.49 GF/s (iters:2819452) | Slots:32768 | Mem:   2.00 MB
+RESULT|avx512_phys|throughput|n4_b1|4|1|1|1|10|0.000024|1.693987|0.000027|1.485399|2.00
+CHECK|avx512_phys|throughput|n8_b1|8|1|1|1|10|6.88878659e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n8_b1            | Len:      8 | Batch:     1 | Thr:10 | Fwd:    0.0000 ms     4.13 GF/s (iters:3373537) | Bwd:    0.0000 ms     4.47 GF/s (iters:3346629) | Slots:32768 | Mem:   4.00 MB
+RESULT|avx512_phys|throughput|n8_b1|8|1|1|1|10|0.000029|4.134126|0.000027|4.469060|4.00
+CHECK|avx512_phys|throughput|n16_b1|16|1|1|1|10|8.06080983e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n16_b1           | Len:     16 | Batch:     1 | Thr:10 | Fwd:    0.0000 ms    12.88 GF/s (iters:3371491) | Bwd:    0.0000 ms    14.74 GF/s (iters:3471050) | Slots:32768 | Mem:   8.00 MB
+RESULT|avx512_phys|throughput|n16_b1|16|1|1|1|10|0.000025|12.884865|0.000022|14.743205|8.00
+CHECK|avx512_phys|throughput|n32_b1|32|1|1|1|10|9.37525156e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr:10 | Fwd:    0.0000 ms    18.72 GF/s (iters:1798011) | Bwd:    0.0000 ms    19.31 GF/s (iters:1837841) | Slots:32768 | Mem:  16.00 MB
+RESULT|avx512_phys|throughput|n32_b1|32|1|1|1|10|0.000043|18.721993|0.000041|19.314015|16.00
+CHECK|avx512_phys|throughput|n64_b1|64|1|1|1|10|1.04453060e-07|1.49011612e-07|1.00000000e-04|PASS
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr:10 | Fwd:    0.0001 ms    26.77 GF/s (iters:1086380) | Bwd:    0.0001 ms    27.31 GF/s (iters:1285020) | Slots:32768 | Mem:  32.00 MB
+RESULT|avx512_phys|throughput|n64_b1|64|1|1|1|10|0.000072|26.773216|0.000070|27.306805|32.00
+CHECK|avx512_phys|throughput|n128_b1|128|1|1|1|10|1.14162990e-07|2.02677705e-07|1.00000000e-04|PASS
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr:10 | Fwd:    0.0002 ms    27.38 GF/s (iters:462237) | Bwd:    0.0002 ms    26.85 GF/s (iters:615844) | Slots:32768 | Mem:  64.00 MB
+RESULT|avx512_phys|throughput|n128_b1|128|1|1|1|10|0.000164|27.378195|0.000167|26.849614|64.00
+CHECK|avx512_phys|throughput|n256_b1|256|1|1|1|10|1.20880689e-07|2.14907603e-07|1.00000000e-04|PASS
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr:10 | Fwd:    0.0004 ms    23.31 GF/s (iters:171222) | Bwd:    0.0004 ms    23.49 GF/s (iters:200544) | Slots:32768 | Mem: 128.00 MB
+RESULT|avx512_phys|throughput|n256_b1|256|1|1|1|10|0.000439|23.305401|0.000436|23.487954|128.00
+CHECK|avx512_phys|throughput|n512_b1|512|1|1|1|10|1.15796630e-07|2.71920675e-07|1.00000000e-04|PASS
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr:10 | Fwd:    0.0010 ms    23.14 GF/s (iters:77215) | Bwd:    0.0010 ms    22.81 GF/s (iters:92976) | Slots:32768 | Mem: 256.00 MB
+RESULT|avx512_phys|throughput|n512_b1|512|1|1|1|10|0.000996|23.139659|0.001010|22.808708|256.00
+CHECK|avx512_phys|throughput|n1024_b1|1024|1|1|1|10|1.24276207e-07|2.52881091e-07|1.00000000e-04|PASS
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:10 | Fwd:    0.0018 ms    27.83 GF/s (iters:47503) | Bwd:    0.0019 ms    27.43 GF/s (iters:41744) | Slots:32768 | Mem: 512.01 MB
+RESULT|avx512_phys|throughput|n1024_b1|1024|1|1|1|10|0.001840|27.826463|0.001867|27.426300|512.01
+CHECK|avx512_phys|throughput|n2048_b1|2048|1|1|1|10|1.45184027e-07|3.37174788e-07|1.00000000e-04|PASS
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:10 | Fwd:    0.0039 ms    28.77 GF/s (iters:22023) | Bwd:    0.0039 ms    29.22 GF/s (iters:23068) | Slots:32768 | Mem:1024.02 MB
+RESULT|avx512_phys|throughput|n2048_b1|2048|1|1|1|10|0.003916|28.765234|0.003855|29.220815|1024.02
+CHECK|avx512_phys|throughput|n4096_b1|4096|1|1|1|10|1.45690048e-07|3.20980835e-07|1.00000000e-04|PASS
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr:10 | Fwd:    0.0071 ms    34.64 GF/s (iters:12145) | Bwd:    0.0074 ms    33.24 GF/s (iters:11585) | Slots:16384 | Mem:1024.03 MB
+RESULT|avx512_phys|throughput|n4096_b1|4096|1|1|1|10|0.007095|34.638328|0.007394|33.239443|1024.03
+CHECK|avx512_phys|throughput|n8192_b1|8192|1|1|1|10|1.89483007e-07|5.41591103e-07|1.00000000e-04|PASS
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:10 | Fwd:    0.0117 ms    45.46 GF/s (iters:6953) | Bwd:    0.0121 ms    43.89 GF/s (iters:6680) | Slots:8192 | Mem:1024.06 MB
+RESULT|avx512_phys|throughput|n8192_b1|8192|1|1|1|10|0.011712|45.464538|0.012131|43.894866|1024.06
+CHECK|avx512_phys|throughput|n16384_b1|16384|1|1|1|10|1.95270107e-07|5.37269007e-07|1.00000000e-04|PASS
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr:10 | Fwd:    0.0179 ms    64.24 GF/s (iters:4336) | Bwd:    0.0196 ms    58.58 GF/s (iters:3950) | Slots:4096 | Mem:1024.12 MB
+RESULT|avx512_phys|throughput|n16384_b1|16384|1|1|1|10|0.017852|64.243251|0.019579|58.577501|1024.12
+CHECK|avx512_phys|throughput|n32768_b1|32768|1|1|1|10|2.09355397e-07|5.49527672e-07|1.00000000e-04|PASS
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr:10 | Fwd:    0.0323 ms    76.15 GF/s (iters:2357) | Bwd:    0.0326 ms    75.39 GF/s (iters:2374) | Slots:2048 | Mem:1024.25 MB
+RESULT|avx512_phys|throughput|n32768_b1|32768|1|1|1|10|0.032273|76.149578|0.032600|75.386043|1024.25
+CHECK|avx512_phys|throughput|n65536_b1|65536|1|1|1|10|2.01306545e-07|6.13667377e-07|1.00000000e-04|PASS
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr:10 | Fwd:    0.0585 ms    89.55 GF/s (iters:1381) | Bwd:    0.0684 ms    76.70 GF/s (iters:1128) | Slots:1024 | Mem:1024.50 MB
+RESULT|avx512_phys|throughput|n65536_b1|65536|1|1|1|10|0.058550|89.546054|0.068359|76.696141|1024.50
+
+Benchmark workload complete.
+
+[DONE] avx512_phys
+
+============================================================
+RUN PROFILE: avx512_logical
+Description : MKL AVX-512, logical-core thread count (hyperthreading on)
+ISA         : AVX512
+Threads     : 20
+Workload    : throughput
+============================================================
+PROFILE|avx512_logical|MKL AVX-512, logical-core thread count (hyperthreading on)|AVX512|20|throughput|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536|1|1,10,20|65536|1024|10
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_logical
+profile_desc     : MKL AVX-512, logical-core thread count (hyperthreading on)
+workload         : throughput
+threads(cli)     : 20
+mkl max threads  : 20
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 1
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 1
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 20
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=20
+CHECK|avx512_logical|throughput|n2_b1|2|1|1|1|20|1.14557866e-08|1.49011612e-08|1.00000000e-04|PASS
+[run ] n2_b1            | Len:      2 | Batch:     1 | Thr:20 | Fwd:    0.0000 ms     0.50 GF/s (iters:3754567) | Bwd:    0.0000 ms     0.45 GF/s (iters:3769136) | Slots:32768 | Mem:   1.00 MB
+RESULT|avx512_logical|throughput|n2_b1|2|1|1|1|20|0.000020|0.495092|0.000022|0.453531|1.00
+CHECK|avx512_logical|throughput|n4_b1|4|1|1|1|20|4.49494167e-08|5.96046448e-08|1.00000000e-04|PASS
+[run ] n4_b1            | Len:      4 | Batch:     1 | Thr:20 | Fwd:    0.0000 ms     1.60 GF/s (iters:3034491) | Bwd:    0.0000 ms     1.61 GF/s (iters:3015215) | Slots:32768 | Mem:   2.00 MB
+RESULT|avx512_logical|throughput|n4_b1|4|1|1|1|20|0.000025|1.603059|0.000025|1.605241|2.00
+CHECK|avx512_logical|throughput|n8_b1|8|1|1|1|20|6.88878659e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n8_b1            | Len:      8 | Batch:     1 | Thr:20 | Fwd:    0.0000 ms     5.54 GF/s (iters:3516223) | Bwd:    0.0000 ms     5.56 GF/s (iters:3500848) | Slots:32768 | Mem:   4.00 MB
+RESULT|avx512_logical|throughput|n8_b1|8|1|1|1|20|0.000022|5.539891|0.000022|5.562192|4.00
+CHECK|avx512_logical|throughput|n16_b1|16|1|1|1|20|8.06080983e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n16_b1           | Len:     16 | Batch:     1 | Thr:20 | Fwd:    0.0000 ms    12.39 GF/s (iters:3389108) | Bwd:    0.0000 ms    14.40 GF/s (iters:3406754) | Slots:32768 | Mem:   8.00 MB
+RESULT|avx512_logical|throughput|n16_b1|16|1|1|1|20|0.000026|12.385297|0.000022|14.396193|8.00
+CHECK|avx512_logical|throughput|n32_b1|32|1|1|1|20|9.37525156e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr:20 | Fwd:    0.0000 ms    20.03 GF/s (iters:1949655) | Bwd:    0.0000 ms    20.01 GF/s (iters:1904516) | Slots:32768 | Mem:  16.00 MB
+RESULT|avx512_logical|throughput|n32_b1|32|1|1|1|20|0.000040|20.029823|0.000040|20.010016|16.00
+CHECK|avx512_logical|throughput|n64_b1|64|1|1|1|20|1.04453060e-07|1.49011612e-07|1.00000000e-04|PASS
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr:20 | Fwd:    0.0001 ms    23.47 GF/s (iters:1044573) | Bwd:    0.0001 ms    26.79 GF/s (iters:1057918) | Slots:32768 | Mem:  32.00 MB
+RESULT|avx512_logical|throughput|n64_b1|64|1|1|1|20|0.000082|23.472952|0.000072|26.785925|32.00
+CHECK|avx512_logical|throughput|n128_b1|128|1|1|1|20|1.14162990e-07|2.02677705e-07|1.00000000e-04|PASS
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr:20 | Fwd:    0.0002 ms    26.82 GF/s (iters:483067) | Bwd:    0.0002 ms    27.71 GF/s (iters:587109) | Slots:32768 | Mem:  64.00 MB
+RESULT|avx512_logical|throughput|n128_b1|128|1|1|1|20|0.000167|26.822271|0.000162|27.714097|64.00
+CHECK|avx512_logical|throughput|n256_b1|256|1|1|1|20|1.20880689e-07|2.14907603e-07|1.00000000e-04|PASS
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr:20 | Fwd:    0.0004 ms    23.10 GF/s (iters:171868) | Bwd:    0.0005 ms    21.91 GF/s (iters:194181) | Slots:32768 | Mem: 128.00 MB
+RESULT|avx512_logical|throughput|n256_b1|256|1|1|1|20|0.000443|23.098683|0.000467|21.910047|128.00
+CHECK|avx512_logical|throughput|n512_b1|512|1|1|1|20|1.15796630e-07|2.71920675e-07|1.00000000e-04|PASS
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr:20 | Fwd:    0.0010 ms    23.52 GF/s (iters:76778) | Bwd:    0.0010 ms    23.36 GF/s (iters:91879) | Slots:32768 | Mem: 256.00 MB
+RESULT|avx512_logical|throughput|n512_b1|512|1|1|1|20|0.000979|23.524748|0.000986|23.363339|256.00
+CHECK|avx512_logical|throughput|n1024_b1|1024|1|1|1|20|1.24276207e-07|2.52881091e-07|1.00000000e-04|PASS
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:20 | Fwd:    0.0018 ms    28.29 GF/s (iters:41693) | Bwd:    0.0018 ms    28.27 GF/s (iters:56729) | Slots:32768 | Mem: 512.01 MB
+RESULT|avx512_logical|throughput|n1024_b1|1024|1|1|1|20|0.001810|28.286412|0.001811|28.269269|512.01
+CHECK|avx512_logical|throughput|n2048_b1|2048|1|1|1|20|1.45184027e-07|3.37174788e-07|1.00000000e-04|PASS
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:20 | Fwd:    0.0039 ms    28.82 GF/s (iters:22329) | Bwd:    0.0040 ms    28.50 GF/s (iters:23223) | Slots:32768 | Mem:1024.02 MB
+RESULT|avx512_logical|throughput|n2048_b1|2048|1|1|1|20|0.003908|28.821514|0.003953|28.497575|1024.02
+CHECK|avx512_logical|throughput|n4096_b1|4096|1|1|1|20|1.45690048e-07|3.20980835e-07|1.00000000e-04|PASS
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr:20 | Fwd:    0.0072 ms    34.12 GF/s (iters:12094) | Bwd:    0.0074 ms    33.31 GF/s (iters:11717) | Slots:16384 | Mem:1024.03 MB
+RESULT|avx512_logical|throughput|n4096_b1|4096|1|1|1|20|0.007203|34.116974|0.007377|33.314864|1024.03
+CHECK|avx512_logical|throughput|n8192_b1|8192|1|1|1|20|1.89483007e-07|5.41591103e-07|1.00000000e-04|PASS
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:20 | Fwd:    0.0138 ms    38.72 GF/s (iters:6134) | Bwd:    0.0131 ms    40.64 GF/s (iters:6462) | Slots:8192 | Mem:1024.06 MB
+RESULT|avx512_logical|throughput|n8192_b1|8192|1|1|1|20|0.013751|38.721598|0.013103|40.636703|1024.06
+CHECK|avx512_logical|throughput|n16384_b1|16384|1|1|1|20|1.95270107e-07|5.37269007e-07|1.00000000e-04|PASS
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr:20 | Fwd:    0.0215 ms    53.30 GF/s (iters:4228) | Bwd:    0.0186 ms    61.67 GF/s (iters:4638) | Slots:4096 | Mem:1024.12 MB
+RESULT|avx512_logical|throughput|n16384_b1|16384|1|1|1|20|0.021518|53.298198|0.018597|61.669687|1024.12
+CHECK|avx512_logical|throughput|n32768_b1|32768|1|1|1|20|2.09355397e-07|5.49527672e-07|1.00000000e-04|PASS
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr:20 | Fwd:    0.2746 ms     8.95 GF/s (iters:3095) | Bwd:    0.1664 ms    14.77 GF/s (iters:3176) | Slots:2048 | Mem:1024.25 MB
+RESULT|avx512_logical|throughput|n32768_b1|32768|1|1|1|20|0.274560|8.951055|0.166418|14.767612|1024.25
+CHECK|avx512_logical|throughput|n65536_b1|65536|1|1|1|20|2.01306545e-07|6.13667377e-07|1.00000000e-04|PASS
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr:20 | Fwd:    0.0591 ms    88.68 GF/s (iters:1400) | Bwd:    0.1035 ms    50.64 GF/s (iters:1375) | Slots:1024 | Mem:1024.50 MB
+RESULT|avx512_logical|throughput|n65536_b1|65536|1|1|1|20|0.059119|88.684199|0.103530|50.641189|1024.50
+
+Benchmark workload complete.
+
+[DONE] avx512_logical
+
+============================================================
+RUN COMPLETE run03
+============================================================

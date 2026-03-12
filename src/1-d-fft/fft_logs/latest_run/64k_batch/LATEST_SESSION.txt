@@ -1,1 +1,0 @@
-/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/64k_batch/20260225_131947

@@ -1,0 +1,1145 @@
+============================================================
+FFT RUN run01
+Date: Tue Mar 10 12:02:23 IST 2026
+Host: amdtoolsserver.morphingmachines
+============================================================
+CONFIG|BENCH_NRUNS|20
+CONFIG|BENCH_WARMUP|5
+CONFIG|BENCH_MAX_MEM_MB|3072
+CONFIG|BENCH_MIN_TOTAL_MS|75
+CONFIG|BENCH_MAX_ADAPT_ITERS|100000000
+CONFIG|BENCH_VALIDATE|0
+CONFIG|BENCH_VALIDATE_TOL|1e-4
+CONFIG|BENCH_VALIDATE_STRICT|1
+CONFIG|BENCH_STREAM_MODE|0
+CONFIG|BENCH_STREAM_TARGET_MB|1024
+CONFIG|BENCH_STREAM_MIN_SLOTS|64
+CONFIG|BENCH_STREAM_MAX_SLOTS|32768
+CONFIG|THROUGHPUT_LENGTHS|1024,2048,8192
+CONFIG|THROUGHPUT_BATCHES|1
+CONFIG|CORE_SWEEP_MIN|1
+CONFIG|CORE_SWEEP_MAX|10
+CONFIG|LOGICAL_FACTOR_SET|1,2
+============================================================
+RUN PROFILE: avx512_c01_t01
+Description : MKL AVX-512 pinned to 1 core(s), 1 thread(s)
+ISA         : AVX512
+Cores       : 1
+Threads/core: 1
+Threads     : 1
+CPU set     : 0
+Workload    : throughput
+============================================================
+PROFILE|avx512_c01_t01|MKL AVX-512 pinned to 1 core(s), 1 thread(s)|AVX512|1|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|1|1|0
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c01_t01
+profile_desc     : MKL AVX-512 pinned to 1 core(s), 1 thread(s)
+workload         : throughput
+threads(cli)     : 1
+mkl max threads  : 1
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 1
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=1
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 1 | Fwd:    0.0006 ms    86.76 GF/s (iters:142315) | Bwd:    0.0006 ms    91.82 GF/s (iters:141209) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c01_t01|throughput|n1024_b1|1024|1|1|1|1|0.000590|86.756829|0.000558|91.818795|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 1 | Fwd:    0.0015 ms    77.53 GF/s (iters:53517) | Bwd:    0.0015 ms    77.30 GF/s (iters:55494) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c01_t01|throughput|n2048_b1|2048|1|1|1|1|0.001453|77.529168|0.001457|77.300766|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 1 | Fwd:    0.0080 ms    66.37 GF/s (iters:9470) | Bwd:    0.0080 ms    66.29 GF/s (iters:9682) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c01_t01|throughput|n8192_b1|8192|1|1|1|1|0.008023|66.369560|0.008032|66.290788|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c01_t01
+
+============================================================
+RUN PROFILE: avx512_c01_t02
+Description : MKL AVX-512 pinned to 1 core(s), 2 thread(s)
+ISA         : AVX512
+Cores       : 1
+Threads/core: 2
+Threads     : 2
+CPU set     : 0,10
+Workload    : throughput
+============================================================
+PROFILE|avx512_c01_t02|MKL AVX-512 pinned to 1 core(s), 2 thread(s)|AVX512|2|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|1|2|0,10
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c01_t02
+profile_desc     : MKL AVX-512 pinned to 1 core(s), 2 thread(s)
+workload         : throughput
+threads(cli)     : 2
+mkl max threads  : 2
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 2
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=2
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 2 | Fwd:    0.0006 ms    90.00 GF/s (iters:145634) | Bwd:    0.0006 ms    91.02 GF/s (iters:143523) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c01_t02|throughput|n1024_b1|1024|1|1|1|2|0.000569|90.000890|0.000562|91.022751|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 2 | Fwd:    0.0014 ms    81.04 GF/s (iters:54692) | Bwd:    0.0014 ms    81.06 GF/s (iters:56552) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c01_t02|throughput|n2048_b1|2048|1|1|1|2|0.001390|81.039452|0.001390|81.062418|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 2 | Fwd:    0.0149 ms    35.65 GF/s (iters:5039) | Bwd:    0.0157 ms    33.96 GF/s (iters:4919) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c01_t02|throughput|n8192_b1|8192|1|1|1|2|0.014938|35.647182|0.015680|33.959653|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c01_t02
+
+============================================================
+RUN PROFILE: avx512_c02_t02
+Description : MKL AVX-512 pinned to 2 core(s), 2 thread(s)
+ISA         : AVX512
+Cores       : 2
+Threads/core: 1
+Threads     : 2
+CPU set     : 0,1
+Workload    : throughput
+============================================================
+PROFILE|avx512_c02_t02|MKL AVX-512 pinned to 2 core(s), 2 thread(s)|AVX512|2|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|2|1|0,1
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c02_t02
+profile_desc     : MKL AVX-512 pinned to 2 core(s), 2 thread(s)
+workload         : throughput
+threads(cli)     : 2
+mkl max threads  : 2
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 2
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=2
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 2 | Fwd:    0.0005 ms    97.70 GF/s (iters:144664) | Bwd:    0.0005 ms    96.24 GF/s (iters:143549) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c02_t02|throughput|n1024_b1|1024|1|1|1|2|0.000524|97.698342|0.000532|96.237427|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 2 | Fwd:    0.0014 ms    81.41 GF/s (iters:56731) | Bwd:    0.0015 ms    75.30 GF/s (iters:53586) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c02_t02|throughput|n2048_b1|2048|1|1|1|2|0.001384|81.409368|0.001496|75.302131|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 2 | Fwd:    0.0143 ms    37.26 GF/s (iters:5708) | Bwd:    0.0132 ms    40.43 GF/s (iters:5904) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c02_t02|throughput|n8192_b1|8192|1|1|1|2|0.014293|37.255113|0.013172|40.425942|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c02_t02
+
+============================================================
+RUN PROFILE: avx512_c02_t04
+Description : MKL AVX-512 pinned to 2 core(s), 4 thread(s)
+ISA         : AVX512
+Cores       : 2
+Threads/core: 2
+Threads     : 4
+CPU set     : 0,1,10,11
+Workload    : throughput
+============================================================
+PROFILE|avx512_c02_t04|MKL AVX-512 pinned to 2 core(s), 4 thread(s)|AVX512|4|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|2|2|0,1,10,11
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c02_t04
+profile_desc     : MKL AVX-512 pinned to 2 core(s), 4 thread(s)
+workload         : throughput
+threads(cli)     : 4
+mkl max threads  : 4
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 4
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=4
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 4 | Fwd:    0.0006 ms    86.43 GF/s (iters:127011) | Bwd:    0.0005 ms    93.20 GF/s (iters:137934) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c02_t04|throughput|n1024_b1|1024|1|1|1|4|0.000592|86.427579|0.000549|93.202496|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 4 | Fwd:    0.0015 ms    75.00 GF/s (iters:52365) | Bwd:    0.0014 ms    81.58 GF/s (iters:56333) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c02_t04|throughput|n2048_b1|2048|1|1|1|4|0.001502|75.002916|0.001381|81.575668|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 4 | Fwd:    0.0131 ms    40.71 GF/s (iters:5899) | Bwd:    0.0129 ms    41.37 GF/s (iters:5950) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c02_t04|throughput|n8192_b1|8192|1|1|1|4|0.013081|40.707870|0.012872|41.368742|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c02_t04
+
+============================================================
+RUN PROFILE: avx512_c03_t03
+Description : MKL AVX-512 pinned to 3 core(s), 3 thread(s)
+ISA         : AVX512
+Cores       : 3
+Threads/core: 1
+Threads     : 3
+CPU set     : 0,1,2
+Workload    : throughput
+============================================================
+PROFILE|avx512_c03_t03|MKL AVX-512 pinned to 3 core(s), 3 thread(s)|AVX512|3|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|3|1|0,1,2
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c03_t03
+profile_desc     : MKL AVX-512 pinned to 3 core(s), 3 thread(s)
+workload         : throughput
+threads(cli)     : 3
+mkl max threads  : 3
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 3
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=3
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 3 | Fwd:    0.0006 ms    92.20 GF/s (iters:138175) | Bwd:    0.0006 ms    91.49 GF/s (iters:136115) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c03_t03|throughput|n1024_b1|1024|1|1|1|3|0.000555|92.203766|0.000560|91.492725|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 3 | Fwd:    0.0015 ms    72.71 GF/s (iters:50142) | Bwd:    0.0014 ms    78.51 GF/s (iters:55184) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c03_t03|throughput|n2048_b1|2048|1|1|1|3|0.001549|72.706989|0.001435|78.510860|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 3 | Fwd:    0.0113 ms    47.26 GF/s (iters:7268) | Bwd:    0.0110 ms    48.57 GF/s (iters:7123) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c03_t03|throughput|n8192_b1|8192|1|1|1|3|0.011268|47.257167|0.010963|48.568905|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c03_t03
+
+============================================================
+RUN PROFILE: avx512_c03_t06
+Description : MKL AVX-512 pinned to 3 core(s), 6 thread(s)
+ISA         : AVX512
+Cores       : 3
+Threads/core: 2
+Threads     : 6
+CPU set     : 0,1,2,10,11,12
+Workload    : throughput
+============================================================
+PROFILE|avx512_c03_t06|MKL AVX-512 pinned to 3 core(s), 6 thread(s)|AVX512|6|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|3|2|0,1,2,10,11,12
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c03_t06
+profile_desc     : MKL AVX-512 pinned to 3 core(s), 6 thread(s)
+workload         : throughput
+threads(cli)     : 6
+mkl max threads  : 6
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 6
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=6
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 6 | Fwd:    0.0005 ms    94.56 GF/s (iters:141888) | Bwd:    0.0005 ms    93.36 GF/s (iters:143170) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c03_t06|throughput|n1024_b1|1024|1|1|1|6|0.000541|94.563971|0.000548|93.361826|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 6 | Fwd:    0.0014 ms    81.15 GF/s (iters:54054) | Bwd:    0.0014 ms    79.21 GF/s (iters:55532) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c03_t06|throughput|n2048_b1|2048|1|1|1|6|0.001388|81.145667|0.001422|79.214631|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 6 | Fwd:    0.0126 ms    42.23 GF/s (iters:6062) | Bwd:    0.0130 ms    41.06 GF/s (iters:5954) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c03_t06|throughput|n8192_b1|8192|1|1|1|6|0.012610|42.228264|0.012968|41.062071|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c03_t06
+
+============================================================
+RUN PROFILE: avx512_c04_t04
+Description : MKL AVX-512 pinned to 4 core(s), 4 thread(s)
+ISA         : AVX512
+Cores       : 4
+Threads/core: 1
+Threads     : 4
+CPU set     : 0,1,2,3
+Workload    : throughput
+============================================================
+PROFILE|avx512_c04_t04|MKL AVX-512 pinned to 4 core(s), 4 thread(s)|AVX512|4|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|4|1|0,1,2,3
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c04_t04
+profile_desc     : MKL AVX-512 pinned to 4 core(s), 4 thread(s)
+workload         : throughput
+threads(cli)     : 4
+mkl max threads  : 4
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 4
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=4
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 4 | Fwd:    0.0005 ms    95.18 GF/s (iters:145452) | Bwd:    0.0005 ms    93.38 GF/s (iters:142962) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c04_t04|throughput|n1024_b1|1024|1|1|1|4|0.000538|95.176245|0.000548|93.375466|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 4 | Fwd:    0.0014 ms    80.37 GF/s (iters:55216) | Bwd:    0.0013 ms    84.65 GF/s (iters:57087) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c04_t04|throughput|n2048_b1|2048|1|1|1|4|0.001402|80.366847|0.001331|84.653302|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 4 | Fwd:    0.0090 ms    59.10 GF/s (iters:8395) | Bwd:    0.0092 ms    57.82 GF/s (iters:8348) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c04_t04|throughput|n8192_b1|8192|1|1|1|4|0.009009|59.102421|0.009210|57.815725|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c04_t04
+
+============================================================
+RUN PROFILE: avx512_c04_t08
+Description : MKL AVX-512 pinned to 4 core(s), 8 thread(s)
+ISA         : AVX512
+Cores       : 4
+Threads/core: 2
+Threads     : 8
+CPU set     : 0,1,2,3,10,11,12,13
+Workload    : throughput
+============================================================
+PROFILE|avx512_c04_t08|MKL AVX-512 pinned to 4 core(s), 8 thread(s)|AVX512|8|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|4|2|0,1,2,3,10,11,12,13
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c04_t08
+profile_desc     : MKL AVX-512 pinned to 4 core(s), 8 thread(s)
+workload         : throughput
+threads(cli)     : 8
+mkl max threads  : 8
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 8
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=8
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 8 | Fwd:    0.0006 ms    92.21 GF/s (iters:139782) | Bwd:    0.0005 ms    93.90 GF/s (iters:138374) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c04_t08|throughput|n1024_b1|1024|1|1|1|8|0.000555|92.209006|0.000545|93.903977|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 8 | Fwd:    0.0014 ms    80.27 GF/s (iters:53478) | Bwd:    0.0014 ms    78.23 GF/s (iters:53349) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c04_t08|throughput|n2048_b1|2048|1|1|1|8|0.001403|80.274155|0.001440|78.230525|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 8 | Fwd:    0.0100 ms    53.32 GF/s (iters:7702) | Bwd:    0.0104 ms    51.13 GF/s (iters:7539) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c04_t08|throughput|n8192_b1|8192|1|1|1|8|0.009986|53.323281|0.010414|51.133460|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c04_t08
+
+============================================================
+RUN PROFILE: avx512_c05_t05
+Description : MKL AVX-512 pinned to 5 core(s), 5 thread(s)
+ISA         : AVX512
+Cores       : 5
+Threads/core: 1
+Threads     : 5
+CPU set     : 0,1,2,3,4
+Workload    : throughput
+============================================================
+PROFILE|avx512_c05_t05|MKL AVX-512 pinned to 5 core(s), 5 thread(s)|AVX512|5|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|5|1|0,1,2,3,4
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c05_t05
+profile_desc     : MKL AVX-512 pinned to 5 core(s), 5 thread(s)
+workload         : throughput
+threads(cli)     : 5
+mkl max threads  : 5
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 5
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=5
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 5 | Fwd:    0.0006 ms    90.84 GF/s (iters:145522) | Bwd:    0.0006 ms    88.72 GF/s (iters:131654) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c05_t05|throughput|n1024_b1|1024|1|1|1|5|0.000564|90.836876|0.000577|88.724742|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 5 | Fwd:    0.0014 ms    80.77 GF/s (iters:57050) | Bwd:    0.0014 ms    83.37 GF/s (iters:56603) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c05_t05|throughput|n2048_b1|2048|1|1|1|5|0.001395|80.774146|0.001351|83.367856|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 5 | Fwd:    0.0093 ms    57.42 GF/s (iters:8587) | Bwd:    0.0092 ms    57.82 GF/s (iters:8283) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c05_t05|throughput|n8192_b1|8192|1|1|1|5|0.009274|57.417785|0.009210|57.818041|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c05_t05
+
+============================================================
+RUN PROFILE: avx512_c05_t10
+Description : MKL AVX-512 pinned to 5 core(s), 10 thread(s)
+ISA         : AVX512
+Cores       : 5
+Threads/core: 2
+Threads     : 10
+CPU set     : 0,1,2,3,4,10,11,12,13,14
+Workload    : throughput
+============================================================
+PROFILE|avx512_c05_t10|MKL AVX-512 pinned to 5 core(s), 10 thread(s)|AVX512|10|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|5|2|0,1,2,3,4,10,11,12,13,14
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c05_t10
+profile_desc     : MKL AVX-512 pinned to 5 core(s), 10 thread(s)
+workload         : throughput
+threads(cli)     : 10
+mkl max threads  : 10
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=10
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:10 | Fwd:    0.0005 ms    99.04 GF/s (iters:145098) | Bwd:    0.0005 ms    97.74 GF/s (iters:150212) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c05_t10|throughput|n1024_b1|1024|1|1|1|10|0.000517|99.041025|0.000524|97.737342|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:10 | Fwd:    0.0014 ms    82.60 GF/s (iters:55989) | Bwd:    0.0014 ms    77.95 GF/s (iters:52010) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c05_t10|throughput|n2048_b1|2048|1|1|1|10|0.001364|82.600506|0.001445|77.945468|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:10 | Fwd:    0.0104 ms    51.40 GF/s (iters:7349) | Bwd:    0.0102 ms    52.00 GF/s (iters:7346) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c05_t10|throughput|n8192_b1|8192|1|1|1|10|0.010359|51.404731|0.010241|51.995769|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c05_t10
+
+============================================================
+RUN PROFILE: avx512_c06_t06
+Description : MKL AVX-512 pinned to 6 core(s), 6 thread(s)
+ISA         : AVX512
+Cores       : 6
+Threads/core: 1
+Threads     : 6
+CPU set     : 0,1,2,3,4,5
+Workload    : throughput
+============================================================
+PROFILE|avx512_c06_t06|MKL AVX-512 pinned to 6 core(s), 6 thread(s)|AVX512|6|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|6|1|0,1,2,3,4,5
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c06_t06
+profile_desc     : MKL AVX-512 pinned to 6 core(s), 6 thread(s)
+workload         : throughput
+threads(cli)     : 6
+mkl max threads  : 6
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 6
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=6
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 6 | Fwd:    0.0005 ms    96.00 GF/s (iters:145218) | Bwd:    0.0005 ms    93.92 GF/s (iters:142290) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c06_t06|throughput|n1024_b1|1024|1|1|1|6|0.000533|95.996711|0.000545|93.917594|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 6 | Fwd:    0.0013 ms    84.35 GF/s (iters:56516) | Bwd:    0.0014 ms    79.92 GF/s (iters:53700) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c06_t06|throughput|n2048_b1|2048|1|1|1|6|0.001335|84.353438|0.001409|79.916779|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 6 | Fwd:    0.0094 ms    56.56 GF/s (iters:8070) | Bwd:    0.0092 ms    57.59 GF/s (iters:8523) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c06_t06|throughput|n8192_b1|8192|1|1|1|6|0.009415|56.556762|0.009246|57.589476|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c06_t06
+
+============================================================
+RUN PROFILE: avx512_c06_t12
+Description : MKL AVX-512 pinned to 6 core(s), 12 thread(s)
+ISA         : AVX512
+Cores       : 6
+Threads/core: 2
+Threads     : 12
+CPU set     : 0,1,2,3,4,5,10,11,12,13,14,15
+Workload    : throughput
+============================================================
+PROFILE|avx512_c06_t12|MKL AVX-512 pinned to 6 core(s), 12 thread(s)|AVX512|12|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|6|2|0,1,2,3,4,5,10,11,12,13,14,15
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c06_t12
+profile_desc     : MKL AVX-512 pinned to 6 core(s), 12 thread(s)
+workload         : throughput
+threads(cli)     : 12
+mkl max threads  : 12
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 12
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=12
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:12 | Fwd:    0.0005 ms    97.10 GF/s (iters:142534) | Bwd:    0.0005 ms    93.73 GF/s (iters:137340) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c06_t12|throughput|n1024_b1|1024|1|1|1|12|0.000527|97.100222|0.000546|93.734226|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:12 | Fwd:    0.0014 ms    81.17 GF/s (iters:54887) | Bwd:    0.0014 ms    82.48 GF/s (iters:56524) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c06_t12|throughput|n2048_b1|2048|1|1|1|12|0.001388|81.169700|0.001366|82.478038|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:12 | Fwd:    0.0102 ms    52.20 GF/s (iters:7356) | Bwd:    0.0103 ms    51.87 GF/s (iters:7382) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c06_t12|throughput|n8192_b1|8192|1|1|1|12|0.010201|52.196515|0.010265|51.874367|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c06_t12
+
+============================================================
+RUN PROFILE: avx512_c07_t07
+Description : MKL AVX-512 pinned to 7 core(s), 7 thread(s)
+ISA         : AVX512
+Cores       : 7
+Threads/core: 1
+Threads     : 7
+CPU set     : 0,1,2,3,4,5,6
+Workload    : throughput
+============================================================
+PROFILE|avx512_c07_t07|MKL AVX-512 pinned to 7 core(s), 7 thread(s)|AVX512|7|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|7|1|0,1,2,3,4,5,6
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c07_t07
+profile_desc     : MKL AVX-512 pinned to 7 core(s), 7 thread(s)
+workload         : throughput
+threads(cli)     : 7
+mkl max threads  : 7
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 7
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=7
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 7 | Fwd:    0.0006 ms    93.07 GF/s (iters:141549) | Bwd:    0.0006 ms    92.20 GF/s (iters:142212) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c07_t07|throughput|n1024_b1|1024|1|1|1|7|0.000550|93.068254|0.000555|92.195954|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 7 | Fwd:    0.0014 ms    81.41 GF/s (iters:55902) | Bwd:    0.0013 ms    84.26 GF/s (iters:57054) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c07_t07|throughput|n2048_b1|2048|1|1|1|7|0.001384|81.410362|0.001337|84.257939|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 7 | Fwd:    0.0096 ms    55.34 GF/s (iters:7980) | Bwd:    0.0096 ms    55.25 GF/s (iters:7788) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c07_t07|throughput|n8192_b1|8192|1|1|1|7|0.009621|55.344805|0.009638|55.246038|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c07_t07
+
+============================================================
+RUN PROFILE: avx512_c07_t14
+Description : MKL AVX-512 pinned to 7 core(s), 14 thread(s)
+ISA         : AVX512
+Cores       : 7
+Threads/core: 2
+Threads     : 14
+CPU set     : 0,1,2,3,4,5,6,10,11,12,13,14,15,16
+Workload    : throughput
+============================================================
+PROFILE|avx512_c07_t14|MKL AVX-512 pinned to 7 core(s), 14 thread(s)|AVX512|14|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|7|2|0,1,2,3,4,5,6,10,11,12,13,14,15,16
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c07_t14
+profile_desc     : MKL AVX-512 pinned to 7 core(s), 14 thread(s)
+workload         : throughput
+threads(cli)     : 14
+mkl max threads  : 14
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 14
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=14
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:14 | Fwd:    0.0005 ms    95.00 GF/s (iters:147467) | Bwd:    0.0005 ms    96.03 GF/s (iters:143001) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c07_t14|throughput|n1024_b1|1024|1|1|1|14|0.000539|94.999620|0.000533|96.027825|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:14 | Fwd:    0.0014 ms    81.20 GF/s (iters:56080) | Bwd:    0.0014 ms    79.76 GF/s (iters:56836) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c07_t14|throughput|n2048_b1|2048|1|1|1|14|0.001387|81.200326|0.001412|79.762529|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:14 | Fwd:    0.0097 ms    54.76 GF/s (iters:7860) | Bwd:    0.0098 ms    54.13 GF/s (iters:7754) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c07_t14|throughput|n8192_b1|8192|1|1|1|14|0.009724|54.760905|0.009837|54.131925|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c07_t14
+
+============================================================
+RUN PROFILE: avx512_c08_t08
+Description : MKL AVX-512 pinned to 8 core(s), 8 thread(s)
+ISA         : AVX512
+Cores       : 8
+Threads/core: 1
+Threads     : 8
+CPU set     : 0,1,2,3,4,5,6,7
+Workload    : throughput
+============================================================
+PROFILE|avx512_c08_t08|MKL AVX-512 pinned to 8 core(s), 8 thread(s)|AVX512|8|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|8|1|0,1,2,3,4,5,6,7
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c08_t08
+profile_desc     : MKL AVX-512 pinned to 8 core(s), 8 thread(s)
+workload         : throughput
+threads(cli)     : 8
+mkl max threads  : 8
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 8
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=8
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 8 | Fwd:    0.0005 ms    96.92 GF/s (iters:144496) | Bwd:    0.0006 ms    91.93 GF/s (iters:139793) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c08_t08|throughput|n1024_b1|1024|1|1|1|8|0.000528|96.919480|0.000557|91.933096|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 8 | Fwd:    0.0014 ms    83.42 GF/s (iters:56110) | Bwd:    0.0014 ms    81.96 GF/s (iters:59835) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c08_t08|throughput|n2048_b1|2048|1|1|1|8|0.001350|83.418611|0.001374|81.964917|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 8 | Fwd:    0.0087 ms    61.18 GF/s (iters:8864) | Bwd:    0.0088 ms    60.32 GF/s (iters:8547) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c08_t08|throughput|n8192_b1|8192|1|1|1|8|0.008704|61.177405|0.008828|60.318734|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c08_t08
+
+============================================================
+RUN PROFILE: avx512_c08_t16
+Description : MKL AVX-512 pinned to 8 core(s), 16 thread(s)
+ISA         : AVX512
+Cores       : 8
+Threads/core: 2
+Threads     : 16
+CPU set     : 0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17
+Workload    : throughput
+============================================================
+PROFILE|avx512_c08_t16|MKL AVX-512 pinned to 8 core(s), 16 thread(s)|AVX512|16|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|8|2|0,1,2,3,4,5,6,7,10,11,12,13,14,15,16,17
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c08_t16
+profile_desc     : MKL AVX-512 pinned to 8 core(s), 16 thread(s)
+workload         : throughput
+threads(cli)     : 16
+mkl max threads  : 16
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 16
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=16
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:16 | Fwd:    0.0005 ms    94.77 GF/s (iters:140356) | Bwd:    0.0005 ms    93.67 GF/s (iters:142884) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c08_t16|throughput|n1024_b1|1024|1|1|1|16|0.000540|94.769322|0.000547|93.668315|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:16 | Fwd:    0.0014 ms    79.72 GF/s (iters:54104) | Bwd:    0.0014 ms    79.10 GF/s (iters:53817) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c08_t16|throughput|n2048_b1|2048|1|1|1|16|0.001413|79.719462|0.001424|79.104517|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:16 | Fwd:    0.0098 ms    54.08 GF/s (iters:7643) | Bwd:    0.0099 ms    53.82 GF/s (iters:7683) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c08_t16|throughput|n8192_b1|8192|1|1|1|16|0.009846|54.078999|0.009894|53.815903|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c08_t16
+
+============================================================
+RUN PROFILE: avx512_c09_t09
+Description : MKL AVX-512 pinned to 9 core(s), 9 thread(s)
+ISA         : AVX512
+Cores       : 9
+Threads/core: 1
+Threads     : 9
+CPU set     : 0,1,2,3,4,5,6,7,8
+Workload    : throughput
+============================================================
+PROFILE|avx512_c09_t09|MKL AVX-512 pinned to 9 core(s), 9 thread(s)|AVX512|9|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|9|1|0,1,2,3,4,5,6,7,8
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c09_t09
+profile_desc     : MKL AVX-512 pinned to 9 core(s), 9 thread(s)
+workload         : throughput
+threads(cli)     : 9
+mkl max threads  : 9
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 9
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=9
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 9 | Fwd:    0.0006 ms    84.59 GF/s (iters:138580) | Bwd:    0.0006 ms    91.56 GF/s (iters:137393) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c09_t09|throughput|n1024_b1|1024|1|1|1|9|0.000605|84.589454|0.000559|91.557400|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 9 | Fwd:    0.0014 ms    78.31 GF/s (iters:52808) | Bwd:    0.0014 ms    83.02 GF/s (iters:57585) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c09_t09|throughput|n2048_b1|2048|1|1|1|9|0.001438|78.310131|0.001357|83.022241|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 9 | Fwd:    0.0089 ms    59.80 GF/s (iters:8522) | Bwd:    0.0089 ms    59.85 GF/s (iters:8444) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c09_t09|throughput|n8192_b1|8192|1|1|1|9|0.008905|59.796589|0.008896|59.853898|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c09_t09
+
+============================================================
+RUN PROFILE: avx512_c09_t18
+Description : MKL AVX-512 pinned to 9 core(s), 18 thread(s)
+ISA         : AVX512
+Cores       : 9
+Threads/core: 2
+Threads     : 18
+CPU set     : 0,1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18
+Workload    : throughput
+============================================================
+PROFILE|avx512_c09_t18|MKL AVX-512 pinned to 9 core(s), 18 thread(s)|AVX512|18|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|9|2|0,1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c09_t18
+profile_desc     : MKL AVX-512 pinned to 9 core(s), 18 thread(s)
+workload         : throughput
+threads(cli)     : 18
+mkl max threads  : 18
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 18
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=18
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:18 | Fwd:    0.0006 ms    91.51 GF/s (iters:137433) | Bwd:    0.0006 ms    93.02 GF/s (iters:136493) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c09_t18|throughput|n1024_b1|1024|1|1|1|18|0.000559|91.510610|0.000550|93.023241|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:18 | Fwd:    0.0014 ms    80.56 GF/s (iters:53759) | Bwd:    0.0015 ms    76.45 GF/s (iters:56404) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c09_t18|throughput|n2048_b1|2048|1|1|1|18|0.001398|80.558785|0.001473|76.454108|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:18 | Fwd:    0.0118 ms    45.30 GF/s (iters:7452) | Bwd:    0.0136 ms    39.03 GF/s (iters:7330) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c09_t18|throughput|n8192_b1|8192|1|1|1|18|0.011754|45.301664|0.013641|39.034900|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c09_t18
+
+============================================================
+RUN PROFILE: avx512_c10_t10
+Description : MKL AVX-512 pinned to 10 core(s), 10 thread(s)
+ISA         : AVX512
+Cores       : 10
+Threads/core: 1
+Threads     : 10
+CPU set     : 0,1,2,3,4,5,6,7,8,9
+Workload    : throughput
+============================================================
+PROFILE|avx512_c10_t10|MKL AVX-512 pinned to 10 core(s), 10 thread(s)|AVX512|10|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|10|1|0,1,2,3,4,5,6,7,8,9
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c10_t10
+profile_desc     : MKL AVX-512 pinned to 10 core(s), 10 thread(s)
+workload         : throughput
+threads(cli)     : 10
+mkl max threads  : 10
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 10
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=10
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:10 | Fwd:    0.0006 ms    90.47 GF/s (iters:133301) | Bwd:    0.0006 ms    90.32 GF/s (iters:132430) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c10_t10|throughput|n1024_b1|1024|1|1|1|10|0.000566|90.473054|0.000567|90.316641|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:10 | Fwd:    0.0014 ms    79.41 GF/s (iters:53022) | Bwd:    0.0014 ms    78.07 GF/s (iters:52705) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c10_t10|throughput|n2048_b1|2048|1|1|1|10|0.001418|79.414582|0.001443|78.065944|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:10 | Fwd:    0.0090 ms    59.16 GF/s (iters:8377) | Bwd:    0.0090 ms    59.47 GF/s (iters:8471) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c10_t10|throughput|n8192_b1|8192|1|1|1|10|0.009001|59.160461|0.008954|59.466551|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c10_t10
+
+============================================================
+RUN PROFILE: avx512_c10_t20
+Description : MKL AVX-512 pinned to 10 core(s), 20 thread(s)
+ISA         : AVX512
+Cores       : 10
+Threads/core: 2
+Threads     : 20
+CPU set     : 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+Workload    : throughput
+============================================================
+PROFILE|avx512_c10_t20|MKL AVX-512 pinned to 10 core(s), 20 thread(s)|AVX512|20|throughput|1024,2048,8192|1|1,10,20|4194304|1024|10|10|2|0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+
+############################################################
+# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
+############################################################
+profile_id       : avx512_c10_t20
+profile_desc     : MKL AVX-512 pinned to 10 core(s), 20 thread(s)
+workload         : throughput
+threads(cli)     : 20
+mkl max threads  : 20
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 75.0
+max adapt iters  : 100000000
+validate         : 0
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 1024.0
+stream min slots : 64
+stream max slots : 32768
+mem cap (MB)     : 3072.0
+lengths: 1024,2048,8192
+batches: 1
+thread_set: 1,2,4,8,10,20
+batch_scale_set: 1,4,16,64,256
+scale_length     : 16384
+scale_batch      : 64
+scale_threads    : 20
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed thread count)
+====================================================================
+threads=20
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr:20 | Fwd:    0.0006 ms    86.30 GF/s (iters:132895) | Bwd:    0.0007 ms    75.26 GF/s (iters:132041) | Slots:  1 | Mem:   0.02 MB
+RESULT|avx512_c10_t20|throughput|n1024_b1|1024|1|1|1|20|0.000593|86.302802|0.000680|75.257516|0.02
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr:20 | Fwd:    0.0015 ms    75.28 GF/s (iters:50964) | Bwd:    0.0014 ms    78.81 GF/s (iters:53489) | Slots:  1 | Mem:   0.05 MB
+RESULT|avx512_c10_t20|throughput|n2048_b1|2048|1|1|1|20|0.001496|75.281649|0.001429|78.807986|0.05
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr:20 | Fwd:    0.0095 ms    56.31 GF/s (iters:7948) | Bwd:    0.0093 ms    57.34 GF/s (iters:8106) | Slots:  1 | Mem:   0.19 MB
+RESULT|avx512_c10_t20|throughput|n8192_b1|8192|1|1|1|20|0.009456|56.314148|0.009286|57.344239|0.19
+
+Benchmark workload complete.
+
+[DONE] avx512_c10_t20
+
+============================================================
+RUN COMPLETE run01
+============================================================

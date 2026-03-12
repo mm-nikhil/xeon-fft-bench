@@ -1,101 +1,0 @@
-[INFO] VTune: Intel(R) VTune(TM) Profiler 2025.8.0 (build 631311) Command Line Tool
-[INFO] Results dir: /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201
-[INFO] Case: N=8192, batch=16, ISA=AVX512, runs=80, warmup=10
-[INFO] Peak model: cores=10, fma_units/core=2, freq=3.3 GHz => 2112.000000 SP GFLOPS
-[INFO] FMA units/core selection: auto (override with FMA_UNITS_PER_CORE=1 or 2)
-
-############################################################
-# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
-############################################################
-profile_id       : vtune_ports_10t
-profile_desc     : vtune ports 10t
-workload         : throughput
-threads(cli)     : 10
-mkl max threads  : 10
-timed runs       : 80
-warmup runs      : 10
-mem cap (MB)     : 3072.0
-lengths: 8192
-batches: 16
-thread_set: 1,2,4,8,10,20
-batch_scale_set: 1,4,16,64,256
-scale_length     : 16384
-scale_batch      : 64
-scale_threads    : 10
-
-
-====================================================================
-WORKLOAD: throughput (length x batch at fixed thread count)
-====================================================================
-threads=10
-[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr:10 | Fwd:    0.0249 ms   342.59 GF/s | Bwd:    0.0261 ms   327.02 GF/s | Mem:   2.00 MB
-RESULT|vtune_ports_10t|throughput|n8192_b16|8192|1|1|16|10|0.024868|342.592008|0.026053|327.015946|2.00
-
-Benchmark workload complete.
-
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/hotspots_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/hotspots_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/hotspots_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/hotspots_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/threading_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/threading_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/threading_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t10/threading_10t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-
-############################################################
-# FFT BENCHMARK (Intel oneMKL DFTI, 1D, single precision)  #
-############################################################
-profile_id       : vtune_ports_20t
-profile_desc     : vtune ports 20t
-workload         : throughput
-threads(cli)     : 20
-mkl max threads  : 20
-timed runs       : 80
-warmup runs      : 10
-mem cap (MB)     : 3072.0
-lengths: 8192
-batches: 16
-thread_set: 1,2,4,8,10,20
-batch_scale_set: 1,4,16,64,256
-scale_length     : 16384
-scale_batch      : 64
-scale_threads    : 20
-
-
-====================================================================
-WORKLOAD: throughput (length x batch at fixed thread count)
-====================================================================
-threads=20
-[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr:20 | Fwd:    0.0168 ms   506.53 GF/s | Bwd:    0.0169 ms   503.58 GF/s | Mem:   2.00 MB
-RESULT|vtune_ports_20t|throughput|n8192_b16|8192|1|1|16|20|0.016820|506.526504|0.016918|503.579510|2.00
-
-Benchmark workload complete.
-
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/hotspots_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/hotspots_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/hotspots_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/hotspots_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/threading_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/threading_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/threading_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-vtune: Using result path `/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/t20/threading_20t'
-vtune: Executing actions  0 %                                                  vtune: Executing actions  0 % Finalizing results                               vtune: Executing actions 50 % Finalizing results                               vtune: Executing actions 50 % Generating a report                              vtune: Executing actions 50 % Setting data model parameters                    vtune: Executing actions 75 % Setting data model parameters                    vtune: Executing actions 75 % Generating a report                              vtune: Executing actions 100 % Generating a report                             vtune: Executing actions 100 % done                                            
-[DONE] Results written to /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201
-[DONE] See:
-       /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/run_summary.tsv
-       /home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/latest_run/more_batches/20260225_115529/vtune/results/20260225_122201/vtune_collection_status.tsv

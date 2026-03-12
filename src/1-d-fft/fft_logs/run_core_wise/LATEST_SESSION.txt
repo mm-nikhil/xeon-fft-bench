@@ -1,0 +1,1 @@
+/home/nikhil/workspace/xeon-fft-bench/src/1-d-fft/fft_logs/run_core_wise/20260310_113330

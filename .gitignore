@@ -2,5 +2,7 @@ build/
 *.o
 *.out
 src/fft_logs/*
+src/gpu/plots/.venv/
 src/gpu/plots/__pycache__/
+src/gpu/runs/**/__pycache__/
 src/plots/__pycache__/

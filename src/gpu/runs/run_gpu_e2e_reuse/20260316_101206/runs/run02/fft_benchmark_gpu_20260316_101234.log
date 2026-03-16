@@ -1,0 +1,354 @@
+============================================================
+GPU FFT RUN run02
+Date: Mon Mar 16 10:12:34 IST 2026
+Host: aorus
+============================================================
+CONFIG|BENCH_NRUNS|20
+CONFIG|BENCH_WARMUP|5
+CONFIG|BENCH_MAX_MEM_MB|8192
+CONFIG|BENCH_MIN_TOTAL_MS|50
+CONFIG|BENCH_MAX_ADAPT_ITERS|100000000
+CONFIG|BENCH_VALIDATE|1
+CONFIG|BENCH_VALIDATE_TOL|1e-4
+CONFIG|BENCH_VALIDATE_STRICT|1
+CONFIG|BENCH_STREAM_MODE|0
+CONFIG|BENCH_STREAM_TARGET_MB|0
+CONFIG|BENCH_STREAM_MIN_SLOTS|1
+CONFIG|BENCH_STREAM_MAX_SLOTS|1
+CONFIG|THROUGHPUT_LENGTHS|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+CONFIG|THROUGHPUT_BATCHES|1,10,16,150,256,1024
+CONFIG|BENCH_TIMING_SCOPE|e2e_pcie
+CONFIG|BENCH_HOST_BUFFER_MODE|pinned
+PROFILE|gpu_e2e_reuse|cuFFT end-to-end cache-reuse (H2D + FFT + D2H on pinned host buffers)|CUDA_CUFFT|1|throughput|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536|1,10,16,150,256,1024|run_gpu_e2e_reuse
+
+############################################################
+# FFT BENCHMARK (cuFFT, 1D, single precision, E2E PCIe)   #
+############################################################
+profile_id       : gpu_e2e_reuse
+profile_desc     : cuFFT end-to-end cache-reuse (H2D + FFT + D2H on pinned host buffers)
+workload         : throughput
+device_index     : 0
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 50.0
+max adapt iters  : 100000000
+validate         : 1
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 0
+stream target MB : 0.0
+stream min slots : 1
+stream max slots : 1
+mem cap (MB)     : 8192.0
+timing scope     : H2D + cuFFT + D2H
+host buffers     : pinned (cudaMallocHost)
+threads_field    : 1
+lengths: 2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536
+batches: 1,10,16,150,256,1024
+gpu_name         : NVIDIA GeForce RTX 3080
+compute_cap      : 8.6
+sm_count         : 68
+warp_size        : 32
+max_threads_sm   : 1536
+max_threads_blk  : 1024
+global_mem_mb    : 9872.4
+
+
+====================================================================
+WORKLOAD: throughput (length x batch, end-to-end PCIe)
+====================================================================
+threads_field=1
+CHECK|gpu_e2e_reuse|throughput|n2_b1|2|1|1|1|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n2_b1            | Len:      2 | Batch:     1 | Thr: 1 | FwdE2E:    0.0052 ms     0.00 GF/s (iters:9659) | BwdE2E:    0.0053 ms     0.00 GF/s (iters:10026) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n2_b1|2|1|1|1|1|0.005182|0.001930|0.005329|0.001876|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n2_b10|2|1|1|10|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n2_b10           | Len:      2 | Batch:    10 | Thr: 1 | FwdE2E:    0.0054 ms     0.02 GF/s (iters:9402) | BwdE2E:    0.0053 ms     0.02 GF/s (iters:9924) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n2_b10|2|1|1|10|1|0.005353|0.018682|0.005324|0.018784|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n2_b16|2|1|1|16|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n2_b16           | Len:      2 | Batch:    16 | Thr: 1 | FwdE2E:    0.0056 ms     0.03 GF/s (iters:8963) | BwdE2E:    0.0058 ms     0.03 GF/s (iters:8924) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n2_b16|2|1|1|16|1|0.005592|0.028611|0.005806|0.027556|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n2_b150|2|1|1|150|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n2_b150          | Len:      2 | Batch:   150 | Thr: 1 | FwdE2E:    0.0140 ms     0.11 GF/s (iters:5732) | BwdE2E:    0.0144 ms     0.10 GF/s (iters:6386) | Slots:      1 | Mem:     0.01 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n2_b150|2|1|1|150|1|0.013967|0.107393|0.014417|0.104044|0.01|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n2_b256|2|1|1|256|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n2_b256          | Len:      2 | Batch:   256 | Thr: 1 | FwdE2E:    0.0134 ms     0.19 GF/s (iters:6127) | BwdE2E:    0.0147 ms     0.17 GF/s (iters:9528) | Slots:      1 | Mem:     0.02 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n2_b256|2|1|1|256|1|0.013401|0.191027|0.014651|0.174726|0.02|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n2_b1024|2|1|1|1024|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n2_b1024         | Len:      2 | Batch:  1024 | Thr: 1 | FwdE2E:    0.0168 ms     0.61 GF/s (iters:3002) | BwdE2E:    0.0169 ms     0.61 GF/s (iters:3121) | Slots:      1 | Mem:     0.08 MB | Work:    0.02 MB
+RESULT|gpu_e2e_reuse|throughput|n2_b1024|2|1|1|1024|1|0.016755|0.611147|0.016910|0.605557|0.08|1|0.02
+CHECK|gpu_e2e_reuse|throughput|n4_b1|4|1|1|1|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n4_b1            | Len:      4 | Batch:     1 | Thr: 1 | FwdE2E:    0.0063 ms     0.01 GF/s (iters:8337) | BwdE2E:    0.0065 ms     0.01 GF/s (iters:8401) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n4_b1|4|1|1|1|1|0.006275|0.006374|0.006473|0.006179|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n4_b10|4|1|1|10|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n4_b10           | Len:      4 | Batch:    10 | Thr: 1 | FwdE2E:    0.0071 ms     0.06 GF/s (iters:7183) | BwdE2E:    0.0070 ms     0.06 GF/s (iters:7860) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n4_b10|4|1|1|10|1|0.007059|0.056665|0.007012|0.057044|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n4_b16|4|1|1|16|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n4_b16           | Len:      4 | Batch:    16 | Thr: 1 | FwdE2E:    0.0077 ms     0.08 GF/s (iters:6632) | BwdE2E:    0.0077 ms     0.08 GF/s (iters:6684) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n4_b16|4|1|1|16|1|0.007687|0.083258|0.007676|0.083375|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n4_b150|4|1|1|150|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n4_b150          | Len:      4 | Batch:   150 | Thr: 1 | FwdE2E:    0.0159 ms     0.38 GF/s (iters:5098) | BwdE2E:    0.0151 ms     0.40 GF/s (iters:3664) | Slots:      1 | Mem:     0.02 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n4_b150|4|1|1|150|1|0.015935|0.376533|0.015060|0.398394|0.02|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n4_b256|4|1|1|256|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n4_b256          | Len:      4 | Batch:   256 | Thr: 1 | FwdE2E:    0.0144 ms     0.71 GF/s (iters:3610) | BwdE2E:    0.0140 ms     0.73 GF/s (iters:3831) | Slots:      1 | Mem:     0.04 MB | Work:    0.01 MB
+RESULT|gpu_e2e_reuse|throughput|n4_b256|4|1|1|256|1|0.014405|0.710875|0.014029|0.729892|0.04|1|0.01
+CHECK|gpu_e2e_reuse|throughput|n4_b1024|4|1|1|1024|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n4_b1024         | Len:      4 | Batch:  1024 | Thr: 1 | FwdE2E:    0.0180 ms     2.28 GF/s (iters:2856) | BwdE2E:    0.0184 ms     2.23 GF/s (iters:4303) | Slots:      1 | Mem:     0.16 MB | Work:    0.03 MB
+RESULT|gpu_e2e_reuse|throughput|n4_b1024|4|1|1|1024|1|0.017957|2.281042|0.018367|2.230074|0.16|1|0.03
+CHECK|gpu_e2e_reuse|throughput|n8_b1|8|1|1|1|1|6.20513738e-08|7.02886368e-08|1.00000000e-04|PASS
+[run ] n8_b1            | Len:      8 | Batch:     1 | Thr: 1 | FwdE2E:    0.0061 ms     0.02 GF/s (iters:8334) | BwdE2E:    0.0059 ms     0.02 GF/s (iters:8505) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n8_b1|8|1|1|1|1|0.006082|0.019731|0.005896|0.020353|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n8_b10|8|1|1|10|1|3.60109583e-08|8.94069672e-08|1.00000000e-04|PASS
+[run ] n8_b10           | Len:      8 | Batch:    10 | Thr: 1 | FwdE2E:    0.0077 ms     0.16 GF/s (iters:6497) | BwdE2E:    0.0078 ms     0.15 GF/s (iters:6385) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n8_b10|8|1|1|10|1|0.007708|0.155682|0.007846|0.152950|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n8_b16|8|1|1|16|1|4.38265568e-08|8.94069672e-08|1.00000000e-04|PASS
+[run ] n8_b16           | Len:      8 | Batch:    16 | Thr: 1 | FwdE2E:    0.0077 ms     0.25 GF/s (iters:6593) | BwdE2E:    0.0078 ms     0.24 GF/s (iters:6385) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n8_b16|8|1|1|16|1|0.007658|0.250717|0.007847|0.244679|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n8_b150|8|1|1|150|1|4.24883031e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n8_b150          | Len:      8 | Batch:   150 | Thr: 1 | FwdE2E:    0.0155 ms     1.16 GF/s (iters:3897) | BwdE2E:    0.0155 ms     1.16 GF/s (iters:3652) | Slots:      1 | Mem:     0.05 MB | Work:    0.01 MB
+RESULT|gpu_e2e_reuse|throughput|n8_b150|8|1|1|150|1|0.015477|1.163002|0.015484|1.162456|0.05|1|0.01
+CHECK|gpu_e2e_reuse|throughput|n8_b256|8|1|1|256|1|4.37165867e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n8_b256          | Len:      8 | Batch:   256 | Thr: 1 | FwdE2E:    0.0171 ms     1.79 GF/s (iters:4916) | BwdE2E:    0.0172 ms     1.79 GF/s (iters:3132) | Slots:      1 | Mem:     0.08 MB | Work:    0.02 MB
+RESULT|gpu_e2e_reuse|throughput|n8_b256|8|1|1|256|1|0.017148|1.791455|0.017194|1.786674|0.08|1|0.02
+CHECK|gpu_e2e_reuse|throughput|n8_b1024|8|1|1|1024|1|4.41714908e-08|1.78813934e-07|1.00000000e-04|PASS
+[run ] n8_b1024         | Len:      8 | Batch:  1024 | Thr: 1 | FwdE2E:    0.0219 ms     5.60 GF/s (iters:2803) | BwdE2E:    0.0197 ms     6.24 GF/s (iters:2873) | Slots:      1 | Mem:     0.31 MB | Work:    0.06 MB
+RESULT|gpu_e2e_reuse|throughput|n8_b1024|8|1|1|1024|1|0.021941|5.600356|0.019681|6.243613|0.31|1|0.06
+CHECK|gpu_e2e_reuse|throughput|n16_b1|16|1|1|1|1|4.67280632e-08|6.66400187e-08|1.00000000e-04|PASS
+[run ] n16_b1           | Len:     16 | Batch:     1 | Thr: 1 | FwdE2E:    0.0074 ms     0.04 GF/s (iters:6917) | BwdE2E:    0.0073 ms     0.04 GF/s (iters:6867) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n16_b1|16|1|1|1|1|0.007396|0.043269|0.007301|0.043827|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n16_b10|16|1|1|10|1|5.71734228e-08|1.22878123e-07|1.00000000e-04|PASS
+[run ] n16_b10          | Len:     16 | Batch:    10 | Thr: 1 | FwdE2E:    0.0152 ms     0.21 GF/s (iters:4094) | BwdE2E:    0.0144 ms     0.22 GF/s (iters:3617) | Slots:      1 | Mem:     0.01 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n16_b10|16|1|1|10|1|0.015167|0.210988|0.014351|0.222977|0.01|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n16_b16|16|1|1|16|1|6.05693303e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n16_b16          | Len:     16 | Batch:    16 | Thr: 1 | FwdE2E:    0.0154 ms     0.33 GF/s (iters:3837) | BwdE2E:    0.0162 ms     0.32 GF/s (iters:3700) | Slots:      1 | Mem:     0.01 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n16_b16|16|1|1|16|1|0.015374|0.333032|0.016171|0.316612|0.01|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n16_b150|16|1|1|150|1|5.42241366e-08|1.46759418e-07|1.00000000e-04|PASS
+[run ] n16_b150         | Len:     16 | Batch:   150 | Thr: 1 | FwdE2E:    0.0166 ms     2.89 GF/s (iters:3418) | BwdE2E:    0.0173 ms     2.77 GF/s (iters:3044) | Slots:      1 | Mem:     0.09 MB | Work:    0.02 MB
+RESULT|gpu_e2e_reuse|throughput|n16_b150|16|1|1|150|1|0.016635|2.885473|0.017339|2.768372|0.09|1|0.02
+CHECK|gpu_e2e_reuse|throughput|n16_b256|16|1|1|256|1|5.35654400e-08|1.78813934e-07|1.00000000e-04|PASS
+[run ] n16_b256         | Len:     16 | Batch:   256 | Thr: 1 | FwdE2E:    0.0185 ms     4.44 GF/s (iters:2948) | BwdE2E:    0.0201 ms     4.08 GF/s (iters:2679) | Slots:      1 | Mem:     0.16 MB | Work:    0.03 MB
+RESULT|gpu_e2e_reuse|throughput|n16_b256|16|1|1|256|1|0.018466|4.436319|0.020085|4.078625|0.16|1|0.03
+CHECK|gpu_e2e_reuse|throughput|n16_b1024|16|1|1|1024|1|5.41486150e-08|1.78813934e-07|1.00000000e-04|PASS
+[run ] n16_b1024        | Len:     16 | Batch:  1024 | Thr: 1 | FwdE2E:    0.0251 ms    13.06 GF/s (iters:2033) | BwdE2E:    0.0251 ms    13.04 GF/s (iters:2043) | Slots:      1 | Mem:     0.62 MB | Work:    0.12 MB
+RESULT|gpu_e2e_reuse|throughput|n16_b1024|16|1|1|1024|1|0.025083|13.063790|0.025129|13.039919|0.62|1|0.12
+CHECK|gpu_e2e_reuse|throughput|n32_b1|32|1|1|1|1|1.13990442e-07|2.45756246e-07|1.00000000e-04|PASS
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr: 1 | FwdE2E:    0.0077 ms     0.10 GF/s (iters:6481) | BwdE2E:    0.0079 ms     0.10 GF/s (iters:6546) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n32_b1|32|1|1|1|1|0.007722|0.103595|0.007893|0.101355|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n32_b10|32|1|1|10|1|1.04318731e-07|2.14907603e-07|1.00000000e-04|PASS
+[run ] n32_b10          | Len:     32 | Batch:    10 | Thr: 1 | FwdE2E:    0.0164 ms     0.49 GF/s (iters:3494) | BwdE2E:    0.0161 ms     0.50 GF/s (iters:3642) | Slots:      1 | Mem:     0.01 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n32_b10|32|1|1|10|1|0.016368|0.488762|0.016132|0.495922|0.01|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n32_b16|32|1|1|16|1|1.03271200e-07|2.40274005e-07|1.00000000e-04|PASS
+[run ] n32_b16          | Len:     32 | Batch:    16 | Thr: 1 | FwdE2E:    0.0160 ms     0.80 GF/s (iters:3859) | BwdE2E:    0.0158 ms     0.81 GF/s (iters:3643) | Slots:      1 | Mem:     0.02 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n32_b16|32|1|1|16|1|0.015994|0.800294|0.015768|0.811745|0.02|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n32_b150|32|1|1|150|1|1.03383346e-07|2.99509633e-07|1.00000000e-04|PASS
+[run ] n32_b150         | Len:     32 | Batch:   150 | Thr: 1 | FwdE2E:    0.0185 ms     6.49 GF/s (iters:2716) | BwdE2E:    0.0185 ms     6.49 GF/s (iters:2892) | Slots:      1 | Mem:     0.18 MB | Work:    0.04 MB
+RESULT|gpu_e2e_reuse|throughput|n32_b150|32|1|1|150|1|0.018499|6.486703|0.018479|6.493926|0.18|1|0.04
+CHECK|gpu_e2e_reuse|throughput|n32_b256|32|1|1|256|1|1.05362193e-07|2.81154547e-07|1.00000000e-04|PASS
+[run ] n32_b256         | Len:     32 | Batch:   256 | Thr: 1 | FwdE2E:    0.0228 ms     8.99 GF/s (iters:2805) | BwdE2E:    0.0201 ms    10.20 GF/s (iters:2872) | Slots:      1 | Mem:     0.31 MB | Work:    0.06 MB
+RESULT|gpu_e2e_reuse|throughput|n32_b256|32|1|1|256|1|0.022790|8.986348|0.020081|10.198456|0.31|1|0.06
+CHECK|gpu_e2e_reuse|throughput|n32_b1024|32|1|1|1024|1|1.04437506e-07|3.16803033e-07|1.00000000e-04|PASS
+[run ] n32_b1024        | Len:     32 | Batch:  1024 | Thr: 1 | FwdE2E:    0.0376 ms    21.81 GF/s (iters:1349) | BwdE2E:    0.0372 ms    22.01 GF/s (iters:1394) | Slots:      1 | Mem:     1.25 MB | Work:    0.25 MB
+RESULT|gpu_e2e_reuse|throughput|n32_b1024|32|1|1|1024|1|0.037566|21.807141|0.037224|22.007342|1.25|1|0.25
+CHECK|gpu_e2e_reuse|throughput|n64_b1|64|1|1|1|1|8.32402053e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr: 1 | FwdE2E:    0.0078 ms     0.25 GF/s (iters:6570) | BwdE2E:    0.0078 ms     0.24 GF/s (iters:6589) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n64_b1|64|1|1|1|1|0.007826|0.245327|0.007840|0.244885|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n64_b10|64|1|1|10|1|9.06661232e-08|2.02677705e-07|1.00000000e-04|PASS
+[run ] n64_b10          | Len:     64 | Batch:    10 | Thr: 1 | FwdE2E:    0.0157 ms     1.22 GF/s (iters:3468) | BwdE2E:    0.0150 ms     1.28 GF/s (iters:3760) | Slots:      1 | Mem:     0.02 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n64_b10|64|1|1|10|1|0.015682|1.224344|0.015037|1.276891|0.02|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n64_b16|64|1|1|16|1|8.86071071e-08|2.14907603e-07|1.00000000e-04|PASS
+[run ] n64_b16          | Len:     64 | Batch:    16 | Thr: 1 | FwdE2E:    0.0169 ms     1.81 GF/s (iters:3510) | BwdE2E:    0.0167 ms     1.84 GF/s (iters:3642) | Slots:      1 | Mem:     0.04 MB | Work:    0.01 MB
+RESULT|gpu_e2e_reuse|throughput|n64_b16|64|1|1|16|1|0.016932|1.814328|0.016725|1.836792|0.04|1|0.01
+CHECK|gpu_e2e_reuse|throughput|n64_b150|64|1|1|150|1|8.79977224e-08|2.45756246e-07|1.00000000e-04|PASS
+[run ] n64_b150         | Len:     64 | Batch:   150 | Thr: 1 | FwdE2E:    0.0201 ms    14.29 GF/s (iters:2789) | BwdE2E:    0.0233 ms    12.39 GF/s (iters:2320) | Slots:      1 | Mem:     0.37 MB | Work:    0.07 MB
+RESULT|gpu_e2e_reuse|throughput|n64_b150|64|1|1|150|1|0.020147|14.294728|0.023253|12.385730|0.37|1|0.07
+CHECK|gpu_e2e_reuse|throughput|n64_b256|64|1|1|256|1|8.78431456e-08|2.54631154e-07|1.00000000e-04|PASS
+[run ] n64_b256         | Len:     64 | Batch:   256 | Thr: 1 | FwdE2E:    0.0253 ms    19.42 GF/s (iters:2184) | BwdE2E:    0.0252 ms    19.54 GF/s (iters:2039) | Slots:      1 | Mem:     0.62 MB | Work:    0.12 MB
+RESULT|gpu_e2e_reuse|throughput|n64_b256|64|1|1|256|1|0.025313|19.417682|0.025161|19.535233|0.62|1|0.12
+CHECK|gpu_e2e_reuse|throughput|n64_b1024|64|1|1|1024|1|8.76194257e-08|2.66560075e-07|1.00000000e-04|PASS
+[run ] n64_b1024        | Len:     64 | Batch:  1024 | Thr: 1 | FwdE2E:    0.0578 ms    34.00 GF/s (iters:866) | BwdE2E:    0.0579 ms    33.96 GF/s (iters:865) | Slots:      1 | Mem:     2.50 MB | Work:    0.50 MB
+RESULT|gpu_e2e_reuse|throughput|n64_b1024|64|1|1|1024|1|0.057822|34.002042|0.057888|33.963495|2.50|1|0.50
+CHECK|gpu_e2e_reuse|throughput|n128_b1|128|1|1|1|1|1.12463852e-07|1.99920056e-07|1.00000000e-04|PASS
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr: 1 | FwdE2E:    0.0078 ms     0.57 GF/s (iters:6464) | BwdE2E:    0.0078 ms     0.57 GF/s (iters:6472) | Slots:      1 | Mem:     0.00 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n128_b1|128|1|1|1|1|0.007830|0.572168|0.007826|0.572458|0.00|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n128_b10|128|1|1|10|1|1.15441074e-07|2.81154547e-07|1.00000000e-04|PASS
+[run ] n128_b10         | Len:    128 | Batch:    10 | Thr: 1 | FwdE2E:    0.0159 ms     2.81 GF/s (iters:3898) | BwdE2E:    0.0164 ms     2.74 GF/s (iters:5089) | Slots:      1 | Mem:     0.05 MB | Work:    0.01 MB
+RESULT|gpu_e2e_reuse|throughput|n128_b10|128|1|1|10|1|0.015921|2.813964|0.016372|2.736315|0.05|1|0.01
+CHECK|gpu_e2e_reuse|throughput|n128_b16|128|1|1|16|1|1.15037191e-07|2.98023224e-07|1.00000000e-04|PASS
+[run ] n128_b16         | Len:    128 | Batch:    16 | Thr: 1 | FwdE2E:    0.0180 ms     3.99 GF/s (iters:4659) | BwdE2E:    0.0174 ms     4.11 GF/s (iters:3223) | Slots:      1 | Mem:     0.08 MB | Work:    0.02 MB
+RESULT|gpu_e2e_reuse|throughput|n128_b16|128|1|1|16|1|0.017982|3.986248|0.017440|4.109986|0.08|1|0.02
+CHECK|gpu_e2e_reuse|throughput|n128_b150|128|1|1|150|1|1.14409260e-07|3.33200094e-07|1.00000000e-04|PASS
+[run ] n128_b150        | Len:    128 | Batch:   150 | Thr: 1 | FwdE2E:    0.0278 ms    24.17 GF/s (iters:1975) | BwdE2E:    0.0287 ms    23.43 GF/s (iters:1819) | Slots:      1 | Mem:     0.73 MB | Work:    0.15 MB
+RESULT|gpu_e2e_reuse|throughput|n128_b150|128|1|1|150|1|0.027798|24.174624|0.028678|23.432870|0.73|1|0.15
+CHECK|gpu_e2e_reuse|throughput|n128_b256|128|1|1|256|1|1.14612622e-07|3.33200094e-07|1.00000000e-04|PASS
+[run ] n128_b256        | Len:    128 | Batch:   256 | Thr: 1 | FwdE2E:    0.0373 ms    30.75 GF/s (iters:1362) | BwdE2E:    0.0368 ms    31.18 GF/s (iters:1380) | Slots:      1 | Mem:     1.25 MB | Work:    0.25 MB
+RESULT|gpu_e2e_reuse|throughput|n128_b256|128|1|1|256|1|0.037297|30.749976|0.036785|31.178086|1.25|1|0.25
+CHECK|gpu_e2e_reuse|throughput|n128_b1024|128|1|1|1024|1|1.14580896e-07|3.47551816e-07|1.00000000e-04|PASS
+[run ] n128_b1024       | Len:    128 | Batch:  1024 | Thr: 1 | FwdE2E:    0.0992 ms    46.25 GF/s (iters:513) | BwdE2E:    0.0985 ms    46.57 GF/s (iters:528) | Slots:      1 | Mem:     5.00 MB | Work:    1.00 MB
+RESULT|gpu_e2e_reuse|throughput|n128_b1024|128|1|1|1024|1|0.099189|46.250453|0.098513|46.567618|5.00|1|1.00
+CHECK|gpu_e2e_reuse|throughput|n256_b1|256|1|1|1|1|1.33346435e-07|3.62560900e-07|1.00000000e-04|PASS
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr: 1 | FwdE2E:    0.0143 ms     0.71 GF/s (iters:3721) | BwdE2E:    0.0179 ms     0.57 GF/s (iters:3656) | Slots:      1 | Mem:     0.01 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n256_b1|256|1|1|1|1|0.014331|0.714533|0.017918|0.571479|0.01|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n256_b10|256|1|1|10|1|1.40478785e-07|4.21468485e-07|1.00000000e-04|PASS
+[run ] n256_b10         | Len:    256 | Batch:    10 | Thr: 1 | FwdE2E:    0.0166 ms     6.19 GF/s (iters:3050) | BwdE2E:    0.0177 ms     5.77 GF/s (iters:3068) | Slots:      1 | Mem:     0.10 MB | Work:    0.02 MB
+RESULT|gpu_e2e_reuse|throughput|n256_b10|256|1|1|10|1|0.016551|6.186973|0.017735|5.773738|0.10|1|0.02
+CHECK|gpu_e2e_reuse|throughput|n256_b16|256|1|1|16|1|1.40142422e-07|4.21468485e-07|1.00000000e-04|PASS
+[run ] n256_b16         | Len:    256 | Batch:    16 | Thr: 1 | FwdE2E:    0.0206 ms     7.94 GF/s (iters:2793) | BwdE2E:    0.0201 ms     8.14 GF/s (iters:2926) | Slots:      1 | Mem:     0.16 MB | Work:    0.03 MB
+RESULT|gpu_e2e_reuse|throughput|n256_b16|256|1|1|16|1|0.020638|7.938570|0.020129|8.139626|0.16|1|0.03
+CHECK|gpu_e2e_reuse|throughput|n256_b150|256|1|1|150|1|1.38143570e-07|4.53935451e-07|1.00000000e-04|PASS
+[run ] n256_b150        | Len:    256 | Batch:   150 | Thr: 1 | FwdE2E:    0.0411 ms    37.38 GF/s (iters:1217) | BwdE2E:    0.0413 ms    37.23 GF/s (iters:1214) | Slots:      1 | Mem:     1.46 MB | Work:    0.29 MB
+RESULT|gpu_e2e_reuse|throughput|n256_b150|256|1|1|150|1|0.041089|37.382532|0.041255|37.232291|1.46|1|0.29
+CHECK|gpu_e2e_reuse|throughput|n256_b256|256|1|1|256|1|1.38531497e-07|4.55887870e-07|1.00000000e-04|PASS
+[run ] n256_b256        | Len:    256 | Batch:   256 | Thr: 1 | FwdE2E:    0.0574 ms    45.64 GF/s (iters:873) | BwdE2E:    0.0574 ms    45.67 GF/s (iters:873) | Slots:      1 | Mem:     2.50 MB | Work:    0.50 MB
+RESULT|gpu_e2e_reuse|throughput|n256_b256|256|1|1|256|1|0.057439|45.639019|0.057400|45.669590|2.50|1|0.50
+CHECK|gpu_e2e_reuse|throughput|n256_b1024|256|1|1|1024|1|1.39151790e-07|4.99577958e-07|1.00000000e-04|PASS
+[run ] n256_b1024       | Len:    256 | Batch:  1024 | Thr: 1 | FwdE2E:    0.1767 ms    59.35 GF/s (iters:284) | BwdE2E:    0.1765 ms    59.40 GF/s (iters:285) | Slots:      1 | Mem:    10.00 MB | Work:    2.00 MB
+RESULT|gpu_e2e_reuse|throughput|n256_b1024|256|1|1|1024|1|0.176664|59.354366|0.176530|59.399471|10.00|1|2.00
+CHECK|gpu_e2e_reuse|throughput|n512_b1|512|1|1|1|1|2.87155450e-07|6.75829677e-07|1.00000000e-04|PASS
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr: 1 | FwdE2E:    0.0159 ms     1.45 GF/s (iters:3693) | BwdE2E:    0.0155 ms     1.48 GF/s (iters:3654) | Slots:      1 | Mem:     0.02 MB | Work:    0.00 MB
+RESULT|gpu_e2e_reuse|throughput|n512_b1|512|1|1|1|1|0.015943|1.445142|0.015539|1.482708|0.02|1|0.00
+CHECK|gpu_e2e_reuse|throughput|n512_b10|512|1|1|10|1|2.76071776e-07|8.26443709e-07|1.00000000e-04|PASS
+[run ] n512_b10         | Len:    512 | Batch:    10 | Thr: 1 | FwdE2E:    0.0206 ms    11.20 GF/s (iters:2980) | BwdE2E:    0.0199 ms    11.58 GF/s (iters:2693) | Slots:      1 | Mem:     0.20 MB | Work:    0.04 MB
+RESULT|gpu_e2e_reuse|throughput|n512_b10|512|1|1|10|1|0.020568|11.201627|0.019896|11.580257|0.20|1|0.04
+CHECK|gpu_e2e_reuse|throughput|n512_b16|512|1|1|16|1|2.75528911e-07|7.61564513e-07|1.00000000e-04|PASS
+[run ] n512_b16         | Len:    512 | Batch:    16 | Thr: 1 | FwdE2E:    0.0230 ms    16.06 GF/s (iters:2189) | BwdE2E:    0.0204 ms    18.03 GF/s (iters:2866) | Slots:      1 | Mem:     0.31 MB | Work:    0.06 MB
+RESULT|gpu_e2e_reuse|throughput|n512_b16|512|1|1|16|1|0.022952|16.061276|0.020450|18.026654|0.31|1|0.06
+CHECK|gpu_e2e_reuse|throughput|n512_b150|512|1|1|150|1|2.73369506e-07|8.86086747e-07|1.00000000e-04|PASS
+[run ] n512_b150        | Len:    512 | Batch:   150 | Thr: 1 | FwdE2E:    0.0667 ms    51.85 GF/s (iters:751) | BwdE2E:    0.0671 ms    51.48 GF/s (iters:765) | Slots:      1 | Mem:     2.93 MB | Work:    0.59 MB
+RESULT|gpu_e2e_reuse|throughput|n512_b150|512|1|1|150|1|0.066660|51.845180|0.067128|51.484046|2.93|1|0.59
+CHECK|gpu_e2e_reuse|throughput|n512_b256|512|1|1|256|1|2.72865748e-07|8.66320244e-07|1.00000000e-04|PASS
+[run ] n512_b256        | Len:    512 | Batch:   256 | Thr: 1 | FwdE2E:    0.1022 ms    57.70 GF/s (iters:505) | BwdE2E:    0.1028 ms    57.38 GF/s (iters:504) | Slots:      1 | Mem:     5.00 MB | Work:    1.00 MB
+RESULT|gpu_e2e_reuse|throughput|n512_b256|512|1|1|256|1|0.102229|57.696434|0.102788|57.382573|5.00|1|1.00
+CHECK|gpu_e2e_reuse|throughput|n512_b1024|512|1|1|1024|1|2.73560518e-07|9.09825416e-07|1.00000000e-04|PASS
+[run ] n512_b1024       | Len:    512 | Batch:  1024 | Thr: 1 | FwdE2E:    0.3502 ms    67.38 GF/s (iters:143) | BwdE2E:    0.3502 ms    67.38 GF/s (iters:143) | Slots:      1 | Mem:    20.00 MB | Work:    4.00 MB
+RESULT|gpu_e2e_reuse|throughput|n512_b1024|512|1|1|1024|1|0.350157|67.378149|0.350169|67.375911|20.00|1|4.00
+CHECK|gpu_e2e_reuse|throughput|n1024_b1|1024|1|1|1|1|2.26410131e-07|7.27567411e-07|1.00000000e-04|PASS
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 1 | FwdE2E:    0.0159 ms     3.23 GF/s (iters:3352) | BwdE2E:    0.0141 ms     3.63 GF/s (iters:3614) | Slots:      1 | Mem:     0.04 MB | Work:    0.01 MB
+RESULT|gpu_e2e_reuse|throughput|n1024_b1|1024|1|1|1|1|0.015870|3.226249|0.014100|3.631123|0.04|1|0.01
+CHECK|gpu_e2e_reuse|throughput|n1024_b10|1024|1|1|10|1|2.21094462e-07|6.79597512e-07|1.00000000e-04|PASS
+[run ] n1024_b10        | Len:   1024 | Batch:    10 | Thr: 1 | FwdE2E:    0.0236 ms    21.67 GF/s (iters:2514) | BwdE2E:    0.0240 ms    21.30 GF/s (iters:2087) | Slots:      1 | Mem:     0.39 MB | Work:    0.08 MB
+RESULT|gpu_e2e_reuse|throughput|n1024_b10|1024|1|1|10|1|0.023631|21.666366|0.024042|21.296176|0.39|1|0.08
+CHECK|gpu_e2e_reuse|throughput|n1024_b16|1024|1|1|16|1|2.17711025e-07|6.57848717e-07|1.00000000e-04|PASS
+[run ] n1024_b16        | Len:   1024 | Batch:    16 | Thr: 1 | FwdE2E:    0.0253 ms    32.36 GF/s (iters:2074) | BwdE2E:    0.0254 ms    32.31 GF/s (iters:1990) | Slots:      1 | Mem:     0.62 MB | Work:    0.12 MB
+RESULT|gpu_e2e_reuse|throughput|n1024_b16|1024|1|1|16|1|0.025316|32.359479|0.025353|32.311363|0.62|1|0.12
+CHECK|gpu_e2e_reuse|throughput|n1024_b150|1024|1|1|150|1|2.19768866e-07|7.74860382e-07|1.00000000e-04|PASS
+[run ] n1024_b150       | Len:   1024 | Batch:   150 | Thr: 1 | FwdE2E:    0.1140 ms    67.39 GF/s (iters:440) | BwdE2E:    0.1141 ms    67.32 GF/s (iters:439) | Slots:      1 | Mem:     5.86 MB | Work:    1.17 MB
+RESULT|gpu_e2e_reuse|throughput|n1024_b150|1024|1|1|150|1|0.113969|67.386650|0.114081|67.320661|5.86|1|1.17
+CHECK|gpu_e2e_reuse|throughput|n1024_b256|1024|1|1|256|1|2.19952787e-07|8.21627111e-07|1.00000000e-04|PASS
+[run ] n1024_b256       | Len:   1024 | Batch:   256 | Thr: 1 | FwdE2E:    0.1793 ms    73.10 GF/s (iters:279) | BwdE2E:    0.1795 ms    73.03 GF/s (iters:279) | Slots:      1 | Mem:    10.00 MB | Work:    2.00 MB
+RESULT|gpu_e2e_reuse|throughput|n1024_b256|1024|1|1|256|1|0.179316|73.095464|0.179482|73.027875|10.00|1|2.00
+CHECK|gpu_e2e_reuse|throughput|n1024_b1024|1024|1|1|1024|1|2.21083304e-07|8.80052034e-07|1.00000000e-04|PASS
+[run ] n1024_b1024      | Len:   1024 | Batch:  1024 | Thr: 1 | FwdE2E:    0.6696 ms    78.30 GF/s (iters:75) | BwdE2E:    0.6694 ms    78.32 GF/s (iters:75) | Slots:      1 | Mem:    40.00 MB | Work:    8.00 MB
+RESULT|gpu_e2e_reuse|throughput|n1024_b1024|1024|1|1|1024|1|0.669594|78.299386|0.669422|78.319494|40.00|1|8.00
+CHECK|gpu_e2e_reuse|throughput|n2048_b1|2048|1|1|1|1|2.00081709e-07|5.62309094e-07|1.00000000e-04|PASS
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 1 | FwdE2E:    0.0183 ms     6.16 GF/s (iters:3157) | BwdE2E:    0.0180 ms     6.24 GF/s (iters:3090) | Slots:      1 | Mem:     0.08 MB | Work:    0.02 MB
+RESULT|gpu_e2e_reuse|throughput|n2048_b1|2048|1|1|1|1|0.018294|6.157256|0.018045|6.242159|0.08|1|0.02
+CHECK|gpu_e2e_reuse|throughput|n2048_b10|2048|1|1|10|1|1.93957890e-07|5.93853807e-07|1.00000000e-04|PASS
+[run ] n2048_b10        | Len:   2048 | Batch:    10 | Thr: 1 | FwdE2E:    0.0323 ms    34.83 GF/s (iters:1661) | BwdE2E:    0.0318 ms    35.45 GF/s (iters:1661) | Slots:      1 | Mem:     0.78 MB | Work:    0.16 MB
+RESULT|gpu_e2e_reuse|throughput|n2048_b10|2048|1|1|10|1|0.032343|34.826489|0.031776|35.447923|0.78|1|0.16
+CHECK|gpu_e2e_reuse|throughput|n2048_b16|2048|1|1|16|1|1.94348208e-07|6.14390615e-07|1.00000000e-04|PASS
+[run ] n2048_b16        | Len:   2048 | Batch:    16 | Thr: 1 | FwdE2E:    0.0399 ms    45.19 GF/s (iters:1257) | BwdE2E:    0.0396 ms    45.54 GF/s (iters:1306) | Slots:      1 | Mem:     1.25 MB | Work:    0.25 MB
+RESULT|gpu_e2e_reuse|throughput|n2048_b16|2048|1|1|16|1|0.039877|45.194754|0.039574|45.541234|1.25|1|0.25
+CHECK|gpu_e2e_reuse|throughput|n2048_b150|2048|1|1|150|1|1.94500857e-07|7.20205663e-07|1.00000000e-04|PASS
+[run ] n2048_b150       | Len:   2048 | Batch:   150 | Thr: 1 | FwdE2E:    0.2155 ms    78.39 GF/s (iters:232) | BwdE2E:    0.2150 ms    78.59 GF/s (iters:233) | Slots:      1 | Mem:    11.72 MB | Work:    2.34 MB
+RESULT|gpu_e2e_reuse|throughput|n2048_b150|2048|1|1|150|1|0.215526|78.394432|0.214989|78.590048|11.72|1|2.34
+CHECK|gpu_e2e_reuse|throughput|n2048_b256|2048|1|1|256|1|1.94579555e-07|8.52367261e-07|1.00000000e-04|PASS
+[run ] n2048_b256       | Len:   2048 | Batch:   256 | Thr: 1 | FwdE2E:    0.3540 ms    81.47 GF/s (iters:142) | BwdE2E:    0.3529 ms    81.71 GF/s (iters:142) | Slots:      1 | Mem:    20.00 MB | Work:    4.00 MB
+RESULT|gpu_e2e_reuse|throughput|n2048_b256|2048|1|1|256|1|0.353965|81.465265|0.352904|81.710126|20.00|1|4.00
+CHECK|gpu_e2e_reuse|throughput|n2048_b1024|2048|1|1|1024|1|1.94242168e-07|8.03039877e-07|1.00000000e-04|PASS
+[run ] n2048_b1024      | Len:   2048 | Batch:  1024 | Thr: 1 | FwdE2E:    1.3309 ms    86.66 GF/s (iters:38) | BwdE2E:    1.3297 ms    86.75 GF/s (iters:38) | Slots:      1 | Mem:    80.00 MB | Work:   16.00 MB
+RESULT|gpu_e2e_reuse|throughput|n2048_b1024|2048|1|1|1024|1|1.330931|86.663639|1.329654|86.746905|80.00|1|16.00
+CHECK|gpu_e2e_reuse|throughput|n4096_b1|4096|1|1|1|1|2.05589312e-07|6.50892546e-07|1.00000000e-04|PASS
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr: 1 | FwdE2E:    0.0196 ms    12.51 GF/s (iters:2900) | BwdE2E:    0.0213 ms    11.56 GF/s (iters:2857) | Slots:      1 | Mem:     0.16 MB | Work:    0.03 MB
+RESULT|gpu_e2e_reuse|throughput|n4096_b1|4096|1|1|1|1|0.019639|12.513604|0.021263|11.558186|0.16|1|0.03
+CHECK|gpu_e2e_reuse|throughput|n4096_b10|4096|1|1|10|1|2.01729784e-07|6.33606065e-07|1.00000000e-04|PASS
+[run ] n4096_b10        | Len:   4096 | Batch:    10 | Thr: 1 | FwdE2E:    0.0446 ms    55.08 GF/s (iters:1126) | BwdE2E:    0.0443 ms    55.45 GF/s (iters:1135) | Slots:      1 | Mem:     1.56 MB | Work:    0.31 MB
+RESULT|gpu_e2e_reuse|throughput|n4096_b10|4096|1|1|10|1|0.044617|55.081783|0.044320|55.450768|1.56|1|0.31
+CHECK|gpu_e2e_reuse|throughput|n4096_b16|4096|1|1|16|1|2.01618231e-07|7.37268739e-07|1.00000000e-04|PASS
+[run ] n4096_b16        | Len:   4096 | Batch:    16 | Thr: 1 | FwdE2E:    0.0599 ms    65.64 GF/s (iters:837) | BwdE2E:    0.0597 ms    65.85 GF/s (iters:840) | Slots:      1 | Mem:     2.50 MB | Work:    0.50 MB
+RESULT|gpu_e2e_reuse|throughput|n4096_b16|4096|1|1|16|1|0.059904|65.640985|0.059714|65.850075|2.50|1|0.50
+CHECK|gpu_e2e_reuse|throughput|n4096_b150|4096|1|1|150|1|2.02003965e-07|7.69252151e-07|1.00000000e-04|PASS
+[run ] n4096_b150       | Len:   4096 | Batch:   150 | Thr: 1 | FwdE2E:    0.4002 ms    92.12 GF/s (iters:125) | BwdE2E:    0.4004 ms    92.07 GF/s (iters:126) | Slots:      1 | Mem:    23.44 MB | Work:    4.69 MB
+RESULT|gpu_e2e_reuse|throughput|n4096_b150|4096|1|1|150|1|0.400185|92.117431|0.400410|92.065716|23.44|1|4.69
+CHECK|gpu_e2e_reuse|throughput|n4096_b256|4096|1|1|256|1|2.02113601e-07|7.41023824e-07|1.00000000e-04|PASS
+[run ] n4096_b256       | Len:   4096 | Batch:   256 | Thr: 1 | FwdE2E:    0.6657 ms    94.51 GF/s (iters:76) | BwdE2E:    0.6666 ms    94.38 GF/s (iters:76) | Slots:      1 | Mem:    40.00 MB | Work:    8.00 MB
+RESULT|gpu_e2e_reuse|throughput|n4096_b256|4096|1|1|256|1|0.665679|94.511834|0.666607|94.380322|40.00|1|8.00
+CHECK|gpu_e2e_reuse|throughput|n4096_b1024|4096|1|1|1024|1|2.02711366e-07|7.99680225e-07|1.00000000e-04|PASS
+[run ] n4096_b1024      | Len:   4096 | Batch:  1024 | Thr: 1 | FwdE2E:    2.6247 ms    95.88 GF/s (iters:20) | BwdE2E:    2.6239 ms    95.91 GF/s (iters:20) | Slots:      1 | Mem:   160.00 MB | Work:   32.00 MB
+RESULT|gpu_e2e_reuse|throughput|n4096_b1024|4096|1|1|1024|1|2.624730|95.879685|2.623877|95.910846|160.00|1|32.00
+CHECK|gpu_e2e_reuse|throughput|n8192_b1|8192|1|1|1|1|3.09557456e-07|9.12262670e-07|1.00000000e-04|PASS
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 1 | FwdE2E:    0.0258 ms    20.66 GF/s (iters:2130) | BwdE2E:    0.0256 ms    20.80 GF/s (iters:2019) | Slots:      1 | Mem:     0.31 MB | Work:    0.06 MB
+RESULT|gpu_e2e_reuse|throughput|n8192_b1|8192|1|1|1|1|0.025772|20.661348|0.025594|20.804882|0.31|1|0.06
+CHECK|gpu_e2e_reuse|throughput|n8192_b10|8192|1|1|10|1|3.14880080e-07|1.05388193e-06|1.00000000e-04|PASS
+[run ] n8192_b10        | Len:   8192 | Batch:    10 | Thr: 1 | FwdE2E:    0.0738 ms    72.18 GF/s (iters:681) | BwdE2E:    0.0738 ms    72.15 GF/s (iters:679) | Slots:      1 | Mem:     3.12 MB | Work:    0.62 MB
+RESULT|gpu_e2e_reuse|throughput|n8192_b10|8192|1|1|10|1|0.073768|72.183165|0.073799|72.152949|3.12|1|0.62
+CHECK|gpu_e2e_reuse|throughput|n8192_b16|8192|1|1|16|1|3.14202605e-07|1.03305464e-06|1.00000000e-04|PASS
+[run ] n8192_b16        | Len:   8192 | Batch:    16 | Thr: 1 | FwdE2E:    0.1056 ms    80.69 GF/s (iters:486) | BwdE2E:    0.1048 ms    81.26 GF/s (iters:484) | Slots:      1 | Mem:     5.00 MB | Work:    1.00 MB
+RESULT|gpu_e2e_reuse|throughput|n8192_b16|8192|1|1|16|1|0.105585|80.690360|0.104846|81.259337|5.00|1|1.00
+CHECK|gpu_e2e_reuse|throughput|n8192_b150|8192|1|1|150|1|3.12093591e-07|1.19097478e-06|1.00000000e-04|PASS
+[run ] n8192_b150       | Len:   8192 | Batch:   150 | Thr: 1 | FwdE2E:    0.7932 ms   100.69 GF/s (iters:64) | BwdE2E:    0.7917 ms   100.88 GF/s (iters:64) | Slots:      1 | Mem:    46.88 MB | Work:    9.38 MB
+RESULT|gpu_e2e_reuse|throughput|n8192_b150|8192|1|1|150|1|0.793229|100.692236|0.791721|100.884025|46.88|1|9.38
+CHECK|gpu_e2e_reuse|throughput|n8192_b256|8192|1|1|256|1|3.13801871e-07|1.16076124e-06|1.00000000e-04|PASS
+[run ] n8192_b256       | Len:   8192 | Batch:   256 | Thr: 1 | FwdE2E:    1.3304 ms   102.46 GF/s (iters:38) | BwdE2E:    1.3261 ms   102.79 GF/s (iters:38) | Slots:      1 | Mem:    80.00 MB | Work:   16.00 MB
+RESULT|gpu_e2e_reuse|throughput|n8192_b256|8192|1|1|256|1|1.330439|102.458594|1.326098|102.793933|80.00|1|16.00
+CHECK|gpu_e2e_reuse|throughput|n8192_b1024|8192|1|1|1024|1|3.13726032e-07|1.37292995e-06|1.00000000e-04|PASS
+[run ] n8192_b1024      | Len:   8192 | Batch:  1024 | Thr: 1 | FwdE2E:    5.4387 ms   100.26 GF/s (iters:20) | BwdE2E:    5.4389 ms   100.25 GF/s (iters:20) | Slots:      1 | Mem:   320.00 MB | Work:   64.00 MB
+RESULT|gpu_e2e_reuse|throughput|n8192_b1024|8192|1|1|1024|1|5.438694|100.255591|5.438875|100.252258|320.00|1|64.00
+CHECK|gpu_e2e_reuse|throughput|n16384_b1|16384|1|1|1|1|2.11460041e-07|7.91867391e-07|1.00000000e-04|PASS
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr: 1 | FwdE2E:    0.0328 ms    34.95 GF/s (iters:1590) | BwdE2E:    0.0345 ms    33.27 GF/s (iters:1501) | Slots:      1 | Mem:     0.62 MB | Work:    0.12 MB
+RESULT|gpu_e2e_reuse|throughput|n16384_b1|16384|1|1|1|1|0.032819|34.945591|0.034467|33.274823|0.62|1|0.12
+CHECK|gpu_e2e_reuse|throughput|n16384_b10|16384|1|1|10|1|2.11957488e-07|7.95225147e-07|1.00000000e-04|PASS
+[run ] n16384_b10       | Len:  16384 | Batch:    10 | Thr: 1 | FwdE2E:    0.1253 ms    91.51 GF/s (iters:400) | BwdE2E:    0.1252 ms    91.62 GF/s (iters:402) | Slots:      1 | Mem:     6.25 MB | Work:    1.25 MB
+RESULT|gpu_e2e_reuse|throughput|n16384_b10|16384|1|1|10|1|0.125331|91.507884|0.125175|91.622357|6.25|1|1.25
+CHECK|gpu_e2e_reuse|throughput|n16384_b16|16384|1|1|16|1|2.11953371e-07|8.94069672e-07|1.00000000e-04|PASS
+[run ] n16384_b16       | Len:  16384 | Batch:    16 | Thr: 1 | FwdE2E:    0.1870 ms    98.15 GF/s (iters:268) | BwdE2E:    0.1868 ms    98.23 GF/s (iters:269) | Slots:      1 | Mem:    10.00 MB | Work:    2.00 MB
+RESULT|gpu_e2e_reuse|throughput|n16384_b16|16384|1|1|16|1|0.186960|98.149828|0.186808|98.229674|10.00|1|2.00
+CHECK|gpu_e2e_reuse|throughput|n16384_b150|16384|1|1|150|1|2.60702227e-07|1.04648172e-06|1.00000000e-04|PASS
+[run ] n16384_b150      | Len:  16384 | Batch:   150 | Thr: 1 | FwdE2E:    1.5803 ms   108.86 GF/s (iters:32) | BwdE2E:    1.5788 ms   108.96 GF/s (iters:32) | Slots:      1 | Mem:    93.75 MB | Work:   18.75 MB
+RESULT|gpu_e2e_reuse|throughput|n16384_b150|16384|1|1|150|1|1.580349|108.856970|1.578826|108.961979|93.75|1|18.75
+CHECK|gpu_e2e_reuse|throughput|n16384_b256|16384|1|1|256|1|2.61160360e-07|1.07311641e-06|1.00000000e-04|PASS
+[run ] n16384_b256      | Len:  16384 | Batch:   256 | Thr: 1 | FwdE2E:    2.7057 ms   108.51 GF/s (iters:20) | BwdE2E:    2.7027 ms   108.63 GF/s (iters:20) | Slots:      1 | Mem:   160.00 MB | Work:   32.00 MB
+RESULT|gpu_e2e_reuse|throughput|n16384_b256|16384|1|1|256|1|2.705683|108.512810|2.702733|108.631262|160.00|1|32.00
+CHECK|gpu_e2e_reuse|throughput|n16384_b1024|16384|1|1|1024|1|2.60579200e-07|1.24038182e-06|1.00000000e-04|PASS
+[run ] n16384_b1024     | Len:  16384 | Batch:  1024 | Thr: 1 | FwdE2E:   10.8657 ms   108.08 GF/s (iters:20) | BwdE2E:   10.8615 ms   108.13 GF/s (iters:20) | Slots:      1 | Mem:   640.00 MB | Work:  128.00 MB
+RESULT|gpu_e2e_reuse|throughput|n16384_b1024|16384|1|1|1024|1|10.865749|108.083222|10.861546|108.125047|640.00|1|128.00
+CHECK|gpu_e2e_reuse|throughput|n32768_b1|32768|1|1|1|1|2.19463275e-07|6.95103633e-07|1.00000000e-04|PASS
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr: 1 | FwdE2E:    0.0433 ms    56.71 GF/s (iters:1162) | BwdE2E:    0.0431 ms    56.98 GF/s (iters:1174) | Slots:      1 | Mem:     1.25 MB | Work:    0.25 MB
+RESULT|gpu_e2e_reuse|throughput|n32768_b1|32768|1|1|1|1|0.043337|56.708464|0.043130|56.981215|1.25|1|0.25
+CHECK|gpu_e2e_reuse|throughput|n32768_b10|32768|1|1|10|1|2.20889281e-07|7.99680225e-07|1.00000000e-04|PASS
+[run ] n32768_b10       | Len:  32768 | Batch:    10 | Thr: 1 | FwdE2E:    0.2357 ms   104.28 GF/s (iters:213) | BwdE2E:    0.2368 ms   103.79 GF/s (iters:212) | Slots:      1 | Mem:    12.50 MB | Work:    2.50 MB
+RESULT|gpu_e2e_reuse|throughput|n32768_b10|32768|1|1|10|1|0.235665|104.283435|0.236788|103.789212|12.50|1|2.50
+CHECK|gpu_e2e_reuse|throughput|n32768_b16|32768|1|1|16|1|2.21113349e-07|8.28054189e-07|1.00000000e-04|PASS
+[run ] n32768_b16       | Len:  32768 | Batch:    16 | Thr: 1 | FwdE2E:    0.3689 ms   106.60 GF/s (iters:136) | BwdE2E:    0.3693 ms   106.48 GF/s (iters:136) | Slots:      1 | Mem:    20.00 MB | Work:    4.00 MB
+RESULT|gpu_e2e_reuse|throughput|n32768_b16|32768|1|1|16|1|0.368855|106.604476|0.369285|106.480378|20.00|1|4.00
+CHECK|gpu_e2e_reuse|throughput|n32768_b150|32768|1|1|150|1|2.20462240e-07|1.04095037e-06|1.00000000e-04|PASS
+[run ] n32768_b150      | Len:  32768 | Batch:   150 | Thr: 1 | FwdE2E:    3.3535 ms   109.93 GF/s (iters:20) | BwdE2E:    3.3510 ms   110.01 GF/s (iters:20) | Slots:      1 | Mem:   187.50 MB | Work:   37.50 MB
+RESULT|gpu_e2e_reuse|throughput|n32768_b150|32768|1|1|150|1|3.353538|109.925705|3.351008|110.008695|187.50|1|37.50
+CHECK|gpu_e2e_reuse|throughput|n32768_b256|32768|1|1|256|1|2.20052556e-07|9.33436141e-07|1.00000000e-04|PASS
+[run ] n32768_b256      | Len:  32768 | Batch:   256 | Thr: 1 | FwdE2E:    5.6636 ms   111.09 GF/s (iters:20) | BwdE2E:    5.6689 ms   110.98 GF/s (iters:20) | Slots:      1 | Mem:   320.00 MB | Work:   64.00 MB
+RESULT|gpu_e2e_reuse|throughput|n32768_b256|32768|1|1|256|1|5.663589|111.086032|5.668934|110.981284|320.00|1|64.00
+CHECK|gpu_e2e_reuse|throughput|n32768_b1024|32768|1|1|1024|1|2.20132787e-07|9.92018996e-07|1.00000000e-04|PASS
+[run ] n32768_b1024     | Len:  32768 | Batch:  1024 | Thr: 1 | FwdE2E:   22.4613 ms   112.04 GF/s (iters:20) | BwdE2E:   22.4235 ms   112.23 GF/s (iters:20) | Slots:      1 | Mem:  1280.00 MB | Work:  256.00 MB
+RESULT|gpu_e2e_reuse|throughput|n32768_b1024|32768|1|1|1024|1|22.461259|112.041019|22.423494|112.229718|1280.00|1|256.00
+CHECK|gpu_e2e_reuse|throughput|n65536_b1|65536|1|1|1|1|2.26633256e-07|6.88040041e-07|1.00000000e-04|PASS
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr: 1 | FwdE2E:    0.0630 ms    83.27 GF/s (iters:803) | BwdE2E:    0.0629 ms    83.32 GF/s (iters:797) | Slots:      1 | Mem:     2.50 MB | Work:    0.50 MB
+RESULT|gpu_e2e_reuse|throughput|n65536_b1|65536|1|1|1|1|0.062964|83.268369|0.062923|83.321889|2.50|1|0.50
+CHECK|gpu_e2e_reuse|throughput|n65536_b10|65536|1|1|10|1|2.25875298e-07|7.74860382e-07|1.00000000e-04|PASS
+[run ] n65536_b10       | Len:  65536 | Batch:    10 | Thr: 1 | FwdE2E:    0.4482 ms   116.99 GF/s (iters:112) | BwdE2E:    0.4485 ms   116.89 GF/s (iters:112) | Slots:      1 | Mem:    25.00 MB | Work:    5.00 MB
+RESULT|gpu_e2e_reuse|throughput|n65536_b10|65536|1|1|10|1|0.448163|116.985892|0.448535|116.889019|25.00|1|5.00
+CHECK|gpu_e2e_reuse|throughput|n65536_b16|65536|1|1|16|1|2.25235719e-07|8.86086747e-07|1.00000000e-04|PASS
+[run ] n65536_b16       | Len:  65536 | Batch:    16 | Thr: 1 | FwdE2E:    0.7265 ms   115.47 GF/s (iters:69) | BwdE2E:    0.7256 ms   115.61 GF/s (iters:69) | Slots:      1 | Mem:    40.00 MB | Work:    8.00 MB
+RESULT|gpu_e2e_reuse|throughput|n65536_b16|65536|1|1|16|1|0.726503|115.465643|0.725626|115.605195|40.00|1|8.00
+CHECK|gpu_e2e_reuse|throughput|n65536_b150|65536|1|1|150|1|2.25971201e-07|8.96549759e-07|1.00000000e-04|PASS
+[run ] n65536_b150      | Len:  65536 | Batch:   150 | Thr: 1 | FwdE2E:    6.6577 ms   118.12 GF/s (iters:20) | BwdE2E:    6.6491 ms   118.28 GF/s (iters:20) | Slots:      1 | Mem:   375.00 MB | Work:   75.00 MB
+RESULT|gpu_e2e_reuse|throughput|n65536_b150|65536|1|1|150|1|6.657677|118.124090|6.649144|118.275676|375.00|1|75.00
+CHECK|gpu_e2e_reuse|throughput|n65536_b256|65536|1|1|256|1|2.25613146e-07|8.30196636e-07|1.00000000e-04|PASS
+[run ] n65536_b256      | Len:  65536 | Batch:   256 | Thr: 1 | FwdE2E:   11.1464 ms   120.41 GF/s (iters:20) | BwdE2E:   11.1348 ms   120.54 GF/s (iters:20) | Slots:      1 | Mem:   640.00 MB | Work:  128.00 MB
+RESULT|gpu_e2e_reuse|throughput|n65536_b256|65536|1|1|256|1|11.146410|120.413418|11.134762|120.539380|640.00|1|128.00
+CHECK|gpu_e2e_reuse|throughput|n65536_b1024|65536|1|1|1024|1|2.25714047e-07|9.09825416e-07|1.00000000e-04|PASS
+[run ] n65536_b1024     | Len:  65536 | Batch:  1024 | Thr: 1 | FwdE2E:   45.1156 ms   119.00 GF/s (iters:20) | BwdE2E:   45.1016 ms   119.04 GF/s (iters:20) | Slots:      1 | Mem:  2560.00 MB | Work:  512.00 MB
+RESULT|gpu_e2e_reuse|throughput|n65536_b1024|65536|1|1|1024|1|45.115634|118.998862|45.101645|119.035772|2560.00|1|512.00
+
+Benchmark workload complete.
+
+============================================================
+RUN COMPLETE run02
+============================================================

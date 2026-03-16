@@ -1,0 +1,4 @@
+run_id	log_path	report_path
+run01	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_noreuse/20260313_121932/runs/run01/fft_benchmark_gpu_20260313_121933.log	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_noreuse/20260313_121932/runs/run01/fft_benchmark_gpu_20260313_121933.report.md
+run02	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_noreuse/20260313_121932/runs/run02/fft_benchmark_gpu_20260313_122012.log	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_noreuse/20260313_121932/runs/run02/fft_benchmark_gpu_20260313_122012.report.md
+run03	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_noreuse/20260313_121932/runs/run03/fft_benchmark_gpu_20260313_122052.log	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_noreuse/20260313_121932/runs/run03/fft_benchmark_gpu_20260313_122052.report.md

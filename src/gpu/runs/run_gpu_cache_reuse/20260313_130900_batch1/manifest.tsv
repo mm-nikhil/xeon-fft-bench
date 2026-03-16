@@ -1,0 +1,4 @@
+run_id	log_path	report_path
+run01	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_reuse/20260313_130900_batch1/runs/run01/fft_benchmark_gpu_20260313_123835.log	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_reuse/20260313_130900_batch1/runs/run01/fft_benchmark_gpu_20260313_123835.report.md
+run02	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_reuse/20260313_130900_batch1/runs/run02/fft_benchmark_gpu_20260313_123839.log	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_reuse/20260313_130900_batch1/runs/run02/fft_benchmark_gpu_20260313_123839.report.md
+run03	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_reuse/20260313_130900_batch1/runs/run03/fft_benchmark_gpu_20260313_123844.log	/home/nikhil/workspace/xeon-fft-bench/src/gpu/runs/run_gpu_cache_reuse/20260313_130900_batch1/runs/run03/fft_benchmark_gpu_20260313_123844.report.md

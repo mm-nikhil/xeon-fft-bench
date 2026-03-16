@@ -1044,7 +1044,7 @@ int main(void)
                                   "2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536",
                                   lengths,
                                   MAX_LIST,
-                                  2,
+                                  1,
                                   1 << 26);
     int n_batches = load_int_list("BENCH_BATCHES",
                                   "1,10,16,150,256,1024",

@@ -1,0 +1,128 @@
+============================================================
+GPU FFT RUN run02
+Date: Mon Mar 16 14:25:19 IST 2026
+Host: aorus
+============================================================
+CONFIG|BENCH_NRUNS|20
+CONFIG|BENCH_WARMUP|5
+CONFIG|BENCH_MAX_MEM_MB|8192
+CONFIG|BENCH_MIN_TOTAL_MS|50
+CONFIG|BENCH_MAX_ADAPT_ITERS|100000000
+CONFIG|BENCH_VALIDATE|1
+CONFIG|BENCH_VALIDATE_TOL|1e-4
+CONFIG|BENCH_VALIDATE_STRICT|1
+CONFIG|BENCH_STREAM_MODE|1
+CONFIG|BENCH_STREAM_TARGET_MB|128
+CONFIG|BENCH_STREAM_MIN_SLOTS|2
+CONFIG|BENCH_STREAM_MAX_SLOTS|262144
+CONFIG|THROUGHPUT_LENGTHS|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+CONFIG|THROUGHPUT_BATCHES|1
+PROFILE|gpu_5001MHz|cuFFT cache-no-reuse batch=1 large-N sweep (memory clock at 5001 MHz)|CUDA_CUFFT|1|throughput|2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304|1|gpu_run_5001MHz
+
+############################################################
+# FFT BENCHMARK (cuFFT, 1D, single precision)              #
+############################################################
+profile_id       : gpu_5001MHz
+profile_desc     : cuFFT cache-no-reuse batch=1 large-N sweep (memory clock at 5001 MHz)
+workload         : throughput
+device_index     : 0
+timed runs       : 20
+warmup runs      : 5
+min total ms     : 50.0
+max adapt iters  : 100000000
+validate         : 1
+validate tol     : 1.000e-04
+validate strict  : 1
+stream mode      : 1
+stream target MB : 128.0
+stream min slots : 2
+stream max slots : 262144
+mem cap (MB)     : 8192.0
+threads_field    : 1
+lengths: 2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536,131072,262144,524288,1048576,2097152,4194304
+batches: 1
+gpu_name         : NVIDIA GeForce RTX 3080
+compute_cap      : 8.6
+sm_count         : 68
+warp_size        : 32
+max_threads_sm   : 1536
+max_threads_blk  : 1024
+global_mem_mb    : 9872.4
+
+
+====================================================================
+WORKLOAD: throughput (length x batch at fixed CUDA profile)
+====================================================================
+threads_field=1
+CHECK|gpu_5001MHz|throughput|n2_b1|2|1|1|1|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n2_b1            | Len:      2 | Batch:     1 | Thr: 1 | Fwd:    0.0027 ms     0.00 GF/s (iters:18728) | Bwd:    0.0027 ms     0.00 GF/s (iters:18697) | Slots: 262144 | Mem:     8.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n2_b1|2|1|1|1|1|0.002678|0.003735|0.002677|0.003735|8.00|262144|0.00
+CHECK|gpu_5001MHz|throughput|n4_b1|4|1|1|1|1|0.00000000e+00|0.00000000e+00|1.00000000e-04|PASS
+[run ] n4_b1            | Len:      4 | Batch:     1 | Thr: 1 | Fwd:    0.0031 ms     0.01 GF/s (iters:16365) | Bwd:    0.0031 ms     0.01 GF/s (iters:16387) | Slots: 262144 | Mem:    16.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n4_b1|4|1|1|1|1|0.003055|0.013092|0.003052|0.013104|16.00|262144|0.00
+CHECK|gpu_5001MHz|throughput|n8_b1|8|1|1|1|1|6.20513738e-08|7.02886368e-08|1.00000000e-04|PASS
+[run ] n8_b1            | Len:      8 | Batch:     1 | Thr: 1 | Fwd:    0.0033 ms     0.04 GF/s (iters:15259) | Bwd:    0.0030 ms     0.04 GF/s (iters:16787) | Slots: 262144 | Mem:    32.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n8_b1|8|1|1|1|1|0.003307|0.036283|0.002982|0.040242|32.00|262144|0.00
+CHECK|gpu_5001MHz|throughput|n16_b1|16|1|1|1|1|4.67280632e-08|6.66400187e-08|1.00000000e-04|PASS
+[run ] n16_b1           | Len:     16 | Batch:     1 | Thr: 1 | Fwd:    0.0030 ms     0.11 GF/s (iters:16631) | Bwd:    0.0030 ms     0.11 GF/s (iters:16597) | Slots: 262144 | Mem:    64.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n16_b1|16|1|1|1|1|0.003033|0.105495|0.003015|0.106145|64.00|262144|0.00
+CHECK|gpu_5001MHz|throughput|n32_b1|32|1|1|1|1|1.13990442e-07|2.45756246e-07|1.00000000e-04|PASS
+[run ] n32_b1           | Len:     32 | Batch:     1 | Thr: 1 | Fwd:    0.0036 ms     0.22 GF/s (iters:13965) | Bwd:    0.0036 ms     0.22 GF/s (iters:14134) | Slots: 262144 | Mem:   128.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n32_b1|32|1|1|1|1|0.003583|0.223281|0.003582|0.223323|128.00|262144|0.00
+CHECK|gpu_5001MHz|throughput|n64_b1|64|1|1|1|1|8.32402053e-08|1.33280037e-07|1.00000000e-04|PASS
+[run ] n64_b1           | Len:     64 | Batch:     1 | Thr: 1 | Fwd:    0.0035 ms     0.55 GF/s (iters:14399) | Bwd:    0.0035 ms     0.55 GF/s (iters:14576) | Slots: 131072 | Mem:   128.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n64_b1|64|1|1|1|1|0.003478|0.552007|0.003473|0.552846|128.00|131072|0.00
+CHECK|gpu_5001MHz|throughput|n128_b1|128|1|1|1|1|1.12463852e-07|1.99920056e-07|1.00000000e-04|PASS
+[run ] n128_b1          | Len:    128 | Batch:     1 | Thr: 1 | Fwd:    0.0038 ms     1.17 GF/s (iters:13081) | Bwd:    0.0038 ms     1.17 GF/s (iters:13086) | Slots:  65536 | Mem:   128.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n128_b1|128|1|1|1|1|0.003827|1.170670|0.003823|1.171813|128.00|65536|0.00
+CHECK|gpu_5001MHz|throughput|n256_b1|256|1|1|1|1|1.33346435e-07|3.62560900e-07|1.00000000e-04|PASS
+[run ] n256_b1          | Len:    256 | Batch:     1 | Thr: 1 | Fwd:    0.0036 ms     2.83 GF/s (iters:13877) | Bwd:    0.0036 ms     2.85 GF/s (iters:13933) | Slots:  32768 | Mem:   128.00 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n256_b1|256|1|1|1|1|0.003619|2.829673|0.003590|2.852726|128.00|32768|0.00
+CHECK|gpu_5001MHz|throughput|n512_b1|512|1|1|1|1|2.87155450e-07|6.75829677e-07|1.00000000e-04|PASS
+[run ] n512_b1          | Len:    512 | Batch:     1 | Thr: 1 | Fwd:    0.0042 ms     5.54 GF/s (iters:12030) | Bwd:    0.0042 ms     5.54 GF/s (iters:12043) | Slots:  16384 | Mem:   128.01 MB | Work:    0.00 MB
+RESULT|gpu_5001MHz|throughput|n512_b1|512|1|1|1|1|0.004157|5.542303|0.004156|5.543979|128.01|16384|0.00
+CHECK|gpu_5001MHz|throughput|n1024_b1|1024|1|1|1|1|2.26410131e-07|7.27567411e-07|1.00000000e-04|PASS
+[run ] n1024_b1         | Len:   1024 | Batch:     1 | Thr: 1 | Fwd:    0.0045 ms    11.49 GF/s (iters:11226) | Bwd:    0.0045 ms    11.48 GF/s (iters:11226) | Slots:   8192 | Mem:   128.02 MB | Work:    0.01 MB
+RESULT|gpu_5001MHz|throughput|n1024_b1|1024|1|1|1|1|0.004455|11.491688|0.004458|11.484884|128.02|8192|0.01
+CHECK|gpu_5001MHz|throughput|n2048_b1|2048|1|1|1|1|2.00081709e-07|5.62309094e-07|1.00000000e-04|PASS
+[run ] n2048_b1         | Len:   2048 | Batch:     1 | Thr: 1 | Fwd:    0.0054 ms    20.99 GF/s (iters:9318) | Bwd:    0.0054 ms    21.02 GF/s (iters:9338) | Slots:   4096 | Mem:   128.03 MB | Work:    0.02 MB
+RESULT|gpu_5001MHz|throughput|n2048_b1|2048|1|1|1|1|0.005366|20.989494|0.005358|21.024214|128.03|4096|0.02
+CHECK|gpu_5001MHz|throughput|n4096_b1|4096|1|1|1|1|2.05589312e-07|6.50892546e-07|1.00000000e-04|PASS
+[run ] n4096_b1         | Len:   4096 | Batch:     1 | Thr: 1 | Fwd:    0.0060 ms    41.29 GF/s (iters:8402) | Bwd:    0.0060 ms    41.29 GF/s (iters:8403) | Slots:   2048 | Mem:   128.06 MB | Work:    0.03 MB
+RESULT|gpu_5001MHz|throughput|n4096_b1|4096|1|1|1|1|0.005953|41.286624|0.005952|41.292382|128.06|2048|0.03
+CHECK|gpu_5001MHz|throughput|n8192_b1|8192|1|1|1|1|3.09557456e-07|9.12262670e-07|1.00000000e-04|PASS
+[run ] n8192_b1         | Len:   8192 | Batch:     1 | Thr: 1 | Fwd:    0.0095 ms    56.24 GF/s (iters:5283) | Bwd:    0.0092 ms    58.13 GF/s (iters:5459) | Slots:   1024 | Mem:   128.12 MB | Work:    0.06 MB
+RESULT|gpu_5001MHz|throughput|n8192_b1|8192|1|1|1|1|0.009468|56.237792|0.009160|58.132667|128.12|1024|0.06
+CHECK|gpu_5001MHz|throughput|n16384_b1|16384|1|1|1|1|2.11460041e-07|7.91867391e-07|1.00000000e-04|PASS
+[run ] n16384_b1        | Len:  16384 | Batch:     1 | Thr: 1 | Fwd:    0.0119 ms    96.23 GF/s (iters:4210) | Bwd:    0.0119 ms    96.43 GF/s (iters:4210) | Slots:    512 | Mem:   128.25 MB | Work:    0.12 MB
+RESULT|gpu_5001MHz|throughput|n16384_b1|16384|1|1|1|1|0.011918|96.232503|0.011894|96.425356|128.25|512|0.12
+CHECK|gpu_5001MHz|throughput|n32768_b1|32768|1|1|1|1|2.19463275e-07|6.95103633e-07|1.00000000e-04|PASS
+[run ] n32768_b1        | Len:  32768 | Batch:     1 | Thr: 1 | Fwd:    0.0102 ms   240.62 GF/s (iters:4933) | Bwd:    0.0105 ms   233.09 GF/s (iters:4908) | Slots:    256 | Mem:   128.50 MB | Work:    0.25 MB
+RESULT|gpu_5001MHz|throughput|n32768_b1|32768|1|1|1|1|0.010213|240.624370|0.010543|233.094556|128.50|256|0.25
+CHECK|gpu_5001MHz|throughput|n65536_b1|65536|1|1|1|1|2.26633256e-07|6.88040041e-07|1.00000000e-04|PASS
+[run ] n65536_b1        | Len:  65536 | Batch:     1 | Thr: 1 | Fwd:    0.0109 ms   479.71 GF/s (iters:4580) | Bwd:    0.0109 ms   480.02 GF/s (iters:4578) | Slots:    128 | Mem:   129.00 MB | Work:    0.50 MB
+RESULT|gpu_5001MHz|throughput|n65536_b1|65536|1|1|1|1|0.010929|479.708707|0.010922|480.019672|129.00|128|0.50
+CHECK|gpu_5001MHz|throughput|n131072_b1|131072|1|1|1|1|2.15206213e-07|7.87403358e-07|1.00000000e-04|PASS
+[run ] n131072_b1       | Len: 131072 | Batch:     1 | Thr: 1 | Fwd:    0.0142 ms   786.26 GF/s (iters:3530) | Bwd:    0.0142 ms   786.19 GF/s (iters:3530) | Slots:     64 | Mem:   130.00 MB | Work:    1.00 MB
+RESULT|gpu_5001MHz|throughput|n131072_b1|131072|1|1|1|1|0.014170|786.259119|0.014171|786.194783|130.00|64|1.00
+CHECK|gpu_5001MHz|throughput|n262144_b1|262144|1|1|1|1|2.01504460e-07|7.83976700e-07|1.00000000e-04|PASS
+[run ] n262144_b1       | Len: 262144 | Batch:     1 | Thr: 1 | Fwd:    0.0233 ms  1010.48 GF/s (iters:2142) | Bwd:    0.0234 ms  1008.73 GF/s (iters:2146) | Slots:     32 | Mem:   132.00 MB | Work:    2.00 MB
+RESULT|gpu_5001MHz|throughput|n262144_b1|262144|1|1|1|1|0.023348|1010.476633|0.023389|1008.728602|132.00|32|2.00
+CHECK|gpu_5001MHz|throughput|n524288_b1|524288|1|1|1|1|2.82680461e-07|1.09945933e-06|1.00000000e-04|PASS
+[run ] n524288_b1       | Len: 524288 | Batch:     1 | Thr: 1 | Fwd:    0.0432 ms  1153.92 GF/s (iters:1159) | Bwd:    0.0430 ms  1157.31 GF/s (iters:1162) | Slots:     16 | Mem:   136.00 MB | Work:    4.00 MB
+RESULT|gpu_5001MHz|throughput|n524288_b1|524288|1|1|1|1|0.043164|1153.923097|0.043037|1157.312725|136.00|16|4.00
+CHECK|gpu_5001MHz|throughput|n1048576_b1|1048576|1|1|1|1|3.60532806e-07|1.39689942e-06|1.00000000e-04|PASS
+[run ] n1048576_b1      | Len:1048576 | Batch:     1 | Thr: 1 | Fwd:    0.0989 ms  1060.33 GF/s (iters:507) | Bwd:    0.0986 ms  1063.01 GF/s (iters:509) | Slots:      8 | Mem:   144.00 MB | Work:    8.00 MB
+RESULT|gpu_5001MHz|throughput|n1048576_b1|1048576|1|1|1|1|0.098892|1060.327205|0.098642|1063.011933|144.00|8|8.00
+CHECK|gpu_5001MHz|throughput|n2097152_b1|2097152|1|1|1|1|3.35097735e-07|1.26721213e-06|1.00000000e-04|PASS
+[run ] n2097152_b1      | Len:2097152 | Batch:     1 | Thr: 1 | Fwd:    0.1989 ms  1107.00 GF/s (iters:252) | Bwd:    0.1992 ms  1105.19 GF/s (iters:251) | Slots:      4 | Mem:   160.00 MB | Work:   16.00 MB
+RESULT|gpu_5001MHz|throughput|n2097152_b1|2097152|1|1|1|1|0.198916|1107.004450|0.199243|1105.185290|160.00|4|16.00
+CHECK|gpu_5001MHz|throughput|n4194304_b1|4194304|1|1|1|1|3.06491559e-07|1.25311589e-06|1.00000000e-04|PASS
+[run ] n4194304_b1      | Len:4194304 | Batch:     1 | Thr: 1 | Fwd:    0.3988 ms  1157.05 GF/s (iters:126) | Bwd:    0.4014 ms  1149.53 GF/s (iters:125) | Slots:      2 | Mem:   192.00 MB | Work:   32.00 MB
+RESULT|gpu_5001MHz|throughput|n4194304_b1|4194304|1|1|1|1|0.398750|1157.047967|0.401359|1149.528490|192.00|2|32.00
+
+Benchmark workload complete.
+
+============================================================
+RUN COMPLETE run02
+============================================================

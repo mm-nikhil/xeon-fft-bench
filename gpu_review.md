@@ -26,6 +26,9 @@ Safe device-resident sessions:
 - `src/gpu/runs/run_gpu_cache_reuse/20260313_130500/`
 - `src/gpu/runs/run_gpu_cache_noreuse/20260313_121932/`
 - `src/gpu/runs/run_gpu_cache_reuse/20260313_130900_batch1/` (diagnostic subset only)
+- `src/gpu/runs/run_gpu_810MHz/20260316_140459/`
+- `src/gpu/runs/gpu_run_5001MHz/20260316_142505/`
+- `src/gpu/runs/gpu_run_9501MHz/20260316_143809/`
 
 Legacy outputs under `src/gpu/fft_logs/`, `src/gpu/plots/out/`, and `src/gpu/runs/older_run/` remain historical only and should not be mixed into current claims.
 
@@ -57,7 +60,7 @@ This is directionally similar to Xeon, but the drop is much smaller. For the GPU
 
 ### 8.4 Plots
 
-All current GPU families, including the new E2E families, generate the same run-local 3-plot pack:
+Most full-matrix GPU families, including the E2E families, generate the same run-local 3-plot pack:
 
 1. `plots/master/all_cases_master.png`
    Forward GFLOPS, forward latency, and working-set heatmaps across the full `N x batch` matrix.
@@ -67,6 +70,93 @@ All current GPU families, including the new E2E families, generate the same run-
    One panel per batch, showing throughput vs. FFT length.
 
 The new E2E sessions also pass the same plot contract and coverage checks as the earlier GPU families.
+
+The memory-clock sweep families are intentionally different because they are `batch=1`, large-`N`, forward-focused studies:
+
+- `run_gpu_810MHz`
+- `gpu_run_5001MHz`
+- `gpu_run_9501MHz`
+
+These families generate exactly one large line plot:
+
+1. `plots/master/all_cases_master.png`
+   Forward GFLOPS vs. `N` for the batch-1 sweep, with no extra whitespace and no secondary panels.
+
+### 8.5 Memory-Clock Sweep: Batch=1 Large-N Runs
+
+These three sessions isolate the effect of locked GPU memory clock on the same cold-streaming, device-resident, batch-1 cuFFT workload.
+
+Sessions:
+
+- `src/gpu/runs/run_gpu_810MHz/20260316_140459/`
+- `src/gpu/runs/gpu_run_5001MHz/20260316_142505/`
+- `src/gpu/runs/gpu_run_9501MHz/20260316_143809/`
+
+The methodology is the same across all three:
+
+- `BENCH_STREAM_MODE=1`
+- `BENCH_STREAM_TARGET_MB=128`
+- `BENCH_STREAM_MIN_SLOTS=2`
+- `BENCH_STREAM_MAX_SLOTS=262144`
+- `THROUGHPUT_BATCHES=1`
+- `THROUGHPUT_LENGTHS=2..4194304` doubling each step for the `5001` and `9501` MHz runs
+- the `810` MHz run includes one extra `N=1` point, but the matched comparisons below use `N=4194304, batch=1`
+
+#### 8.5.1 Bandwidth Derivation from Locked Memory Clock
+
+For this RTX 3080 board:
+
+- memory interface = `320-bit`
+- effective DDR multiplier = `2`
+
+So the theoretical memory bandwidth scales linearly with reported memory clock:
+
+```text
+Bandwidth (GB/s) ~= memory_clock_MHz x 2 x 320 / 8 / 1000
+                  ~= memory_clock_MHz x 0.08
+```
+
+That gives:
+
+| Locked memory clock | Derived peak bandwidth |
+|---:|---:|
+| `810 MHz` | `64.80 GB/s` |
+| `5001 MHz` | `400.08 GB/s` |
+| `9501 MHz` | `760.08 GB/s` |
+
+#### 8.5.2 Sweep Summary
+
+| Campaign | Locked memory clock | Derived bandwidth | Best forward case | Best forward GFLOPS | % of 36817.92 peak |
+|---|---:|---:|---|---:|---:|
+| `run_gpu_810MHz` | `810 MHz` | `64.80 GB/s` | `N=131072, B=1` | `217.48` | `0.59%` |
+| `gpu_run_5001MHz` | `5001 MHz` | `400.08 GB/s` | `N=524288, B=1` | `1160.20` | `3.15%` |
+| `gpu_run_9501MHz` | `9501 MHz` | `760.08 GB/s` | `N=4194304, B=1` | `1849.61` | `5.02%` |
+
+#### 8.5.3 Matched Large-N Comparison
+
+At the matched largest case `N=4194304, batch=1`:
+
+| Campaign | Locked memory clock | Derived bandwidth | Forward GFLOPS | Forward ms | Working set | Stream slots |
+|---|---:|---:|---:|---:|---:|---:|
+| `run_gpu_810MHz` | `810 MHz` | `64.80 GB/s` | `174.92` | `2.638` | `192.00 MB` | `2` |
+| `gpu_run_5001MHz` | `5001 MHz` | `400.08 GB/s` | `1154.92` | `0.399` | `192.00 MB` | `2` |
+| `gpu_run_9501MHz` | `9501 MHz` | `760.08 GB/s` | `1849.61` | `0.249` | `192.00 MB` | `2` |
+
+Fixed-case throughput ratios at `N=4194304, batch=1`:
+
+- `5001 / 810` = `6.60x`
+- `9501 / 5001` = `1.60x`
+- `9501 / 810` = `10.57x`
+
+This is a strong indication that the cold-streaming batch-1 large-`N` path is heavily memory-bandwidth-sensitive on this board.
+
+#### 8.5.4 Interpretation
+
+The sweep does not prove a perfectly linear roofline relationship between clock and FFT throughput, but it does show the expected qualitative behavior:
+
+- moving from `810 MHz` to `5001 MHz` produces a major jump in large-`N` throughput
+- moving from `5001 MHz` to `9501 MHz` still produces a large gain, but with diminishing return relative to raw bandwidth scaling
+- the highest clock pushes the best large-`N` batch-1 result to `1849.61 GFLOPS`, which is over `10x` the matched `810 MHz` result at `N=4194304`
 
 ---
 
@@ -120,6 +210,20 @@ Bandwidth ~= 9501 MHz x 2 x 320 / 8
           ~= 760.1 GB/s
 ```
 
+Equivalently, for this board:
+
+```text
+Bandwidth (GB/s) ~= memory_clock_MHz x 0.08
+```
+
+So the locked-clock sweep values used in Section 8.5 correspond to:
+
+| Memory clock | Derived bandwidth |
+|---:|---:|
+| `810 MHz` | `64.80 GB/s` |
+| `5001 MHz` | `400.08 GB/s` |
+| `9501 MHz` | `760.08 GB/s` |
+
 ### 9.3 Software Environment
 
 | Component | Value |
@@ -133,15 +237,37 @@ Bandwidth ~= 9501 MHz x 2 x 320 / 8
 
 ### 9.4 Theoretical Compute Peak
 
-The report builder uses:
+For consistency with the Xeon review, the GPU compute peak is written out from the hardware units:
 
 ```text
-Peak SP GFLOPS = CUDA cores x 2 FLOP/cycle x max SM clock
-               = 8704 x 2 x 2.115
+Peak SP GFLOPS = SMs x CUDA cores/SM x FLOP/cycle x frequency
+               = 68 x 128 x 2 x 2.115 GHz
                = 36817.92 SP GFLOPS
 ```
 
-As with the Xeon review, this is a compute roofline, not a realistic FFT roofline. FFT remains dominated by data movement and staging, so single-digit percent-of-peak values are expected.
+Equivalently:
+
+```text
+Total CUDA cores = 68 x 128 = 8704
+Peak SP GFLOPS   = 8704 x 2 x 2.115
+                 = 36817.92 SP GFLOPS
+```
+
+Where:
+
+- `68` is the SM count
+- `128` is the CUDA core count per SM for this Ampere GA102 device
+- `2 FLOP/cycle` is the standard single-precision fused-multiply-add throughput model used by the report builder
+- `2.115 GHz` is the maximum SM clock reported locally by `nvidia-smi`
+
+The corresponding memory-side ceiling from Section 9.2 is:
+
+```text
+Peak memory bandwidth ~= 9501 MHz x 2 x 320 / 8
+                       ~= 760.1 GB/s
+```
+
+As with the Xeon review, the `36817.92 SP GFLOPS` figure is a compute roofline, not a realistic FFT roofline. FFT remains dominated by data movement and staging, so single-digit percent-of-peak values are expected.
 
 ---
 
